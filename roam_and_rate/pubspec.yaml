@@ -1,0 +1,59 @@
+name: roam_and_rate
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.0-278.1.beta
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  lottie: ^3.1.2
+  smooth_page_indicator: ^1.1.0
+  intl: ^0.19.0
+  font_awesome_flutter: ^10.7.0
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+  flutter_slidable: ^3.1.1
+  dropdown_search: ^6.0.2
+  drift: ^2.26.0
+  path_provider: ^2.0.11
+  path: ^1.8.3
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  drift_dev: ^2.13.0
+  build_runner: ^2.4.6
+
+flutter:
+  uses-material-design:
+    true
+    # To add assets
+  assets:
+    # Logos
+    - assets/images/logo/logopurple.png
+
+    # Onboard
+    - assets/images/onboarding/CollectingMoney.json
+    - assets/images/onboarding/share.json
+    - assets/images/onboarding/TrackExpensives.json
+
+    # Icons
+    - assets/images/icons/card.png
+
+  # Custom fonts
+  fonts:
+    - family: JetBrains Mono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf
+        - asset: assets/fonts/JetBrainsMono/JetBrainsMono-Bold.ttf
+          weight: 700
+
+    - family: AntonSC
+      fonts:
+        - asset: assets/fonts/AntonSC/AntonSC-Regular.ttf
