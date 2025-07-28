@@ -50,9 +50,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Onboarding Page'),
-      ),
+      appBar: AppBar(title: Text('Onboarding Page')),
       body: Column(
         children: [
           Expanded(
@@ -70,7 +68,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     children: [
                       Text(
                         'Welcome to RoamAndRate',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(height: 20),
                       Text('TODO: Implement onboarding step 1'),
@@ -83,7 +84,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     children: [
                       Text(
                         'Step 2',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(height: 20),
                       Text('TODO: Implement onboarding step 2'),
@@ -96,7 +100,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     children: [
                       Text(
                         'Get Started',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(height: 20),
                       Text('TODO: Implement onboarding step 3'),
@@ -123,9 +130,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       height: 8,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: _currentStep == index
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey,
+                        color:
+                            _currentStep == index
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey,
                       ),
                     );
                   }),
