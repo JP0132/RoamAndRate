@@ -4,6 +4,7 @@ class CustomColours {
   CustomColours._();
   // Dark Theme Colours
   static const Color darkBackground = Color(0xFF343B46);
+  static const Color darkGraidentBackground = Color(0xFF687281);
   static const Color darkSurface = Color(0xFF606888);
   static const Color darkSecondarySurface = Color(0xFF484e65);
   static const Color darkPrimary = Color(0xFFc5ee7e);

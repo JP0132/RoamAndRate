@@ -8,7 +8,7 @@ class CustomAppTheme {
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
-    fontFamily: "JetBrains Mono",
+    fontFamily: "Poppins",
     appBarTheme: AppBarTheme(backgroundColor: CustomColours.lightSurface),
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.white,
@@ -26,7 +26,7 @@ class CustomAppTheme {
 
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
-    fontFamily: "JetBrains Mono",
+    fontFamily: "Poppins",
     appBarTheme: AppBarTheme(backgroundColor: CustomColours.darkBackground),
     colorScheme: ColorScheme.fromSeed(
       seedColor: CustomColours.darkBackground,
