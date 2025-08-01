@@ -22,6 +22,7 @@ dependencies:
   path_provider: ^2.0.11
   path: ^1.8.3
   shared_preferences: ^2.5.3
+  syncfusion_flutter_datepicker: ^30.1.42
 
 dev_dependencies:
   flutter_test:
@@ -53,14 +54,15 @@ flutter:
         - asset: assets/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf
         - asset: assets/fonts/JetBrainsMono/JetBrainsMono-Bold.ttf
           weight: 700
+
     - family: Poppins
       fonts:
-        - asset: assets/fonts/Poppins/Poppins-Regular.tff
-        - asset: assets/fonts/Poppins/Poppins-Bold.tff
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Poppins/Poppins-ExtraBold.tff
+        - asset: assets/fonts/Poppins/Poppins-ExtraBold.ttf
           weight: 800
-        - asset: assets/fonts/Poppins/Poppins-Black.tff
+        - asset: assets/fonts/Poppins/Poppins-Black.ttf
           weight: 900
 
     - family: AntonSC
