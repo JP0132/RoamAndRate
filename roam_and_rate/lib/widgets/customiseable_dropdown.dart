@@ -47,7 +47,10 @@ class _FixedPositionDropdownState<T> extends State<FixedPositionDropdown<T>> {
 
   @override
   void dispose() {
-    _closeDropdown();
+    if (_isOpen) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
     super.dispose();
   }
 
@@ -60,24 +63,40 @@ class _FixedPositionDropdownState<T> extends State<FixedPositionDropdown<T>> {
   }
 
   void _openDropdown() {
+    if (!mounted) return; // prevent inserting overlay if widget is disposed
+    final overlay = Overlay.of(context); // overlay might be null in edge cases
+
     _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
+    overlay.insert(_overlayEntry!);
     setState(() {
       _isOpen = true;
     });
   }
 
+  // Was called in dispose method but caused expection
   void _closeDropdown() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-    setState(() {
-      _isOpen = false;
-    });
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+    if (mounted) {
+      setState(() {
+        _isOpen = false;
+      });
+    }
   }
 
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox =
-        _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    final context = _buttonKey.currentContext;
+    if (context == null) {
+      throw Exception("Button context is null. Cannot create overlay.");
+    }
+
+    final renderBox = context.findRenderObject();
+    if (renderBox == null || renderBox is! RenderBox || !renderBox.attached) {
+      throw Exception("RenderBox is invalid. Cannot create overlay.");
+    }
+
     Size size = renderBox.size;
     Offset offset = renderBox.localToGlobal(Offset.zero);
 

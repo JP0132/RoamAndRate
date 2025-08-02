@@ -3,8 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/models/date_picker_model.dart';
+import 'package:roam_and_rate/widgets/custom_bottom_navbar.dart';
 import 'package:roam_and_rate/widgets/customiseable_dropdown.dart';
 import 'package:roam_and_rate/widgets/customised_date_picker.dart';
+import 'package:roam_and_rate/widgets/smooth_transition_page.dart';
 
 class EnterUserDetails extends StatefulWidget {
   const EnterUserDetails({super.key});
@@ -138,7 +140,8 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
               ),
               SizedBox(height: 50),
               ElevatedButton(
-                onPressed: () => {},
+                onPressed:
+                    () => SmoothTransitionPage(context, CustomBottomNavbar()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CustomColours.darkPrimary,
                   foregroundColor: CustomColours.darkBackground,
