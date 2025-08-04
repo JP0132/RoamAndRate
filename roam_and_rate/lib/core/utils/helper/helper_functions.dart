@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+const Map<int, String> ratingDescriptions = {
+  10: 'Masterpiece',
+  9: 'Great',
+  8: 'Very good',
+  7: 'Good',
+  6: 'Fine',
+  5: 'Average',
+  4: 'Bad',
+  3: 'Very Bad',
+  2: 'Horrible',
+  1: 'DO NOT RECOMMEND',
+};
+
 class Helperfunctions {
   static Size screenSize(BuildContext context) {
     return MediaQuery.of(context).size;
@@ -38,5 +51,9 @@ class Helperfunctions {
     SystemChrome.setEnabledSystemUIMode(
       enable ? SystemUiMode.immersiveSticky : SystemUiMode.edgeToEdge,
     );
+  }
+
+  static String getRatingDescription(int rating) {
+    return ratingDescriptions[rating] ?? 'Unknown';
   }
 }
