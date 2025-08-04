@@ -122,7 +122,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                 ),
               ),
               SizedBox(height: 10),
-              FixedPositionDropdown<String>(
+              CustomiseableDropdown<String>(
                 items: genderOptions,
                 value: selectedGender,
                 backgroundColor: CustomColours.darkSurface,

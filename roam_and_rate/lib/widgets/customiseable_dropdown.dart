@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 
-class FixedPositionDropdown<T> extends StatefulWidget {
+class CustomiseableDropdown<T> extends StatefulWidget {
   final List<T> items;
   final T? value;
   final String hint;
@@ -17,8 +17,8 @@ class FixedPositionDropdown<T> extends StatefulWidget {
   final Widget? suffixIcon;
   final double? menuMaxHeight;
 
-  const FixedPositionDropdown({
-    Key? key,
+  const CustomiseableDropdown({
+    super.key,
     required this.items,
     this.value,
     required this.hint,
@@ -33,14 +33,14 @@ class FixedPositionDropdown<T> extends StatefulWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.menuMaxHeight = 300,
-  }) : super(key: key);
+  });
 
   @override
-  State<FixedPositionDropdown<T>> createState() =>
-      _FixedPositionDropdownState<T>();
+  State<CustomiseableDropdown<T>> createState() =>
+      _CustomiseableDropdownState<T>();
 }
 
-class _FixedPositionDropdownState<T> extends State<FixedPositionDropdown<T>> {
+class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
   final GlobalKey _buttonKey = GlobalKey();
   OverlayEntry? _overlayEntry;
   bool _isOpen = false;

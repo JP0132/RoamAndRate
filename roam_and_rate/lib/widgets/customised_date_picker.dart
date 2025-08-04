@@ -293,7 +293,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       'December',
     ];
 
-    return Container(
+    return SizedBox(
       height: 280,
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
