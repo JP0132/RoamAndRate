@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/widgets/expense_card.dart';
 import 'package:roam_and_rate/widgets/rating_cards.dart';
+import 'package:roam_and_rate/widgets/swipeable_card_stack.dart';
+import 'package:roam_and_rate/widgets/trip_cards.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,6 +13,29 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<TripCards> cards = [
+    TripCards(
+      tripName: "Porto, Portugal",
+      budget: 7000,
+      startDate: DateTime(2025, 9, 3),
+      endDate: DateTime(2025, 9, 10),
+      cardColour: CustomColours.cardColourBlue,
+    ),
+    TripCards(
+      tripName: "Lisbon, Portugal",
+      budget: 4000,
+      startDate: DateTime(2024, 7, 3),
+      endDate: DateTime(2024, 7, 10),
+      cardColour: CustomColours.darkSecondary,
+    ),
+    TripCards(
+      tripName: "Lisbon, Portugal",
+      budget: 4000,
+      startDate: DateTime(2023, 7, 3),
+      endDate: DateTime(2023, 7, 10),
+      cardColour: CustomColours.darkError,
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +44,11 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          SwipeableStack(
+            cards: cards, // or create a generic version
+          ),
+
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [Text("Ratings"), Text("View All")],
