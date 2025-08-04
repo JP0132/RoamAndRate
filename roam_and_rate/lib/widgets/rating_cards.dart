@@ -71,7 +71,7 @@ class _RatingCardsState extends State<RatingCards> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                DateFormat('EE, dd MMMM yyyy').format(widget.dateRated),
+                DateFormat('EE, dd MMM yyyy').format(widget.dateRated),
                 style: TextStyle(
                   fontSize: 12,
                   color: CustomColours.darkSecondaryText,

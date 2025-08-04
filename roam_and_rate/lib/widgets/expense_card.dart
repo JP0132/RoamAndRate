@@ -85,7 +85,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
               ),
               SizedBox(height: 5),
               Text(
-                DateFormat('EE, dd MM yyyy').format(widget.datePaid),
+                DateFormat('EE, dd MMM yyyy').format(widget.datePaid),
                 style: TextStyle(
                   fontSize: 12,
                   color: CustomColours.darkSecondaryText,

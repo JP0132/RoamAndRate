@@ -14,6 +14,7 @@ class CustomColours {
   static const Color darkSecondaryText = Color(0xFFa9a9a9);
   static const Color darkError = Color.fromRGBO(240, 97, 109, 1);
   static const Color darkSuccess = Color.fromRGBO(39, 173, 117, 1);
+  static const Color cardColourBlue = Color(0xFF647fab);
 
   // Light Theme Colours
   static const Color lightPrimary = Color.fromRGBO(80, 127, 229, 1);
