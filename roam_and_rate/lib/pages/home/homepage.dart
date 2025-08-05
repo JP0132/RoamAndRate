@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/models/trip_model.dart';
 import 'package:roam_and_rate/widgets/expense_card.dart';
 import 'package:roam_and_rate/widgets/rating_cards.dart';
 import 'package:roam_and_rate/widgets/swipeable_card_stack.dart';
@@ -13,27 +14,30 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<TripCards> cards = [
-    TripCards(
-      tripName: "Porto, Portugal",
-      budget: 7000,
+  List<TripModel> cards = [
+    TripModel(
+      tripName: "Dad Holiday",
+      location: "Porto, Portugal",
       startDate: DateTime(2025, 9, 3),
       endDate: DateTime(2025, 9, 10),
-      cardColour: CustomColours.cardColourBlue,
+      backgroundColor: CustomColours.cardColourBlue,
+      budget: 7000,
     ),
-    TripCards(
-      tripName: "Lisbon, Portugal",
-      budget: 4000,
+    TripModel(
+      tripName: "Double Wedding",
+      location: "Lisbon, Portugal",
       startDate: DateTime(2024, 7, 3),
       endDate: DateTime(2024, 7, 10),
-      cardColour: CustomColours.darkSecondary,
-    ),
-    TripCards(
-      tripName: "Lisbon, Portugal",
+      backgroundColor: CustomColours.darkSecondary,
       budget: 4000,
+    ),
+    TripModel(
+      tripName: "First Time Back Lisbon",
+      location: "Lisbon, Portugal",
       startDate: DateTime(2023, 7, 3),
       endDate: DateTime(2023, 7, 10),
-      cardColour: CustomColours.darkError,
+      backgroundColor: CustomColours.darkError,
+      budget: 4000,
     ),
   ];
   @override
@@ -45,7 +49,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SwipeableStack(
-            cards: cards, // or create a generic version
+            cards: [...cards.map((card) => TripCards(tripModel: card))],
           ),
 
           SizedBox(height: 20),
