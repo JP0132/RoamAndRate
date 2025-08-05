@@ -8,6 +8,7 @@ import 'package:roam_and_rate/pages/bottom_nav/bloc/navigation_state.dart';
 import 'package:roam_and_rate/pages/expenses/expenses_page.dart';
 import 'package:roam_and_rate/pages/home/homepage.dart';
 import 'package:roam_and_rate/pages/settings/settings_page.dart';
+import 'package:roam_and_rate/pages/trips/trips_page.dart';
 
 class CustomBottomNavbar extends StatelessWidget {
   const CustomBottomNavbar({super.key});
@@ -58,7 +59,7 @@ class CustomBottomNavbar extends StatelessWidget {
                       selectedIndex: selectedIndex,
                       onTap:
                           () => context.read<NavigationBloc>().add(
-                            NavigateToSplits(),
+                            NavigateToTrips(),
                           ),
                     ),
                     const SizedBox(width: 40), // Space for the FAB
@@ -92,8 +93,8 @@ class CustomBottomNavbar extends StatelessWidget {
           builder: (context, state) {
             if (state is HomeState) {
               return const HomePage();
-            } else if (state is SplitNavState) {
-              return const ExpensesPage();
+            } else if (state is TripsState) {
+              return const TripsPage();
             } else if (state is AnalyticsState) {
               return Container(color: Colors.orange);
             } else if (state is SettingsState) {
@@ -136,56 +137,56 @@ class CustomBottomNavbar extends StatelessWidget {
 
 int _getSelectedIndex(NavigationState state) {
   if (state is HomeState) return 0;
-  if (state is SplitNavState) return 1;
+  if (state is TripsState) return 1;
   if (state is AnalyticsState) return 2;
   if (state is SettingsState) return 3;
   return 0;
 }
 
-class CircularNotchedAndCorneredRectangle extends NotchedShape {
-  final double cornerRadius;
+// class CircularNotchedAndCorneredRectangle extends NotchedShape {
+//   final double cornerRadius;
 
-  CircularNotchedAndCorneredRectangle({this.cornerRadius = 20.0});
+//   CircularNotchedAndCorneredRectangle({this.cornerRadius = 20.0});
 
-  @override
-  Path getOuterPath(Rect host, Rect? guest) {
-    const fabRadius = 28.0; // Default FAB radius
+//   @override
+//   Path getOuterPath(Rect host, Rect? guest) {
+//     const fabRadius = 28.0; // Default FAB radius
 
-    final notchRadius = guest != null ? guest.width / 2.0 : 0.0;
+//     final notchRadius = guest != null ? guest.width / 2.0 : 0.0;
 
-    final path =
-        Path()
-          ..moveTo(host.left + cornerRadius, host.top)
-          ..arcToPoint(
-            Offset(host.left, host.top + cornerRadius),
-            radius: Radius.circular(cornerRadius),
-            clockwise: false,
-          )
-          ..lineTo(host.left, host.bottom)
-          ..lineTo(host.right, host.bottom)
-          ..lineTo(host.right, host.top + cornerRadius)
-          ..arcToPoint(
-            Offset(host.right - cornerRadius, host.top),
-            radius: Radius.circular(cornerRadius),
-            clockwise: false,
-          );
+//     final path =
+//         Path()
+//           ..moveTo(host.left + cornerRadius, host.top)
+//           ..arcToPoint(
+//             Offset(host.left, host.top + cornerRadius),
+//             radius: Radius.circular(cornerRadius),
+//             clockwise: false,
+//           )
+//           ..lineTo(host.left, host.bottom)
+//           ..lineTo(host.right, host.bottom)
+//           ..lineTo(host.right, host.top + cornerRadius)
+//           ..arcToPoint(
+//             Offset(host.right - cornerRadius, host.top),
+//             radius: Radius.circular(cornerRadius),
+//             clockwise: false,
+//           );
 
-    // Add notch
-    if (guest != null) {
-      final notchCenter = guest.center.dx;
-      final notchRadius = guest.width / 2.0 + 8.0;
+//     // Add notch
+//     if (guest != null) {
+//       final notchCenter = guest.center.dx;
+//       final notchRadius = guest.width / 2.0 + 8.0;
 
-      path.lineTo(notchCenter + notchRadius, host.top);
-      path.arcToPoint(
-        Offset(notchCenter - notchRadius, host.top),
-        radius: Radius.circular(notchRadius),
-        clockwise: true,
-      );
-    }
+//       path.lineTo(notchCenter + notchRadius, host.top);
+//       path.arcToPoint(
+//         Offset(notchCenter - notchRadius, host.top),
+//         radius: Radius.circular(notchRadius),
+//         clockwise: true,
+//       );
+//     }
 
-    path.lineTo(host.left + cornerRadius, host.top);
-    path.close();
+//     path.lineTo(host.left + cornerRadius, host.top);
+//     path.close();
 
-    return path;
-  }
-}
+//     return path;
+//   }
+// }

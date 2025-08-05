@@ -15,7 +15,7 @@ class NavigateToLogin extends NavigationEvent {}
 
 class NavigateToAnalytics extends NavigationEvent {}
 
-class NavigateToSplits extends NavigationEvent {}
+class NavigateToTrips extends NavigationEvent {}
 
 class NavigateToProfile extends NavigationEvent {}
 
