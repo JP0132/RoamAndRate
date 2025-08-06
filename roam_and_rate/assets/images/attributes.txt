@@ -9,3 +9,11 @@ Facebook Icon
 
 Card Logo
 https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/default-project-widgets-xzsp5v/assets/ddr0sc80h0hs/@3xlogoMark_outline.png
+
+
+<a href="https://www.flaticon.com/free-icons/vacation" title="vacation icons">Vacation icons created by Freepik - Flaticon</a>
+
+
+<a href="https://www.flaticon.com/free-icons/flight" title="flight icons">Flight icons created by Good Ware - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/finish-flag" title="finish flag icons">Finish flag icons created by Icon mania - Flaticon</a>

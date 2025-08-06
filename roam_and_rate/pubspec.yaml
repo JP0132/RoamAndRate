@@ -46,7 +46,11 @@ flutter:
     - assets/images/onboarding/TrackExpensives.json
 
     # Icons
-    - assets/images/icons/card.png
+    - assets/images/icons/
+    # - assets/images/icons/next-date.png
+    # - assets/images/icons/time-left.png
+    # - assets/images/icons/direct-flight.png
+    # - assets/images/icons/flag.png
 
   # Custom fonts
   fonts:
