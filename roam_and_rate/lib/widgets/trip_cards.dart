@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
@@ -11,15 +12,18 @@ bool isBetweenInclusive(DateTime target, DateTime start, DateTime end) {
 
 String getTripStatus(DateTime startDate, DateTime endDate) {
   DateTime currentDate = DateTime.now();
+  // Trip is ongoing
   if (isBetweenInclusive(currentDate, startDate, endDate)) {
-    return "CURRENT TRIP";
+    return "assets/images/icons/direct-flight.png";
   }
 
+  // Trip is upcoming
   if (startDate.isAfter(currentDate)) {
-    return "UPCOMING TRIP";
+    return "assets/images/icons/time-left.png";
   }
 
-  return "FINISHED TRIP";
+  // Trip is done
+  return "assets/images/icons/flag.png";
 }
 
 class TripCards extends StatefulWidget {
@@ -33,49 +37,81 @@ class TripCards extends StatefulWidget {
 class _TripCardsState extends State<TripCards> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          color: widget.tripModel.backgroundColor,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${getTripStatus(widget.tripModel.startDate, widget.tripModel.endDate)}: ${widget.tripModel.tripName}",
-                style: const TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              const Text('Balance', style: TextStyle(color: Colors.white)),
-              Text(
-                "${widget.tripModel.budget}",
-                style: const TextStyle(color: Colors.white, fontSize: 25),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(0, 12, 0, 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "FROM: ${DateFormat('dd/MM/yyyy').format(widget.tripModel.startDate)}",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    Text(
-                      "EXP: ${DateFormat('dd/MM/yyyy').format(widget.tripModel.endDate)}",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ],
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        color: widget.tripModel.backgroundColor,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.tripModel.tripName,
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
-          ),
+                SizedBox(width: 8),
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: CustomColours.darkPrimary,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Image.asset(
+                      getTripStatus(
+                        widget.tripModel.startDate,
+                        widget.tripModel.endDate,
+                      ),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 12),
+
+            const Text('Balance', style: TextStyle(color: Colors.white)),
+
+            SizedBox(height: 4),
+
+            Text(
+              "${widget.tripModel.budget}",
+              style: const TextStyle(color: Colors.white, fontSize: 25),
+            ),
+
+            SizedBox(height: 12),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    "FROM: ${DateFormat('dd/MM/yyyy').format(widget.tripModel.startDate)}",
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    "EXP: ${DateFormat('dd/MM/yyyy').format(widget.tripModel.endDate)}",
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
