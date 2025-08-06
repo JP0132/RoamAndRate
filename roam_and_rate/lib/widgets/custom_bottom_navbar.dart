@@ -20,7 +20,9 @@ class CustomBottomNavbar extends StatelessWidget {
       child: Scaffold(
         extendBody: true,
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, "/addTrip");
+          },
           shape: const CircleBorder(),
           backgroundColor: CustomColours.darkPrimary,
           foregroundColor: Colors.black,

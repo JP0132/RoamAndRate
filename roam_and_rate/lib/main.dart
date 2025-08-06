@@ -3,6 +3,7 @@ import 'package:roam_and_rate/core/themes/theme.dart';
 import 'package:roam_and_rate/pages/navigation/navigation_page.dart';
 import 'package:roam_and_rate/pages/onboarding/onboarding_page.dart';
 import 'package:roam_and_rate/pages/splash/splash_page.dart';
+import 'package:roam_and_rate/pages/trips/add_trip_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -21,6 +22,7 @@ class MainApp extends StatelessWidget {
         '/splash': (context) => SplashPage(),
         '/home': (context) => CustomBottomNavbar(),
         '/onboarding': (context) => OnboardingPage(),
+        '/addTrip': (context) => AddTripPage(),
         // '/createSplit': (context) => CreateNewSplit(),
       },
       home: SplashPage(),
