@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum DatePickerViewMode { day, month, year }
-
 class TripModel {
   final String tripName;
   final String location;
