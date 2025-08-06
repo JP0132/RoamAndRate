@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/models/date_picker_model.dart';
 import 'package:roam_and_rate/widgets/custom_bottom_navbar.dart';
+import 'package:roam_and_rate/widgets/custom_input_field.dart';
 import 'package:roam_and_rate/widgets/customiseable_dropdown.dart';
 import 'package:roam_and_rate/widgets/customised_date_picker.dart';
 import 'package:roam_and_rate/widgets/smooth_transition_page.dart';
@@ -18,7 +19,7 @@ class EnterUserDetails extends StatefulWidget {
 class _EnterUserDetailsState extends State<EnterUserDetails> {
   DateTime? selectedDate = DateTime.now();
   String? selectedGender;
-  TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
   final List<String> genderOptions = [
     'Male',
@@ -135,7 +136,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                     selectedGender = value;
                   });
                 },
-                itemBuilder: (country) => Text(country),
+                itemBuilder: (gender) => Text(gender),
                 menuMaxHeight: 200,
               ),
               SizedBox(height: 50),
@@ -214,45 +215,5 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
         selectedDate = date;
       });
     }
-  }
-}
-
-class CustomInputField extends StatelessWidget {
-  final String inputText;
-  final FaIcon inputIcon;
-  final TextEditingController controller;
-  const CustomInputField({
-    super.key,
-    required this.inputText,
-    required this.inputIcon,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: inputText,
-            hintStyle: TextStyle(color: CustomColours.darkSecondaryText),
-            icon: inputIcon,
-            iconColor: CustomColours.darkPrimary,
-            filled: false,
-            border: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            errorBorder: InputBorder.none,
-            disabledBorder: InputBorder.none,
-          ),
-        ),
-      ),
-    );
   }
 }
