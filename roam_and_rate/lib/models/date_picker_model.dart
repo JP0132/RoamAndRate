@@ -11,6 +11,7 @@ class DatePickerConfig {
   final Color disabledTextColor;
   final Color borderColor;
   final Color rangeColor;
+  final Color rangeTextColor;
   final Color todayColor;
   final Color hoverColor;
   final TextStyle headerTextStyle;
@@ -26,6 +27,7 @@ class DatePickerConfig {
   const DatePickerConfig({
     this.primaryColor = Colors.blue,
     this.backgroundColor = Colors.white,
+    this.rangeTextColor = Colors.black,
     this.textColor = Colors.black87,
     this.selectedTextColor = Colors.white,
     this.disabledTextColor = Colors.grey,
@@ -61,6 +63,7 @@ class DatePickerConfig {
     Color? disabledTextColor,
     Color? borderColor,
     Color? rangeColor,
+    Color? rangeTextColor,
     Color? todayColor,
     Color? hoverColor,
     TextStyle? headerTextStyle,
@@ -81,6 +84,7 @@ class DatePickerConfig {
       disabledTextColor: disabledTextColor ?? this.disabledTextColor,
       borderColor: borderColor ?? this.borderColor,
       rangeColor: rangeColor ?? this.rangeColor,
+      rangeTextColor: rangeTextColor ?? this.rangeTextColor,
       todayColor: todayColor ?? this.todayColor,
       hoverColor: hoverColor ?? this.hoverColor,
       headerTextStyle: headerTextStyle ?? this.headerTextStyle,

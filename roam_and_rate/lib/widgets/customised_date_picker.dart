@@ -155,7 +155,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         borderRadius: BorderRadius.circular(widget.config.borderRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -351,7 +351,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     final startYear = (_currentYear ~/ 12) * 12;
     final years = List.generate(12, (index) => startYear + index);
 
-    return Container(
+    return SizedBox(
       height: 280,
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -403,7 +403,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: BoxDecoration(
-        color: widget.config.primaryColor.withOpacity(0.1),
+        color: widget.config.primaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -604,6 +604,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       textColor = widget.config.selectedTextColor;
     } else if (isInRange) {
       backgroundColor = widget.config.rangeColor;
+      textColor = widget.config.rangeTextColor;
     } else if (isToday) {
       border = Border.all(color: widget.config.todayColor, width: 2);
       textColor = widget.config.todayColor;
