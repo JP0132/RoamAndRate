@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/models/trip_model.dart';
+import 'package:roam_and_rate/pages/trips/view_trip.dart';
+import 'package:roam_and_rate/widgets/smooth_transition_page.dart';
 import 'package:roam_and_rate/widgets/trip_cards.dart';
 
 class TripsPage extends StatefulWidget {
@@ -45,7 +48,21 @@ class _TripsPageState extends State<TripsPage> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [...cards.map((card) => TripCards(tripModel: card))],
+          children: [
+            ...cards.map(
+              (card) => InkWell(
+                onTap:
+                    () => {
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.viewTrip,
+                        arguments: ViewTripArguments(tripDetails: card),
+                      ),
+                    },
+                child: TripCards(tripModel: card),
+              ),
+            ),
+          ],
         ),
       ),
     );

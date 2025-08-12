@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/pages/bottom_nav/bloc/navigation_bloc.dart';
 import 'package:roam_and_rate/pages/bottom_nav/bloc/navigation_event.dart';
@@ -21,7 +22,7 @@ class CustomBottomNavbar extends StatelessWidget {
         extendBody: true,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, "/addTrip");
+            Navigator.pushNamed(context, AppRouter.addTrip);
           },
           shape: const CircleBorder(),
           backgroundColor: CustomColours.darkPrimary,
