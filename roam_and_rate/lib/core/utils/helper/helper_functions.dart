@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const Map<int, String> ratingDescriptions = {
-  10: 'Masterpiece',
+  10: 'Stellar',
   9: 'Great',
   8: 'Very good',
   7: 'Good',
@@ -11,7 +11,7 @@ const Map<int, String> ratingDescriptions = {
   4: 'Bad',
   3: 'Very Bad',
   2: 'Horrible',
-  1: 'DO NOT RECOMMEND',
+  1: 'Avoid',
 };
 
 class Helperfunctions {
@@ -54,6 +54,6 @@ class Helperfunctions {
   }
 
   static String getRatingDescription(int rating) {
-    return ratingDescriptions[rating] ?? 'Unknown';
+    return ratingDescriptions[rating] ?? 'Unrated';
   }
 }

@@ -244,6 +244,10 @@ class CurrencyData {
     return currencies.where((c) => !c.isCrypto).map((c) => c.code).toList();
   }
 
+  static List<String> get fiatCurrenciesNames {
+    return currencies.where((c) => !c.isCrypto).map((c) => c.name).toList();
+  }
+
   // Get popular currencies (most commonly used)
   static List<CurrencyModel> get popularCurrencies {
     return currencies
