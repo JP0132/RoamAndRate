@@ -5,15 +5,19 @@ import 'package:roam_and_rate/core/utils/constants/colours.dart';
 
 class CustomInputField extends StatelessWidget {
   final String inputText;
+  final bool isObscureText;
+  final String regFilter;
   final FaIcon inputIcon;
   final TextEditingController controller;
-  final String inputType;
+  final bool numberKeyBoard;
   const CustomInputField({
     super.key,
     required this.inputText,
     required this.inputIcon,
     required this.controller,
-    this.inputType = "char",
+    this.isObscureText = false,
+    this.regFilter = ".*",
+    this.numberKeyBoard = false,
   });
 
   @override
@@ -27,12 +31,14 @@ class CustomInputField extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: TextField(
           controller: controller,
-          inputFormatters:
-              inputType == "numbers"
-                  ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
-                  : null,
+          obscureText: isObscureText,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(regFilter)),
+          ],
           keyboardType:
-              inputType == "char" ? TextInputType.text : TextInputType.number,
+              numberKeyBoard
+                  ? TextInputType.numberWithOptions(decimal: true)
+                  : null,
           decoration: InputDecoration(
             hintText: inputText,
             hintStyle: TextStyle(color: CustomColours.darkSecondaryText),

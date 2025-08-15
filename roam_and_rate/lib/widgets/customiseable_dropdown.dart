@@ -8,14 +8,28 @@ class CustomiseableDropdown<T> extends StatefulWidget {
   final Function(T?) onChanged;
   final Widget Function(T) itemBuilder;
   final Widget Function(T)? selectedItemBuilder;
-  final Color? backgroundColor;
-  final Color? borderColor;
+  final Color? backgroundColour;
+  final Color? borderColour;
   final double borderRadius;
   final EdgeInsets padding;
   final TextStyle? hintStyle;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final double? menuMaxHeight;
+
+  // New parameters for selected text customization
+  final TextStyle? selectedTextStyle;
+  final Color? selectedTextColour;
+  final String Function(T)? selectedTextBuilder; // To convert item to string
+  final TextOverflow selectedTextOverflow;
+  final int? selectedTextMaxLines;
+  final Color? selectedItemColour; // Background color of selected item in list
+  final Color? selectedItemTextColour; // Text color of selected item in list
+  final TextStyle? selectedItemTextStyle; // Text style of selected item in list
+  final Color? unselectedItemTextColour; // Text color of unselected items
+  final TextStyle? unselectedItemTextStyle; // Text style of unselected items
+  final Widget Function(T, bool isSelected)?
+  dropdownItemBuilder; // Custom builder with selection state
 
   const CustomiseableDropdown({
     super.key,
@@ -25,14 +39,25 @@ class CustomiseableDropdown<T> extends StatefulWidget {
     required this.onChanged,
     required this.itemBuilder,
     this.selectedItemBuilder,
-    this.backgroundColor,
-    this.borderColor,
     this.borderRadius = 8.0,
     this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     this.hintStyle,
     this.prefixIcon,
     this.suffixIcon,
     this.menuMaxHeight = 300,
+    this.selectedTextStyle,
+    this.selectedTextBuilder,
+    this.selectedTextOverflow = TextOverflow.ellipsis,
+    this.selectedTextMaxLines = 1,
+    this.backgroundColour,
+    this.borderColour,
+    this.selectedTextColour,
+    this.selectedItemColour,
+    this.selectedItemTextColour,
+    this.selectedItemTextStyle,
+    this.unselectedItemTextColour,
+    this.unselectedItemTextStyle,
+    this.dropdownItemBuilder,
   });
 
   @override
@@ -63,8 +88,8 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
   }
 
   void _openDropdown() {
-    if (!mounted) return; // prevent inserting overlay if widget is disposed
-    final overlay = Overlay.of(context); // overlay might be null in edge cases
+    if (!mounted) return;
+    final overlay = Overlay.of(context);
 
     _overlayEntry = _createOverlayEntry();
     overlay.insert(_overlayEntry!);
@@ -73,7 +98,6 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
     });
   }
 
-  // Was called in dispose method but caused expection
   void _closeDropdown() {
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
@@ -84,6 +108,44 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
         _isOpen = false;
       });
     }
+  }
+
+  // Build dropdown item with proper styling based on selection state
+  Widget _buildDropdownItem(T item, bool isSelected) {
+    // If custom dropdown item builder is provided, use it
+    if (widget.dropdownItemBuilder != null) {
+      return widget.dropdownItemBuilder!(item, isSelected);
+    }
+
+    // Default styling based on selection state
+    TextStyle effectiveTextStyle;
+    if (isSelected) {
+      effectiveTextStyle = TextStyle(
+        color: widget.selectedItemTextColour ?? Colors.white,
+      ).merge(widget.selectedItemTextStyle);
+    } else {
+      effectiveTextStyle = TextStyle(
+        color:
+            widget.unselectedItemTextColour ??
+            Theme.of(context).textTheme.bodyLarge?.color,
+      ).merge(widget.unselectedItemTextStyle);
+    }
+
+    // If the item is a string, create a Text widget with proper styling
+    if (item is String) {
+      return Text(
+        item,
+        style: effectiveTextStyle,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      );
+    }
+
+    // For other types, wrap the original itemBuilder result with styling
+    return DefaultTextStyle(
+      style: effectiveTextStyle,
+      child: widget.itemBuilder(item),
+    );
   }
 
   OverlayEntry _createOverlayEntry() {
@@ -104,7 +166,7 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
       builder:
           (context) => Positioned(
             left: offset.dx,
-            top: offset.dy + size.height + 4, // Fixed position below the button
+            top: offset.dy + size.height + 4,
             width: size.width,
             child: Material(
               elevation: 4,
@@ -113,9 +175,9 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
                 constraints: BoxConstraints(maxHeight: widget.menuMaxHeight!),
                 decoration: BoxDecoration(
                   color:
-                      widget.backgroundColor ?? Theme.of(context).canvasColor,
+                      widget.backgroundColour ?? Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(widget.borderRadius),
-                  border: Border.all(color: widget.borderColor ?? Colors.grey),
+                  border: Border.all(color: widget.borderColour ?? Colors.grey),
                 ),
                 child: ListView.builder(
                   padding: EdgeInsets.zero,
@@ -123,6 +185,8 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
                   itemCount: widget.items.length,
                   itemBuilder: (context, index) {
                     final item = widget.items[index];
+                    final isSelected = item == widget.value;
+
                     return InkWell(
                       onTap: () {
                         widget.onChanged(item);
@@ -133,7 +197,16 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
                           horizontal: 16,
                           vertical: 12,
                         ),
-                        child: widget.itemBuilder(item),
+                        decoration:
+                            isSelected
+                                ? BoxDecoration(
+                                  color:
+                                      widget.selectedItemColour ??
+                                      Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(4),
+                                )
+                                : null,
+                        child: _buildDropdownItem(item, isSelected),
                       ),
                     );
                   },
@@ -152,9 +225,9 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
       child: Container(
         padding: widget.padding,
         decoration: BoxDecoration(
-          color: widget.backgroundColor,
+          color: widget.backgroundColour,
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          border: Border.all(color: widget.borderColor ?? Colors.grey),
+          border: Border.all(color: widget.borderColour ?? Colors.grey),
         ),
         child: Row(
           children: [
@@ -173,6 +246,8 @@ class _CustomiseableDropdownState<T> extends State<CustomiseableDropdown<T>> {
                         style:
                             widget.hintStyle ??
                             TextStyle(color: CustomColours.darkSecondaryText),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
             ),
             widget.suffixIcon ??

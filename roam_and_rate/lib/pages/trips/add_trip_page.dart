@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
+import 'package:roam_and_rate/core/utils/constants/values.dart';
 import 'package:roam_and_rate/models/date_picker_model.dart';
-import 'package:roam_and_rate/widgets/currency_selector.dart';
 import 'package:roam_and_rate/widgets/custom_input_field.dart';
 import 'package:roam_and_rate/widgets/customiseable_dropdown.dart';
 import 'package:roam_and_rate/widgets/customised_date_picker.dart';
@@ -64,11 +64,11 @@ class _AddTripPageState extends State<AddTripPage> {
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
             CustomiseableDropdown<String>(
-              items: CurrencyData.fiatCurrenciesCodes,
+              items: CurrencyData.fiatCurrenciesNames,
               hint: "What currency did you use",
               value: selectedCurrency,
-              backgroundColor: CustomColours.darkSurface,
-              borderColor: Colors.transparent,
+              backgroundColour: CustomColours.darkSurface,
+              borderColour: Colors.transparent,
               padding: EdgeInsets.all(20),
               borderRadius: 20,
               menuMaxHeight: 200,
@@ -89,7 +89,8 @@ class _AddTripPageState extends State<AddTripPage> {
               inputText: "What was your budget",
               inputIcon: FaIcon(FontAwesomeIcons.moneyBill),
               controller: _budgetController,
-              inputType: "numbers",
+              numberKeyBoard: true,
+              regFilter: Values.decimalOnlyRegExp,
             ),
             SizedBox(height: 20),
 
@@ -146,8 +147,8 @@ class _AddTripPageState extends State<AddTripPage> {
               items: Categories.categories.map((cat) => cat.name).toList(),
               hint: "Type of trip",
               value: selectedCategory,
-              backgroundColor: CustomColours.darkSurface,
-              borderColor: Colors.transparent,
+              backgroundColour: CustomColours.darkSurface,
+              borderColour: Colors.transparent,
               padding: EdgeInsets.all(20),
               borderRadius: 20,
               menuMaxHeight: 200,
@@ -157,6 +158,19 @@ class _AddTripPageState extends State<AddTripPage> {
                 });
               },
               itemBuilder: (category) => Text(category),
+            ),
+            SizedBox(height: 50),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CustomColours.darkPrimary,
+                foregroundColor: CustomColours.darkBackground,
+                padding: EdgeInsets.all(8.0),
+              ),
+              child: Text(
+                "Submit",
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+              ),
             ),
           ],
         ),

@@ -126,8 +126,8 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
               CustomiseableDropdown<String>(
                 items: genderOptions,
                 value: selectedGender,
-                backgroundColor: CustomColours.darkSurface,
-                borderColor: Colors.transparent,
+                backgroundColour: CustomColours.darkSurface,
+                borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
                 borderRadius: 20,
                 hint: 'Select your gender',
