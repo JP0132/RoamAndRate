@@ -1,17 +1,18 @@
 import 'dart:convert';
 
-// import 'package:drift/drift.dart';
+import 'package:drift/drift.dart';
 
-// class StringListConverter extends TypeConverter<List<String>, String> {
-//   const StringListConverter();
+class StringListConverter extends TypeConverter<List<String>, String> {
+  const StringListConverter();
 
-//   @override
-//   List<String> fromSql(String fromDb) {
-//     return (jsonDecode(fromDb) as List).map((e) => e.toString()).toList();
-//   }
+  @override
+  List<String> fromSql(String fromDb) {
+    if (fromDb.isEmpty) return [];
+    return (jsonDecode(fromDb) as List).map((e) => e.toString()).toList();
+  }
 
-//   @override
-//   String toSql(List<String> value) {
-//     return jsonEncode(value);
-//   }
-// }
+  @override
+  String toSql(List<String> value) {
+    return jsonEncode(value);
+  }
+}
