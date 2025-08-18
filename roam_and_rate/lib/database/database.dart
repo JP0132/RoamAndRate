@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:roam_and_rate/core/utils/helper/string_list_converter.dart';
 import 'package:uuid/uuid.dart';
 
 // Tables
