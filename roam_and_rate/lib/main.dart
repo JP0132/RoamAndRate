@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/themes/theme.dart';
-import 'package:roam_and_rate/pages/navigation/navigation_page.dart';
-import 'package:roam_and_rate/pages/onboarding/onboarding_page.dart';
-import 'package:roam_and_rate/pages/splash/splash_page.dart';
-import 'package:roam_and_rate/pages/trips/add_trip_page.dart';
-import 'package:roam_and_rate/pages/trips/view_trip.dart';
+import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
+import 'package:roam_and_rate/presentation/onboarding/onboarding_page.dart';
+import 'package:roam_and_rate/presentation/splash/splash_page.dart';
+import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
+import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';
 
 void main() {
   runApp(const MainApp());

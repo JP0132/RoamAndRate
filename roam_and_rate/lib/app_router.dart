@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/models/trip_model.dart';
-import 'package:roam_and_rate/pages/expenses/add_expense_page.dart';
-import 'package:roam_and_rate/pages/navigation/navigation_page.dart';
-import 'package:roam_and_rate/pages/onboarding/onboarding_page.dart';
-import 'package:roam_and_rate/pages/ratings/add_rating.dart';
-import 'package:roam_and_rate/pages/splash/splash_page.dart';
-import 'package:roam_and_rate/pages/trips/add_trip_page.dart';
-import 'package:roam_and_rate/pages/trips/view_trip.dart';
+import 'package:roam_and_rate/domain/models/trip_model.dart';
+import 'package:roam_and_rate/presentation/expenses/add_expense_page.dart';
+import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
+import 'package:roam_and_rate/presentation/onboarding/onboarding_page.dart';
+import 'package:roam_and_rate/presentation/ratings/pages/add_rating.dart';
+import 'package:roam_and_rate/presentation/splash/splash_page.dart';
+import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
+import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';
 
 class ViewTripArguments {
   final TripModel tripDetails;

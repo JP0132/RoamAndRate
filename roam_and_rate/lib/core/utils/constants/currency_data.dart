@@ -1,4 +1,4 @@
-import 'package:roam_and_rate/models/currency_model.dart';
+import 'package:roam_and_rate/domain/models/currency_model.dart';
 
 class CurrencyData {
   static final List<CurrencyModel> currencies = [

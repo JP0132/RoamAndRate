@@ -1,5 +1,5 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:roam_and_rate/models/category_model.dart';
+import 'package:roam_and_rate/domain/models/category_model.dart';
 
 class Categories {
   static final List<CategoryModel> categories = [
