@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:roam_and_rate/core/utils/helper/string_list_converter.dart';
-import 'package:roam_and_rate/data/tables/trips.dart';
+import 'package:roam_and_rate/data/local/tables/trips.dart';
 import 'package:uuid/uuid.dart';
 
 class Ratings extends Table {
