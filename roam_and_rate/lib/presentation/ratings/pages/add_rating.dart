@@ -380,7 +380,37 @@ class _AddRatingPageState extends State<AddRatingPage> {
               ),
               WLargeTextfield(hintText: "Notes", controller: _notesController),
               SizedBox(height: 20),
-              Center(child: _image == null ? Text("") : Image.file(_image!)),
+              Center(
+                child:
+                    _image == null
+                        ? Text("No Image added")
+                        : Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: Stack(
+                            children: [
+                              Image.file(_image!),
+                              Positioned(
+                                top: 0.0,
+                                right: 0.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: IconButton(
+                                    icon: Icon(Icons.cancel, color: Colors.red),
+                                    onPressed:
+                                        () => {
+                                          setState(() {
+                                            _image = null;
+                                          }),
+                                        },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+              ),
               SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.only(bottom: 30),
