@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class UserModel {
-  final String userId;
+  final String? userId;
   final String fullName;
-  final DateTime dob;
+  final DateTime? dob;
   final String gender;
 
   const UserModel({
-    required this.userId,
+    this.userId,
     required this.fullName,
     required this.dob,
     required this.gender,

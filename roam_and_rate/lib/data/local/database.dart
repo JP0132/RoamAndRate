@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:roam_and_rate/core/utils/helper/string_list_converter.dart';
+import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:uuid/uuid.dart';
 
 // Tables
@@ -12,7 +13,7 @@ import 'tables/expenses.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Users, Trips, Ratings, Expenses])
+@DriftDatabase(tables: [Users, Trips, Ratings, Expenses], daos: [UserDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
