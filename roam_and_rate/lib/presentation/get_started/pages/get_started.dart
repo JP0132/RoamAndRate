@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
-import 'package:roam_and_rate/presentation/get_started/enter_user_details.dart';
+import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 
 class GetStarted extends StatefulWidget {
@@ -46,8 +46,8 @@ class _GetStartedState extends State<GetStarted> {
                   width: double.infinity,
                   child: StartingOptionBtn(
                     btnText: "GET STARTED",
-                    onPress:
-                        () => SmoothTransitionPage(context, EnterUserDetails()),
+                    onPress: () =>
+                        SmoothTransitionPage(context, EnterUserDetails()),
                   ),
                 ),
               ],

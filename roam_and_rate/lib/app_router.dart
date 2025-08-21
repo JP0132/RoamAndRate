@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
-import 'package:roam_and_rate/presentation/expenses/add_expense_page.dart';
+import 'package:roam_and_rate/presentation/expenses/pages/add_expense_page.dart';
 import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
 import 'package:roam_and_rate/presentation/onboarding/onboarding_page.dart';
 import 'package:roam_and_rate/presentation/ratings/pages/add_rating.dart';

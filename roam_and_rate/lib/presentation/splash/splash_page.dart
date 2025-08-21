@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/my_logo.dart';
-import 'package:roam_and_rate/presentation/get_started/get_started.dart';
+import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
 import 'package:roam_and_rate/presentation/onboarding/onboarding_page.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
