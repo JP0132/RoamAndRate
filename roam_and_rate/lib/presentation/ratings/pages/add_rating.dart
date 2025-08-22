@@ -13,7 +13,6 @@ import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dar
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_input.dart';
-import 'package:roam_and_rate/presentation/widgets/w_filter_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 
@@ -48,8 +47,8 @@ class _AddRatingPageState extends State<AddRatingPage> {
 
   final List<String> categories = [
     "Food & Drink",
-    "Toursit Attraction",
-    "Accomadation",
+    "Tourist Attraction",
+    "Accommodation",
     "Shopping",
     "Nature & Outdoors",
     "Wellness",
