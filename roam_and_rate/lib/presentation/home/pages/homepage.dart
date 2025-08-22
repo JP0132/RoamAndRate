@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:roam_and_rate/application/user/user_bloc.dart';
+import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
+import 'package:roam_and_rate/domain/repositories/user_repository.dart';
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/rating_cards.dart';
 import 'package:roam_and_rate/presentation/home/widgets/swipeable_card_stack.dart';
@@ -51,6 +55,27 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+           BlocProvider(
+              create: (context) => UserBloc(
+                context.read<UserRepository>(),
+              ),
+              child: BlocBuilder<UserBloc, UserState>(
+                builder: (context, state) {
+                  if (state is UserInitial) {
+                      return const Center(child: CircularProgressIndicator());
+                  } else if (state is UserLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                  } else if (state is UserLoaded) {
+                      return Text("Welcome, ${state.users.first.fullName}");
+                  } else if (state is UserError) {
+                      return Text("Error: ${state.message}");
+                  } else {
+                      return const Text("Something went wrong!");
+                  }
+                }
+              ),
+            ),
+
           SwipeableStack(
             cards: [...cards.map((card) => TripCards(tripModel: card))],
           ),

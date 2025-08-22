@@ -38,7 +38,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
     "gender": true,
   };
 
-  void handlesubmit() async {
+  void handleSubmit() async {
     setState(() {
       validateDetails();
     });
@@ -46,7 +46,6 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
     if (formValid.values.every((v) => v)) {
       // All fields are valid, proceed
       final UserModel newUser = UserModel(
-        userId: '',
         fullName: _nameController.text,
         dob: selectedDate,
         gender: selectedGender!,
@@ -217,7 +216,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
               ),
               SizedBox(height: 50),
               ElevatedButton(
-                onPressed: () => handlesubmit(),
+                onPressed: () => handleSubmit(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CustomColours.darkPrimary,
                   foregroundColor: CustomColours.darkBackground,
