@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/add_expense_page.dart';
+import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
+import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
 import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
-import 'package:roam_and_rate/presentation/onboarding/onboarding_page.dart';
+import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:roam_and_rate/presentation/ratings/pages/add_rating.dart';
 import 'package:roam_and_rate/presentation/splash/splash_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
@@ -18,6 +20,8 @@ class AppRouter {
   static const String splash = '/';
   static const String home = '/home';
   static const String onboarding = '/onboarding';
+  static const String enterUserDetails = '/enterUserDetails';
+  static const String getStarted = '/getStarted';
   static const String addTrip = '/addTrip';
   static const String viewTrip = '/viewTrip';
   static const String addRating = '/addRating';
@@ -31,6 +35,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => CustomBottomNavbar());
       case onboarding:
         return MaterialPageRoute(builder: (_) => OnboardingPage());
+      case enterUserDetails:
+        return MaterialPageRoute(builder: (_) => EnterUserDetails());
+      case getStarted:
+        return MaterialPageRoute(builder: (_) => GetStarted());
       case addTrip:
         return MaterialPageRoute(builder: (_) => AddTripPage());
       case addRating:

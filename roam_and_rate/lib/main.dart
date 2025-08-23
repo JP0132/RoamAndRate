@@ -7,7 +7,7 @@ import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/repositories/user_repository_impl.dart';
 import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
-import 'package:roam_and_rate/presentation/onboarding/onboarding_page.dart';
+import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:roam_and_rate/presentation/splash/splash_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';

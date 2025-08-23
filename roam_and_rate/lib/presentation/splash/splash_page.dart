@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/my_logo.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
-import 'package:roam_and_rate/presentation/onboarding/onboarding_page.dart';
+import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart';
+import 'package:roam_and_rate/presentation/widgets/bottom_nav/bottom_navbar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,24 +52,24 @@ class _SplashPageState extends State<SplashPage>
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         // Animation completed, navigate based on authentication state
-        // _checkFirstTime();
+        _checkFirstTime();
         //_goToOnBoarding(true);
-        _goToGetStarted(true);
+        // _goToGetStarted(true);
       }
     });
   }
 
-  void _goToOnBoarding(test) {
-    if (test) {
-      SmoothTransitionPage(context, OnboardingPage());
-    }
-  }
+  // void _goToOnBoarding(test) {
+  //   if (test) {
+  //     SmoothTransitionPage(context, OnboardingPage());
+  //   }
+  // }
 
-  void _goToGetStarted(test) {
-    if (test) {
-      SmoothTransitionPage(context, GetStarted());
-    }
-  }
+  // void _goToGetStarted(test) {
+  //   if (test) {
+  //     SmoothTransitionPage(context, GetStarted());
+  //   }
+  // }
 
   Future<void> _checkFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -79,16 +80,12 @@ class _SplashPageState extends State<SplashPage>
       await prefs.setBool('isFirstTime', false);
     }
 
-    if (isFirstTime) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => OnboardingPage()),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Placeholder()),
-      );
+    if (mounted) {
+      if (isFirstTime) {
+        SmoothTransitionPage(context, OnboardingPage());
+      } else {
+        SmoothTransitionPage(context, CustomBottomNavbar());
+      }
     }
   }
 
