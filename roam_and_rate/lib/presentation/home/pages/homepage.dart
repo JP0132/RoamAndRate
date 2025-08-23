@@ -51,68 +51,65 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Center(child: Text("Home"))),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-           BlocProvider(
-              create: (context) => UserBloc(
-                context.read<UserRepository>(),
-              ),
-              child: BlocBuilder<UserBloc, UserState>(
-                builder: (context, state) {
-                  if (state is UserInitial) {
-                      return const Center(child: CircularProgressIndicator());
-                  } else if (state is UserLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                  } else if (state is UserLoaded) {
-                      return Text("Welcome, ${state.users.first.fullName}");
-                  } else if (state is UserError) {
-                      return Text("Error: ${state.message}");
-                  } else {
-                      return const Text("Something went wrong!");
-                  }
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                if (state is UserInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is UserLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is UserLoaded) {
+                  return Text("Welcome, ${state.users.first.fullName}");
+                } else if (state is UserError) {
+                  return Text("Error: ${state.message}");
+                } else {
+                  return const Text("Something went wrong!");
                 }
-              ),
+              },
             ),
 
-          SwipeableStack(
-            cards: [...cards.map((card) => TripCards(tripModel: card))],
-          ),
+            SwipeableStack(
+              cards: [...cards.map((card) => TripCards(tripModel: card))],
+            ),
 
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text("Ratings"), Text("View All")],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: RatingCards(
-                name: "Vasco de Gama",
-                rating: 10,
-                dateRated: DateTime.now(),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [Text("Ratings"), Text("View All")],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: RatingCards(
+                  name: "Vasco de Gama",
+                  rating: 10,
+                  dateRated: DateTime.now(),
+                ),
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text("Transactions"), Text("View All")],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ExpenseCard(
-                transactionName: "Vasco de Gama",
-                paid: 56.95,
-                datePaid: DateTime.now(),
-                type: 'Card',
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [Text("Transactions"), Text("View All")],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ExpenseCard(
+                  transactionName: "Vasco de Gama",
+                  paid: 56.95,
+                  datePaid: DateTime.now(),
+                  type: 'Card',
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

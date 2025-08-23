@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_event.dart';
+import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/user_model.dart';
@@ -215,18 +216,74 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                 style: TextStyle(color: CustomColours.darkError),
               ),
               SizedBox(height: 50),
-              ElevatedButton(
-                onPressed: () => handleSubmit(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: CustomColours.darkPrimary,
-                  foregroundColor: CustomColours.darkBackground,
-                  padding: EdgeInsets.all(8.0),
-                ),
-                child: Text(
-                  "Submit",
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-                ),
+
+              BlocConsumer<UserBloc, UserState>(
+                listener: (context, state) {
+                  if (state is UserAdded) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("User created!"),
+                        backgroundColor: CustomColours.darkSuccess,
+                      ),
+                    );
+                    SmoothTransitionPage(context, CustomBottomNavbar());
+                  } else if (state is UserError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Failed to create user: ${state.message}",
+                        ),
+                        backgroundColor: CustomColours.darkError,
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is UserLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                  return ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        validateDetails();
+                      });
+                      if (formValid.values.every((v) => v)) {
+                        final UserModel newUser = UserModel(
+                          fullName: _nameController.text,
+                          dob: selectedDate,
+                          gender: selectedGender!,
+                        );
+                        context.read<UserBloc>().add(AddUser(newUser));
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: CustomColours.darkPrimary,
+                      foregroundColor: CustomColours.darkBackground,
+                      padding: EdgeInsets.all(8.0),
+                    ),
+                    child: Text(
+                      "Submit",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
+                    ),
+                  );
+                },
               ),
+
+              // ElevatedButton(
+              //   onPressed: () => handleSubmit(),
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: CustomColours.darkPrimary,
+              //     foregroundColor: CustomColours.darkBackground,
+              //     padding: EdgeInsets.all(8.0),
+              //   ),
+              //   child: Text(
+              //     "Submit",
+              //     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+              //   ),
+              // ),
             ],
           ),
         ),
