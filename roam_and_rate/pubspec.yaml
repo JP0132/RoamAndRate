@@ -44,9 +44,7 @@ flutter:
     - assets/images/logo/logopurple.png
 
     # Onboard
-    - assets/images/onboarding/CollectingMoney.json
-    - assets/images/onboarding/share.json
-    - assets/images/onboarding/TrackExpensives.json
+    - assets/images/onboarding/
 
     # Icons
     - assets/images/icons/

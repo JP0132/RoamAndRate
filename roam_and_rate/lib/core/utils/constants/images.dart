@@ -9,8 +9,10 @@ class CustomImages {
   static const String collectingMoney =
       "assets/images/onboarding/CollectingMoney.json";
   static const String share = "assets/images/onboarding/share.json";
-  static const String TrackExpensives =
+  static const String trackExpensives =
       "assets/images/onboarding/TrackExpensives.json";
+  static const String traveler = "assets/images/onboarding/Traveler.json";
+  static const String review = "assets/images/onboarding/Review.json";
 
   // Icons
   static const String facebook = "assets/images/icons/facebook.png";
