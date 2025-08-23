@@ -63,7 +63,9 @@ class _HomePageState extends State<HomePage> {
                 } else if (state is UserLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is UserLoaded) {
-                  return Text("Welcome, ${state.users.first.fullName}");
+                  return Text(
+                    "Welcome, ${state.users.where((user) => user.admin == true).first.username}",
+                  );
                 } else if (state is UserError) {
                   return Text("Error: ${state.message}");
                 } else {

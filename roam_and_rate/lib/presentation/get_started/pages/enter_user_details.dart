@@ -25,6 +25,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
   DateTime? selectedDate;
   String? selectedGender;
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   final List<String> genderOptions = [
     'Male',
@@ -35,30 +36,16 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
   ];
   final Map<String, bool> formValid = {
     "name": true,
+    "username": true,
     "date": true,
     "gender": true,
   };
 
-  void handleSubmit() async {
-    setState(() {
-      validateDetails();
-    });
-    // Check if all values are true
-    if (formValid.values.every((v) => v)) {
-      // All fields are valid, proceed
-      final UserModel newUser = UserModel(
-        fullName: _nameController.text,
-        dob: selectedDate,
-        gender: selectedGender!,
-      );
-
-      context.read<UserBloc>().add(AddUser(newUser));
-      SmoothTransitionPage(context, CustomBottomNavbar());
-    }
-  }
-
   void validateDetails() {
     formValid["name"] =
+        _nameController.text.trim().isNotEmpty &&
+        _nameController.text.length > 1;
+    formValid["username"] =
         _nameController.text.trim().isNotEmpty &&
         _nameController.text.length > 1;
     formValid["date"] = checkValidDOB();
@@ -133,6 +120,31 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                     formValid["name"] == true
                         ? ""
                         : "Name cannot be blank or be less than 2 characters!",
+                    style: TextStyle(color: CustomColours.darkError),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Username",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
+              ),
+              SizedBox(height: 10),
+              CustomInputField(
+                inputText: "Username",
+                inputIcon: FaIcon(FontAwesomeIcons.solidCircleUser),
+                controller: _usernameController,
+              ),
+              ValueListenableBuilder<TextEditingValue>(
+                valueListenable: _usernameController,
+                builder: (context, value, child) {
+                  return Text(
+                    formValid["username"] == true
+                        ? ""
+                        : "Username cannot be blank or be less than 2 characters!",
                     style: TextStyle(color: CustomColours.darkError),
                   );
                 },
@@ -250,8 +262,10 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                       if (formValid.values.every((v) => v)) {
                         final UserModel newUser = UserModel(
                           fullName: _nameController.text,
+                          username: _usernameController.text,
                           dob: selectedDate,
                           gender: selectedGender!,
+                          admin: true,
                         );
                         context.read<UserBloc>().add(AddUser(newUser));
                       }
@@ -271,19 +285,6 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                   );
                 },
               ),
-
-              // ElevatedButton(
-              //   onPressed: () => handleSubmit(),
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: CustomColours.darkPrimary,
-              //     foregroundColor: CustomColours.darkBackground,
-              //     padding: EdgeInsets.all(8.0),
-              //   ),
-              //   child: Text(
-              //     "Submit",
-              //     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-              //   ),
-              // ),
             ],
           ),
         ),
