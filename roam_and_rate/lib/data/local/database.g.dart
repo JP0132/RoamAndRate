@@ -18,6 +18,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     requiredDuringInsert: false,
     clientDefault: () => const Uuid().v4(),
   );
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _fullNameMeta = const VerificationMeta(
     'fullName',
   );
@@ -47,6 +58,18 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _adminMeta = const VerificationMeta('admin');
+  @override
+  late final GeneratedColumn<bool> admin = GeneratedColumn<bool>(
+    'admin',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("admin" IN (0, 1))',
+    ),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -59,7 +82,15 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, fullName, dob, gender, createdAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    username,
+    fullName,
+    dob,
+    gender,
+    admin,
+    createdAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -74,6 +105,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('username')) {
+      context.handle(
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_usernameMeta);
     }
     if (data.containsKey('full_name')) {
       context.handle(
@@ -99,6 +138,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_genderMeta);
     }
+    if (data.containsKey('admin')) {
+      context.handle(
+        _adminMeta,
+        admin.isAcceptableOrUnknown(data['admin']!, _adminMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_adminMeta);
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -120,6 +167,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      username: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}username'],
+      )!,
       fullName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}full_name'],
@@ -131,6 +182,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       gender: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}gender'],
+      )!,
+      admin: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}admin'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -147,24 +202,30 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
 
 class User extends DataClass implements Insertable<User> {
   final String id;
+  final String username;
   final String fullName;
   final DateTime dob;
   final String gender;
+  final bool admin;
   final DateTime createdAt;
   const User({
     required this.id,
+    required this.username,
     required this.fullName,
     required this.dob,
     required this.gender,
+    required this.admin,
     required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['username'] = Variable<String>(username);
     map['full_name'] = Variable<String>(fullName);
     map['dob'] = Variable<DateTime>(dob);
     map['gender'] = Variable<String>(gender);
+    map['admin'] = Variable<bool>(admin);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -172,9 +233,11 @@ class User extends DataClass implements Insertable<User> {
   UsersCompanion toCompanion(bool nullToAbsent) {
     return UsersCompanion(
       id: Value(id),
+      username: Value(username),
       fullName: Value(fullName),
       dob: Value(dob),
       gender: Value(gender),
+      admin: Value(admin),
       createdAt: Value(createdAt),
     );
   }
@@ -186,9 +249,11 @@ class User extends DataClass implements Insertable<User> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return User(
       id: serializer.fromJson<String>(json['id']),
+      username: serializer.fromJson<String>(json['username']),
       fullName: serializer.fromJson<String>(json['fullName']),
       dob: serializer.fromJson<DateTime>(json['dob']),
       gender: serializer.fromJson<String>(json['gender']),
+      admin: serializer.fromJson<bool>(json['admin']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -197,32 +262,40 @@ class User extends DataClass implements Insertable<User> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'username': serializer.toJson<String>(username),
       'fullName': serializer.toJson<String>(fullName),
       'dob': serializer.toJson<DateTime>(dob),
       'gender': serializer.toJson<String>(gender),
+      'admin': serializer.toJson<bool>(admin),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
   User copyWith({
     String? id,
+    String? username,
     String? fullName,
     DateTime? dob,
     String? gender,
+    bool? admin,
     DateTime? createdAt,
   }) => User(
     id: id ?? this.id,
+    username: username ?? this.username,
     fullName: fullName ?? this.fullName,
     dob: dob ?? this.dob,
     gender: gender ?? this.gender,
+    admin: admin ?? this.admin,
     createdAt: createdAt ?? this.createdAt,
   );
   User copyWithCompanion(UsersCompanion data) {
     return User(
       id: data.id.present ? data.id.value : this.id,
+      username: data.username.present ? data.username.value : this.username,
       fullName: data.fullName.present ? data.fullName.value : this.fullName,
       dob: data.dob.present ? data.dob.value : this.dob,
       gender: data.gender.present ? data.gender.value : this.gender,
+      admin: data.admin.present ? data.admin.value : this.admin,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -231,66 +304,83 @@ class User extends DataClass implements Insertable<User> {
   String toString() {
     return (StringBuffer('User(')
           ..write('id: $id, ')
+          ..write('username: $username, ')
           ..write('fullName: $fullName, ')
           ..write('dob: $dob, ')
           ..write('gender: $gender, ')
+          ..write('admin: $admin, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, fullName, dob, gender, createdAt);
+  int get hashCode =>
+      Object.hash(id, username, fullName, dob, gender, admin, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is User &&
           other.id == this.id &&
+          other.username == this.username &&
           other.fullName == this.fullName &&
           other.dob == this.dob &&
           other.gender == this.gender &&
+          other.admin == this.admin &&
           other.createdAt == this.createdAt);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> id;
+  final Value<String> username;
   final Value<String> fullName;
   final Value<DateTime> dob;
   final Value<String> gender;
+  final Value<bool> admin;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
+    this.username = const Value.absent(),
     this.fullName = const Value.absent(),
     this.dob = const Value.absent(),
     this.gender = const Value.absent(),
+    this.admin = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
     this.id = const Value.absent(),
+    required String username,
     required String fullName,
     required DateTime dob,
     required String gender,
+    required bool admin,
     required DateTime createdAt,
     this.rowid = const Value.absent(),
-  }) : fullName = Value(fullName),
+  }) : username = Value(username),
+       fullName = Value(fullName),
        dob = Value(dob),
        gender = Value(gender),
+       admin = Value(admin),
        createdAt = Value(createdAt);
   static Insertable<User> custom({
     Expression<String>? id,
+    Expression<String>? username,
     Expression<String>? fullName,
     Expression<DateTime>? dob,
     Expression<String>? gender,
+    Expression<bool>? admin,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (username != null) 'username': username,
       if (fullName != null) 'full_name': fullName,
       if (dob != null) 'dob': dob,
       if (gender != null) 'gender': gender,
+      if (admin != null) 'admin': admin,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -298,17 +388,21 @@ class UsersCompanion extends UpdateCompanion<User> {
 
   UsersCompanion copyWith({
     Value<String>? id,
+    Value<String>? username,
     Value<String>? fullName,
     Value<DateTime>? dob,
     Value<String>? gender,
+    Value<bool>? admin,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return UsersCompanion(
       id: id ?? this.id,
+      username: username ?? this.username,
       fullName: fullName ?? this.fullName,
       dob: dob ?? this.dob,
       gender: gender ?? this.gender,
+      admin: admin ?? this.admin,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -320,6 +414,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
     if (fullName.present) {
       map['full_name'] = Variable<String>(fullName.value);
     }
@@ -328,6 +425,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     }
     if (gender.present) {
       map['gender'] = Variable<String>(gender.value);
+    }
+    if (admin.present) {
+      map['admin'] = Variable<bool>(admin.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -342,9 +442,11 @@ class UsersCompanion extends UpdateCompanion<User> {
   String toString() {
     return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
+          ..write('username: $username, ')
           ..write('fullName: $fullName, ')
           ..write('dob: $dob, ')
           ..write('gender: $gender, ')
+          ..write('admin: $admin, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -2578,18 +2680,22 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$UsersTableCreateCompanionBuilder =
     UsersCompanion Function({
       Value<String> id,
+      required String username,
       required String fullName,
       required DateTime dob,
       required String gender,
+      required bool admin,
       required DateTime createdAt,
       Value<int> rowid,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
     UsersCompanion Function({
       Value<String> id,
+      Value<String> username,
       Value<String> fullName,
       Value<DateTime> dob,
       Value<String> gender,
+      Value<bool> admin,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -2631,6 +2737,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get fullName => $composableBuilder(
     column: $table.fullName,
     builder: (column) => ColumnFilters(column),
@@ -2643,6 +2754,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get gender => $composableBuilder(
     column: $table.gender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get admin => $composableBuilder(
+    column: $table.admin,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2691,6 +2807,11 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get fullName => $composableBuilder(
     column: $table.fullName,
     builder: (column) => ColumnOrderings(column),
@@ -2703,6 +2824,11 @@ class $$UsersTableOrderingComposer
 
   ColumnOrderings<String> get gender => $composableBuilder(
     column: $table.gender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get admin => $composableBuilder(
+    column: $table.admin,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2724,6 +2850,9 @@ class $$UsersTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
   GeneratedColumn<String> get fullName =>
       $composableBuilder(column: $table.fullName, builder: (column) => column);
 
@@ -2732,6 +2861,9 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get gender =>
       $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<bool> get admin =>
+      $composableBuilder(column: $table.admin, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -2791,32 +2923,40 @@ class $$UsersTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String> username = const Value.absent(),
                 Value<String> fullName = const Value.absent(),
                 Value<DateTime> dob = const Value.absent(),
                 Value<String> gender = const Value.absent(),
+                Value<bool> admin = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
+                username: username,
                 fullName: fullName,
                 dob: dob,
                 gender: gender,
+                admin: admin,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                required String username,
                 required String fullName,
                 required DateTime dob,
                 required String gender,
+                required bool admin,
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
+                username: username,
                 fullName: fullName,
                 dob: dob,
                 gender: gender,
+                admin: admin,
                 createdAt: createdAt,
                 rowid: rowid,
               ),

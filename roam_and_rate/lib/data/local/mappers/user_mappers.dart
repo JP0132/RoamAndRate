@@ -4,7 +4,14 @@ import 'package:roam_and_rate/domain/models/user_model.dart';
 
 extension UserEntityMapper on User {
   UserModel toModel() {
-    return UserModel(userId: id, fullName: fullName, dob: dob, gender: gender);
+    return UserModel(
+      userId: id,
+      fullName: fullName,
+      username: username,
+      dob: dob,
+      gender: gender,
+      admin: admin,
+    );
   }
 }
 
@@ -13,9 +20,11 @@ extension UserModelMapper on UserModel {
     return UsersCompanion.insert(
       id: userId != null ? Value(userId!) : const Value.absent(),
       fullName: fullName,
+      username: username,
       dob: dob ?? DateTime(1970, 1, 1),
       gender: gender,
       createdAt: DateTime.now(),
+      admin: admin,
     );
   }
 }
