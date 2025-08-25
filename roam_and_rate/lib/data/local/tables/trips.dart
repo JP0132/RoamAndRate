@@ -15,7 +15,7 @@ class Trips extends Table {
   TextColumn get bgColour => text()();
   DateTimeColumn get startDate => dateTime()();
   DateTimeColumn get endDate => dateTime()();
-  DateTimeColumn get createdAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
   @override
   Set<Column> get primaryKey => {id};
 }

@@ -13,8 +13,10 @@ class Expenses extends Table {
   RealColumn get cost => real()();
   TextColumn get currency => text()();
   DateTimeColumn get datePaid => dateTime()();
+  DateTimeColumn get dateAdded => dateTime()();
   TextColumn get notes => text().nullable()();
   TextColumn get images => text().nullable()();
+  TextColumn get type => text()();
   TextColumn get tags => text().map(const StringListConverter())();
 
   @override

@@ -11,7 +11,6 @@ import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
-import 'package:roam_and_rate/presentation/ratings/widgets/rating_input.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 
@@ -31,6 +30,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   DateTime? selectedDate = DateTime.now();
 
   final List<String> value = ["Cheap", "Just Right", "Expensive"];
+  final List<String> types = ["card", "cash", "bank transfer"];
   String? selectedValue = "";
 
   final List<String> categories = [
@@ -43,7 +43,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     "Other",
   ];
   String? selectedCategory;
-
+  String? selectedType;
   String? selectedCurrency;
 
   List<String> addedTags = [];
@@ -63,29 +63,28 @@ class _AddExpensePageState extends State<AddExpensePage> {
   void _showPickOptionsDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder:
-          (context) => SafeArea(
-            child: Wrap(
-              children: [
-                ListTile(
-                  leading: Icon(Icons.photo_library),
-                  title: Text('Pick from Gallery'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.gallery);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.camera_alt),
-                  title: Text('Take a Photo'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.camera);
-                  },
-                ),
-              ],
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Pick from Gallery'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickImage(ImageSource.gallery);
+              },
             ),
-          ),
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Take a Photo'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -123,7 +122,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
               ),
               CustomInputField(
-                inputText: "Where you spent it?",
+                inputText: "What you spent it on?",
                 inputIcon: FaIcon(FontAwesomeIcons.earthEurope),
                 controller: _expenseNameController,
               ),
@@ -252,62 +251,88 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Date Paid",
+                          "Payment Type",
                           style: TextStyle(
                             fontSize: 14,
                             color: CustomColours.darkPrimary,
                           ),
                         ),
-                        InkWell(
-                          onTap: () => _showCustomStyledPicker(),
-
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: CustomColours.darkSurface,
-
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                            ),
-
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-
-                              child: InputDecorator(
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.only(right: 20),
-
-                                    child: Icon(
-                                      Icons.calendar_today,
-                                      color: CustomColours.darkPrimary,
-                                    ),
-                                  ),
-                                ),
-
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-
-                                  child: Text(
-                                    DateFormat(
-                                      'dd/MM/yyyy',
-                                    ).format(selectedDate!),
-
-                                    textAlign: TextAlign.justify,
-
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                        CustomiseableDropdown<String>(
+                          items: types,
+                          hint: "Select payment type",
+                          value: selectedType,
+                          backgroundColour: CustomColours.darkSurface,
+                          borderColour: Colors.transparent,
+                          padding: EdgeInsets.all(20),
+                          borderRadius: 20,
+                          menuMaxHeight: 200,
+                          selectedItemTextColour: CustomColours.darkPrimary,
+                          unselectedItemTextColour: Colors.grey[300],
+                          selectedTextOverflow: TextOverflow.ellipsis,
+                          selectedTextMaxLines: 1,
+                          onChanged: (type) {
+                            setState(() {
+                              selectedType = type;
+                            });
+                          },
+                          itemBuilder: (value) => Text(value),
                         ),
                       ],
                     ),
                   ),
                 ],
+              ),
+
+              SizedBox(height: 20),
+
+              Text(
+                "Date Paid",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
+              ),
+              InkWell(
+                onTap: () => _showCustomStyledPicker(),
+
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: CustomColours.darkSurface,
+
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 20),
+
+                          child: Icon(
+                            Icons.calendar_today,
+                            color: CustomColours.darkPrimary,
+                          ),
+                        ),
+                      ),
+
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(selectedDate!),
+
+                          textAlign: TextAlign.justify,
+
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
 
               SizedBox(height: 20),

@@ -23,6 +23,9 @@ class _TripsPageState extends State<TripsPage> {
       backgroundColor: CustomColours.cardColourBlue,
       budget: 7000,
       tripId: '',
+      userId: '',
+      currency: '',
+      category: '',
     ),
     TripModel(
       tripName: "Double Wedding",
@@ -32,6 +35,9 @@ class _TripsPageState extends State<TripsPage> {
       backgroundColor: CustomColours.darkSecondary,
       budget: 4000,
       tripId: '',
+      userId: '',
+      currency: '',
+      category: '',
     ),
     TripModel(
       tripName: "First Time Back Lisbon",
@@ -41,6 +47,9 @@ class _TripsPageState extends State<TripsPage> {
       backgroundColor: CustomColours.darkError,
       budget: 4000,
       tripId: '',
+      userId: '',
+      currency: '',
+      category: '',
     ),
   ];
   @override
@@ -53,14 +62,13 @@ class _TripsPageState extends State<TripsPage> {
         separatorBuilder: (context, index) => SizedBox(height: 12),
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
-            onTap:
-                () => {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.viewTrip,
-                    arguments: ViewTripArguments(tripDetails: cards[index]),
-                  ),
-                },
+            onTap: () => {
+              Navigator.pushNamed(
+                context,
+                AppRouter.viewTrip,
+                arguments: ViewTripArguments(tripDetails: cards[index]),
+              ),
+            },
             child: TripCards(tripModel: cards[index]),
           );
         },

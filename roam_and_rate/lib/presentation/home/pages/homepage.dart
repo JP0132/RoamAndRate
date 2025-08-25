@@ -27,6 +27,9 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: CustomColours.cardColourBlue,
       budget: 7000,
       tripId: '',
+      userId: '',
+      currency: '',
+      category: '',
     ),
     TripModel(
       tripName: "Double Wedding",
@@ -36,6 +39,9 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: CustomColours.darkSecondary,
       budget: 4000,
       tripId: '',
+      userId: '',
+      currency: '',
+      category: '',
     ),
     TripModel(
       tripName: "First Time Back Lisbon",
@@ -45,6 +51,9 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: CustomColours.darkError,
       budget: 4000,
       tripId: '',
+      userId: '',
+      currency: '',
+      category: '',
     ),
   ];
   @override
