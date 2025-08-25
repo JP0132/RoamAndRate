@@ -1,5 +1,5 @@
 class ExpenseModel {
-  final String expenseId;
+  final String? expenseId;
   final String tripId;
   final String name;
   final double paid;
@@ -15,7 +15,7 @@ class ExpenseModel {
 
   ExpenseModel({
     required this.name,
-    required this.expenseId,
+    this.expenseId,
     required this.tripId,
     required this.paid,
     required this.cost,
