@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TripModel {
-  final String tripId;
+  final String? tripId;
   final String userId;
   final String tripName;
   final String location;
@@ -10,9 +10,10 @@ class TripModel {
   final String category;
   final String notes;
   final String images;
-  final Color backgroundColor;
+  final String backgroundColor;
   final DateTime startDate;
   final DateTime endDate;
+  final DateTime createdAt;
 
   const TripModel({
     required this.tripId,
@@ -22,11 +23,12 @@ class TripModel {
     required this.currency,
     this.budget = 0,
     required this.category,
+    required this.createdAt,
     this.notes = "",
     this.images = "",
     required this.startDate,
     required this.endDate,
-    this.backgroundColor = Colors.white,
+    this.backgroundColor = "default",
   });
 
   TripModel copyWith({
@@ -39,9 +41,10 @@ class TripModel {
     String? category,
     String? notes,
     String? images,
-    Color? backgroundColor,
+    String? backgroundColor,
     DateTime? startDate,
     DateTime? endDate,
+    DateTime? createdAt,
   }) {
     return TripModel(
       tripId: tripId ?? this.tripId,
@@ -56,6 +59,7 @@ class TripModel {
       images: images ?? this.images,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

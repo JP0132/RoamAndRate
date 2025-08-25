@@ -592,9 +592,9 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -716,6 +716,8 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
         _createdAtMeta,
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
     }
     return context;
   }
@@ -777,7 +779,7 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
-      ),
+      )!,
     );
   }
 
@@ -800,7 +802,7 @@ class Trip extends DataClass implements Insertable<Trip> {
   final String bgColour;
   final DateTime startDate;
   final DateTime endDate;
-  final DateTime? createdAt;
+  final DateTime createdAt;
   const Trip({
     required this.id,
     required this.userId,
@@ -814,7 +816,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     required this.bgColour,
     required this.startDate,
     required this.endDate,
-    this.createdAt,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -835,9 +837,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     map['bg_colour'] = Variable<String>(bgColour);
     map['start_date'] = Variable<DateTime>(startDate);
     map['end_date'] = Variable<DateTime>(endDate);
-    if (!nullToAbsent || createdAt != null) {
-      map['created_at'] = Variable<DateTime>(createdAt);
-    }
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -859,9 +859,7 @@ class Trip extends DataClass implements Insertable<Trip> {
       bgColour: Value(bgColour),
       startDate: Value(startDate),
       endDate: Value(endDate),
-      createdAt: createdAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(createdAt),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -883,7 +881,7 @@ class Trip extends DataClass implements Insertable<Trip> {
       bgColour: serializer.fromJson<String>(json['bgColour']),
       startDate: serializer.fromJson<DateTime>(json['startDate']),
       endDate: serializer.fromJson<DateTime>(json['endDate']),
-      createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -902,7 +900,7 @@ class Trip extends DataClass implements Insertable<Trip> {
       'bgColour': serializer.toJson<String>(bgColour),
       'startDate': serializer.toJson<DateTime>(startDate),
       'endDate': serializer.toJson<DateTime>(endDate),
-      'createdAt': serializer.toJson<DateTime?>(createdAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -919,7 +917,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     String? bgColour,
     DateTime? startDate,
     DateTime? endDate,
-    Value<DateTime?> createdAt = const Value.absent(),
+    DateTime? createdAt,
   }) => Trip(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -933,7 +931,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     bgColour: bgColour ?? this.bgColour,
     startDate: startDate ?? this.startDate,
     endDate: endDate ?? this.endDate,
-    createdAt: createdAt.present ? createdAt.value : this.createdAt,
+    createdAt: createdAt ?? this.createdAt,
   );
   Trip copyWithCompanion(TripsCompanion data) {
     return Trip(
@@ -1021,7 +1019,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
   final Value<String> bgColour;
   final Value<DateTime> startDate;
   final Value<DateTime> endDate;
-  final Value<DateTime?> createdAt;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const TripsCompanion({
     this.id = const Value.absent(),
@@ -1052,7 +1050,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     required String bgColour,
     required DateTime startDate,
     required DateTime endDate,
-    this.createdAt = const Value.absent(),
+    required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : userId = Value(userId),
        tripName = Value(tripName),
@@ -1062,7 +1060,8 @@ class TripsCompanion extends UpdateCompanion<Trip> {
        category = Value(category),
        bgColour = Value(bgColour),
        startDate = Value(startDate),
-       endDate = Value(endDate);
+       endDate = Value(endDate),
+       createdAt = Value(createdAt);
   static Insertable<Trip> custom({
     Expression<String>? id,
     Expression<String>? userId,
@@ -1110,7 +1109,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     Value<String>? bgColour,
     Value<DateTime>? startDate,
     Value<DateTime>? endDate,
-    Value<DateTime?>? createdAt,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return TripsCompanion(
@@ -2094,6 +2093,17 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _dateAddedMeta = const VerificationMeta(
+    'dateAdded',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateAdded = GeneratedColumn<DateTime>(
+    'date_added',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -2111,6 +2121,15 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
   );
   @override
   late final GeneratedColumnWithTypeConverter<List<String>, String> tags =
@@ -2131,8 +2150,10 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     cost,
     currency,
     datePaid,
+    dateAdded,
     notes,
     images,
+    type,
     tags,
   ];
   @override
@@ -2209,6 +2230,14 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     } else if (isInserting) {
       context.missing(_datePaidMeta);
     }
+    if (data.containsKey('date_added')) {
+      context.handle(
+        _dateAddedMeta,
+        dateAdded.isAcceptableOrUnknown(data['date_added']!, _dateAddedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateAddedMeta);
+    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
@@ -2220,6 +2249,14 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         _imagesMeta,
         images.isAcceptableOrUnknown(data['images']!, _imagesMeta),
       );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
     }
     return context;
   }
@@ -2262,6 +2299,10 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}date_paid'],
       )!,
+      dateAdded: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_added'],
+      )!,
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -2270,6 +2311,10 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         DriftSqlType.string,
         data['${effectivePrefix}images'],
       ),
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
       tags: $ExpensesTable.$convertertags.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.string,
@@ -2297,8 +2342,10 @@ class Expense extends DataClass implements Insertable<Expense> {
   final double cost;
   final String currency;
   final DateTime datePaid;
+  final DateTime dateAdded;
   final String? notes;
   final String? images;
+  final String type;
   final List<String> tags;
   const Expense({
     required this.id,
@@ -2309,8 +2356,10 @@ class Expense extends DataClass implements Insertable<Expense> {
     required this.cost,
     required this.currency,
     required this.datePaid,
+    required this.dateAdded,
     this.notes,
     this.images,
+    required this.type,
     required this.tags,
   });
   @override
@@ -2324,12 +2373,14 @@ class Expense extends DataClass implements Insertable<Expense> {
     map['cost'] = Variable<double>(cost);
     map['currency'] = Variable<String>(currency);
     map['date_paid'] = Variable<DateTime>(datePaid);
+    map['date_added'] = Variable<DateTime>(dateAdded);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
     if (!nullToAbsent || images != null) {
       map['images'] = Variable<String>(images);
     }
+    map['type'] = Variable<String>(type);
     {
       map['tags'] = Variable<String>($ExpensesTable.$convertertags.toSql(tags));
     }
@@ -2346,12 +2397,14 @@ class Expense extends DataClass implements Insertable<Expense> {
       cost: Value(cost),
       currency: Value(currency),
       datePaid: Value(datePaid),
+      dateAdded: Value(dateAdded),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
       images: images == null && nullToAbsent
           ? const Value.absent()
           : Value(images),
+      type: Value(type),
       tags: Value(tags),
     );
   }
@@ -2370,8 +2423,10 @@ class Expense extends DataClass implements Insertable<Expense> {
       cost: serializer.fromJson<double>(json['cost']),
       currency: serializer.fromJson<String>(json['currency']),
       datePaid: serializer.fromJson<DateTime>(json['datePaid']),
+      dateAdded: serializer.fromJson<DateTime>(json['dateAdded']),
       notes: serializer.fromJson<String?>(json['notes']),
       images: serializer.fromJson<String?>(json['images']),
+      type: serializer.fromJson<String>(json['type']),
       tags: serializer.fromJson<List<String>>(json['tags']),
     );
   }
@@ -2387,8 +2442,10 @@ class Expense extends DataClass implements Insertable<Expense> {
       'cost': serializer.toJson<double>(cost),
       'currency': serializer.toJson<String>(currency),
       'datePaid': serializer.toJson<DateTime>(datePaid),
+      'dateAdded': serializer.toJson<DateTime>(dateAdded),
       'notes': serializer.toJson<String?>(notes),
       'images': serializer.toJson<String?>(images),
+      'type': serializer.toJson<String>(type),
       'tags': serializer.toJson<List<String>>(tags),
     };
   }
@@ -2402,8 +2459,10 @@ class Expense extends DataClass implements Insertable<Expense> {
     double? cost,
     String? currency,
     DateTime? datePaid,
+    DateTime? dateAdded,
     Value<String?> notes = const Value.absent(),
     Value<String?> images = const Value.absent(),
+    String? type,
     List<String>? tags,
   }) => Expense(
     id: id ?? this.id,
@@ -2414,8 +2473,10 @@ class Expense extends DataClass implements Insertable<Expense> {
     cost: cost ?? this.cost,
     currency: currency ?? this.currency,
     datePaid: datePaid ?? this.datePaid,
+    dateAdded: dateAdded ?? this.dateAdded,
     notes: notes.present ? notes.value : this.notes,
     images: images.present ? images.value : this.images,
+    type: type ?? this.type,
     tags: tags ?? this.tags,
   );
   Expense copyWithCompanion(ExpensesCompanion data) {
@@ -2430,8 +2491,10 @@ class Expense extends DataClass implements Insertable<Expense> {
       cost: data.cost.present ? data.cost.value : this.cost,
       currency: data.currency.present ? data.currency.value : this.currency,
       datePaid: data.datePaid.present ? data.datePaid.value : this.datePaid,
+      dateAdded: data.dateAdded.present ? data.dateAdded.value : this.dateAdded,
       notes: data.notes.present ? data.notes.value : this.notes,
       images: data.images.present ? data.images.value : this.images,
+      type: data.type.present ? data.type.value : this.type,
       tags: data.tags.present ? data.tags.value : this.tags,
     );
   }
@@ -2447,8 +2510,10 @@ class Expense extends DataClass implements Insertable<Expense> {
           ..write('cost: $cost, ')
           ..write('currency: $currency, ')
           ..write('datePaid: $datePaid, ')
+          ..write('dateAdded: $dateAdded, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
+          ..write('type: $type, ')
           ..write('tags: $tags')
           ..write(')'))
         .toString();
@@ -2464,8 +2529,10 @@ class Expense extends DataClass implements Insertable<Expense> {
     cost,
     currency,
     datePaid,
+    dateAdded,
     notes,
     images,
+    type,
     tags,
   );
   @override
@@ -2480,8 +2547,10 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.cost == this.cost &&
           other.currency == this.currency &&
           other.datePaid == this.datePaid &&
+          other.dateAdded == this.dateAdded &&
           other.notes == this.notes &&
           other.images == this.images &&
+          other.type == this.type &&
           other.tags == this.tags);
 }
 
@@ -2494,8 +2563,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<double> cost;
   final Value<String> currency;
   final Value<DateTime> datePaid;
+  final Value<DateTime> dateAdded;
   final Value<String?> notes;
   final Value<String?> images;
+  final Value<String> type;
   final Value<List<String>> tags;
   final Value<int> rowid;
   const ExpensesCompanion({
@@ -2507,8 +2578,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.cost = const Value.absent(),
     this.currency = const Value.absent(),
     this.datePaid = const Value.absent(),
+    this.dateAdded = const Value.absent(),
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
+    this.type = const Value.absent(),
     this.tags = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -2521,8 +2594,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     required double cost,
     required String currency,
     required DateTime datePaid,
+    required DateTime dateAdded,
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
+    required String type,
     required List<String> tags,
     this.rowid = const Value.absent(),
   }) : tripId = Value(tripId),
@@ -2532,6 +2607,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
        cost = Value(cost),
        currency = Value(currency),
        datePaid = Value(datePaid),
+       dateAdded = Value(dateAdded),
+       type = Value(type),
        tags = Value(tags);
   static Insertable<Expense> custom({
     Expression<String>? id,
@@ -2542,8 +2619,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Expression<double>? cost,
     Expression<String>? currency,
     Expression<DateTime>? datePaid,
+    Expression<DateTime>? dateAdded,
     Expression<String>? notes,
     Expression<String>? images,
+    Expression<String>? type,
     Expression<String>? tags,
     Expression<int>? rowid,
   }) {
@@ -2556,8 +2635,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       if (cost != null) 'cost': cost,
       if (currency != null) 'currency': currency,
       if (datePaid != null) 'date_paid': datePaid,
+      if (dateAdded != null) 'date_added': dateAdded,
       if (notes != null) 'notes': notes,
       if (images != null) 'images': images,
+      if (type != null) 'type': type,
       if (tags != null) 'tags': tags,
       if (rowid != null) 'rowid': rowid,
     });
@@ -2572,8 +2653,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Value<double>? cost,
     Value<String>? currency,
     Value<DateTime>? datePaid,
+    Value<DateTime>? dateAdded,
     Value<String?>? notes,
     Value<String?>? images,
+    Value<String>? type,
     Value<List<String>>? tags,
     Value<int>? rowid,
   }) {
@@ -2586,8 +2669,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       cost: cost ?? this.cost,
       currency: currency ?? this.currency,
       datePaid: datePaid ?? this.datePaid,
+      dateAdded: dateAdded ?? this.dateAdded,
       notes: notes ?? this.notes,
       images: images ?? this.images,
+      type: type ?? this.type,
       tags: tags ?? this.tags,
       rowid: rowid ?? this.rowid,
     );
@@ -2620,11 +2705,17 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     if (datePaid.present) {
       map['date_paid'] = Variable<DateTime>(datePaid.value);
     }
+    if (dateAdded.present) {
+      map['date_added'] = Variable<DateTime>(dateAdded.value);
+    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
     if (images.present) {
       map['images'] = Variable<String>(images.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
     }
     if (tags.present) {
       map['tags'] = Variable<String>(
@@ -2648,8 +2739,10 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
           ..write('cost: $cost, ')
           ..write('currency: $currency, ')
           ..write('datePaid: $datePaid, ')
+          ..write('dateAdded: $dateAdded, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
+          ..write('type: $type, ')
           ..write('tags: $tags, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -3021,7 +3114,7 @@ typedef $$TripsTableCreateCompanionBuilder =
       required String bgColour,
       required DateTime startDate,
       required DateTime endDate,
-      Value<DateTime?> createdAt,
+      required DateTime createdAt,
       Value<int> rowid,
     });
 typedef $$TripsTableUpdateCompanionBuilder =
@@ -3038,7 +3131,7 @@ typedef $$TripsTableUpdateCompanionBuilder =
       Value<String> bgColour,
       Value<DateTime> startDate,
       Value<DateTime> endDate,
-      Value<DateTime?> createdAt,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
@@ -3500,7 +3593,7 @@ class $$TripsTableTableManager
                 Value<String> bgColour = const Value.absent(),
                 Value<DateTime> startDate = const Value.absent(),
                 Value<DateTime> endDate = const Value.absent(),
-                Value<DateTime?> createdAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TripsCompanion(
                 id: id,
@@ -3532,7 +3625,7 @@ class $$TripsTableTableManager
                 required String bgColour,
                 required DateTime startDate,
                 required DateTime endDate,
-                Value<DateTime?> createdAt = const Value.absent(),
+                required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => TripsCompanion.insert(
                 id: id,
@@ -4154,8 +4247,10 @@ typedef $$ExpensesTableCreateCompanionBuilder =
       required double cost,
       required String currency,
       required DateTime datePaid,
+      required DateTime dateAdded,
       Value<String?> notes,
       Value<String?> images,
+      required String type,
       required List<String> tags,
       Value<int> rowid,
     });
@@ -4169,8 +4264,10 @@ typedef $$ExpensesTableUpdateCompanionBuilder =
       Value<double> cost,
       Value<String> currency,
       Value<DateTime> datePaid,
+      Value<DateTime> dateAdded,
       Value<String?> notes,
       Value<String?> images,
+      Value<String> type,
       Value<List<String>> tags,
       Value<int> rowid,
     });
@@ -4242,6 +4339,11 @@ class $$ExpensesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get dateAdded => $composableBuilder(
+    column: $table.dateAdded,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnFilters(column),
@@ -4249,6 +4351,11 @@ class $$ExpensesTableFilterComposer
 
   ColumnFilters<String> get images => $composableBuilder(
     column: $table.images,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4326,6 +4433,11 @@ class $$ExpensesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get dateAdded => $composableBuilder(
+    column: $table.dateAdded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnOrderings(column),
@@ -4333,6 +4445,11 @@ class $$ExpensesTableOrderingComposer
 
   ColumnOrderings<String> get images => $composableBuilder(
     column: $table.images,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4397,11 +4514,17 @@ class $$ExpensesTableAnnotationComposer
   GeneratedColumn<DateTime> get datePaid =>
       $composableBuilder(column: $table.datePaid, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get dateAdded =>
+      $composableBuilder(column: $table.dateAdded, builder: (column) => column);
+
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
   GeneratedColumn<String> get images =>
       $composableBuilder(column: $table.images, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<List<String>, String> get tags =>
       $composableBuilder(column: $table.tags, builder: (column) => column);
@@ -4466,8 +4589,10 @@ class $$ExpensesTableTableManager
                 Value<double> cost = const Value.absent(),
                 Value<String> currency = const Value.absent(),
                 Value<DateTime> datePaid = const Value.absent(),
+                Value<DateTime> dateAdded = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
+                Value<String> type = const Value.absent(),
                 Value<List<String>> tags = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExpensesCompanion(
@@ -4479,8 +4604,10 @@ class $$ExpensesTableTableManager
                 cost: cost,
                 currency: currency,
                 datePaid: datePaid,
+                dateAdded: dateAdded,
                 notes: notes,
                 images: images,
+                type: type,
                 tags: tags,
                 rowid: rowid,
               ),
@@ -4494,8 +4621,10 @@ class $$ExpensesTableTableManager
                 required double cost,
                 required String currency,
                 required DateTime datePaid,
+                required DateTime dateAdded,
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
+                required String type,
                 required List<String> tags,
                 Value<int> rowid = const Value.absent(),
               }) => ExpensesCompanion.insert(
@@ -4507,8 +4636,10 @@ class $$ExpensesTableTableManager
                 cost: cost,
                 currency: currency,
                 datePaid: datePaid,
+                dateAdded: dateAdded,
                 notes: notes,
                 images: images,
+                type: type,
                 tags: tags,
                 rowid: rowid,
               ),

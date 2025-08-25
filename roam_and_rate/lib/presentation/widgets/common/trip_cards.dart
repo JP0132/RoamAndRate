@@ -40,7 +40,9 @@ class _TripCardsState extends State<TripCards> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
-        color: widget.tripModel.backgroundColor,
+        color: widget.tripModel.backgroundColor == "red"
+            ? CustomColours.darkError
+            : CustomColours.darkSurface,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
