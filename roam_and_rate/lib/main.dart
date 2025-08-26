@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/core/themes/theme.dart';
+import 'package:roam_and_rate/data/local/daos/trip_dao.dart';
 import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
+import 'package:roam_and_rate/data/repositories/trip_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/user_repository_impl.dart';
-import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
-import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart';
-import 'package:roam_and_rate/presentation/splash/splash_page.dart';
-import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
-import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';
+import 'package:roam_and_rate/domain/repositories/trip_repository.dart';
 
 void main() {
   final userRepository = UserRepositoryImpl(UserDao(AppDatabase()));
+  final tripRepository = TripRepositoryImpl(TripDao(AppDatabase()));
   runApp(
     MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => UserBloc(userRepository))],
+      providers: [
+        BlocProvider(create: (_) => UserBloc(userRepository)),
+        BlocProvider(create: (_) => TripBloc(tripRepository)),
+      ],
       child: const MainApp(),
     ),
   );
