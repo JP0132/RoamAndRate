@@ -1,12 +1,17 @@
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/application/trips/trip_bloc.dart';
+import 'package:roam_and_rate/application/trips/trip_event.dart';
+import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
+import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
@@ -27,6 +32,32 @@ class _AddTripPageState extends State<AddTripPage> {
   DateTimeRange? selectedRange;
   String? selectedCurrency;
   String? selectedCategory;
+
+  final Map<String, bool> formValid = {
+    "tripName": true,
+    "location": true,
+    "budget": true,
+    "selectedRange": true,
+    "category": true,
+    "currency": true,
+  };
+
+  void validateDetails() {
+    formValid["tripName"] =
+        _tripNameController.text.trim().isNotEmpty &&
+        _tripNameController.text.length > 1;
+    formValid["location"] =
+        _locationController.text.trim().isNotEmpty &&
+        _locationController.text.length > 1;
+    formValid["budget"] =
+        _budgetController.text.trim().isNotEmpty &&
+        _budgetController.text.length > 1;
+    formValid["date"] = selectedRange != null;
+    formValid["category"] =
+        selectedCategory != null && selectedCategory!.isNotEmpty;
+    formValid["currency"] =
+        selectedCurrency != null && selectedCurrency!.isNotEmpty;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +158,9 @@ class _AddTripPageState extends State<AddTripPage> {
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           fontSize: 16,
-                          color:
-                              selectedRange != null
-                                  ? Colors.white
-                                  : CustomColours.darkSecondaryText,
+                          color: selectedRange != null
+                              ? Colors.white
+                              : CustomColours.darkSecondaryText,
                         ),
                       ),
                     ),
@@ -160,17 +190,59 @@ class _AddTripPageState extends State<AddTripPage> {
               itemBuilder: (category) => Text(category),
             ),
             SizedBox(height: 50),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: CustomColours.darkPrimary,
-                foregroundColor: CustomColours.darkBackground,
-                padding: EdgeInsets.all(8.0),
-              ),
-              child: Text(
-                "Submit",
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-              ),
+            BlocConsumer<TripBloc, TripState>(
+              listener: (context, state) {
+                if (state is TripAdded) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Trip created!"),
+                      backgroundColor: CustomColours.darkSuccess,
+                    ),
+                  );
+                  Navigator.pop(context);
+                } else if (state is TripError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Failed to create trip: ${state.message}"),
+                      backgroundColor: CustomColours.darkError,
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is TripLoading) {
+                  return const CircularProgressIndicator();
+                }
+                return ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      validateDetails();
+                    });
+                    if (formValid.values.every((v) => v)) {
+                      final TripModel newTrip = TripModel(
+                        userId: "",
+                        tripName: _tripNameController.text,
+                        location: _locationController.text,
+                        currency: selectedCurrency!,
+                        category: selectedCategory!,
+                        createdAt: DateTime.now(),
+                        startDate: selectedRange!.start,
+                        endDate: selectedRange!.end,
+                      );
+                      context.read<TripBloc>().add(AddTrip(newTrip));
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: CustomColours.darkPrimary,
+                    foregroundColor: CustomColours.darkBackground,
+                    padding: EdgeInsets.all(8.0),
+                  ),
+                  child: Text(
+                    "Submit",
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                  ),
+                );
+              },
             ),
           ],
         ),

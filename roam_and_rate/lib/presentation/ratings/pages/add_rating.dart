@@ -1,13 +1,10 @@
 import 'dart:io';
 
-import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
-import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
@@ -26,7 +23,7 @@ class AddRatingPage extends StatefulWidget {
 class _AddRatingPageState extends State<AddRatingPage> {
   final TextEditingController _placeNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _valueController = TextEditingController();
+  //final TextEditingController _valueController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   DateTime? selectedDate = DateTime.now();
   DateTimeRange? selectedRange;
@@ -74,29 +71,28 @@ class _AddRatingPageState extends State<AddRatingPage> {
   void _showPickOptionsDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder:
-          (context) => SafeArea(
-            child: Wrap(
-              children: [
-                ListTile(
-                  leading: Icon(Icons.photo_library),
-                  title: Text('Pick from Gallery'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.gallery);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.camera_alt),
-                  title: Text('Take a Photo'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.camera);
-                  },
-                ),
-              ],
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Pick from Gallery'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickImage(ImageSource.gallery);
+              },
             ),
-          ),
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Take a Photo'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -380,35 +376,33 @@ class _AddRatingPageState extends State<AddRatingPage> {
               WLargeTextfield(hintText: "Notes", controller: _notesController),
               SizedBox(height: 20),
               Center(
-                child:
-                    _image == null
-                        ? Text("No Image added")
-                        : Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          child: Stack(
-                            children: [
-                              Image.file(_image!),
-                              Positioned(
-                                top: 0.0,
-                                right: 0.0,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: IconButton(
-                                    icon: Icon(Icons.cancel, color: Colors.red),
-                                    onPressed:
-                                        () => {
-                                          setState(() {
-                                            _image = null;
-                                          }),
-                                        },
-                                  ),
+                child: _image == null
+                    ? Text("No Image added")
+                    : Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                        child: Stack(
+                          children: [
+                            Image.file(_image!),
+                            Positioned(
+                              top: 0.0,
+                              right: 0.0,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: IconButton(
+                                  icon: Icon(Icons.cancel, color: Colors.red),
+                                  onPressed: () => {
+                                    setState(() {
+                                      _image = null;
+                                    }),
+                                  },
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                      ),
               ),
               SizedBox(height: 50),
               Padding(

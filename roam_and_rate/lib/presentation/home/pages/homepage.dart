@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:roam_and_rate/application/trips/trip_bloc.dart';
+import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
@@ -86,8 +88,32 @@ class _HomePageState extends State<HomePage> {
               },
             ),
 
-            SwipeableStack(
-              cards: [...cards.map((card) => TripCards(tripModel: card))],
+            BlocBuilder<TripBloc, TripState>(
+              builder: (context, state) {
+                if (state is TripInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is TripLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is TripLoaded) {
+                  if (state.trips.isEmpty) {
+                    return Center(
+                      child: Text("Create your first trip to get started!"),
+                    );
+                  } else {
+                    return SwipeableStack(
+                      cards: [
+                        ...state.trips.map(
+                          (card) => TripCards(tripModel: card),
+                        ),
+                      ],
+                    );
+                  }
+                } else if (state is TripError) {
+                  return Text("Error: ${state.message}");
+                } else {
+                  return const Text("Something went wrong!");
+                }
+              },
             ),
 
             SizedBox(height: 20),

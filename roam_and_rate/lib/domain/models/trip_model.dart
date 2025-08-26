@@ -16,7 +16,7 @@ class TripModel {
   final DateTime createdAt;
 
   const TripModel({
-    required this.tripId,
+    this.tripId,
     required this.userId,
     required this.tripName,
     required this.location,
