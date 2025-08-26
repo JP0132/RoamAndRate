@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:roam_and_rate/application/onboarding/onboarding_cubit.dart';
 import 'package:roam_and_rate/core/utils/constants/images.dart';
+import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/presentation/onboarding/widgets/onboarding_step.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -86,6 +89,56 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ],
                 );
               },
+            ),
+            //Skip Button
+            Positioned(
+              top: Helperfunctions.getAppBarHeight(),
+              right: 20,
+              child: BlocBuilder<OnboardingCubit, OnboardingState>(
+                builder: (context, state) {
+                  return TextButton(
+                    onPressed: () {
+                      context.read<OnboardingCubit>().skipPage();
+                    },
+                    child: const Text("Skip"),
+                  );
+                },
+              ),
+            ),
+            // Page indicators, dot form
+            Positioned(
+              bottom: kBottomNavigationBarHeight + 25.0,
+              left: 20,
+              child: BlocBuilder<OnboardingCubit, OnboardingState>(
+                builder: (context, state) {
+                  return SmoothPageIndicator(
+                    controller: state.pageController,
+                    count: 3,
+                    onDotClicked: (page) => context
+                        .read<OnboardingCubit>()
+                        .dotNavigationClick(page),
+                    effect: ExpandingDotsEffect(dotHeight: 6),
+                  );
+                },
+              ),
+            ),
+
+            // Next page button
+            Positioned(
+              right: 20,
+              bottom: Helperfunctions.getBottomNavBarHeight(),
+              child: BlocBuilder<OnboardingCubit, OnboardingState>(
+                builder: (context, state) {
+                  return ElevatedButton(
+                    onPressed: () => context.read<OnboardingCubit>().nextPage(),
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(20),
+                    ),
+                    child: const FaIcon(FontAwesomeIcons.arrowRight),
+                  );
+                },
+              ),
             ),
           ],
         ),
