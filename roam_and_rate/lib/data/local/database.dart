@@ -2,6 +2,9 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:roam_and_rate/core/utils/helper/string_list_converter.dart';
+import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
+import 'package:roam_and_rate/data/local/daos/rating_dao.dart';
+import 'package:roam_and_rate/data/local/daos/trip_dao.dart';
 import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,9 +16,14 @@ import 'tables/expenses.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Users, Trips, Ratings, Expenses], daos: [UserDao])
+@DriftDatabase(
+  tables: [Users, Trips, Ratings, Expenses],
+  daos: [UserDao, TripDao, RatingDao, ExpenseDao],
+)
 class AppDatabase extends _$AppDatabase {
-  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
+  AppDatabase._internal([QueryExecutor? executor])
+    : super(executor ?? _openConnection());
+  static final AppDatabase instance = AppDatabase._internal();
 
   @override
   int get schemaVersion => 1;

@@ -9,11 +9,11 @@ import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/repositories/trip_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/user_repository_impl.dart';
-import 'package:roam_and_rate/domain/repositories/trip_repository.dart';
 
 void main() {
-  final userRepository = UserRepositoryImpl(UserDao(AppDatabase()));
-  final tripRepository = TripRepositoryImpl(TripDao(AppDatabase()));
+  final db = AppDatabase.instance;
+  final userRepository = UserRepositoryImpl(UserDao(db));
+  final tripRepository = TripRepositoryImpl(TripDao(db));
   runApp(
     MultiBlocProvider(
       providers: [
