@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/trips/trip_bloc.dart';
+import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';
@@ -59,21 +62,43 @@ class _TripsPageState extends State<TripsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Trips")),
-      body: ListView.separated(
-        padding: EdgeInsets.all(8),
-        itemCount: cards.length,
-        separatorBuilder: (context, index) => SizedBox(height: 12),
-        itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-            onTap: () => {
-              Navigator.pushNamed(
-                context,
-                AppRouter.viewTrip,
-                arguments: ViewTripArguments(tripDetails: cards[index]),
-              ),
-            },
-            child: TripCards(tripModel: cards[index]),
-          );
+      body: BlocBuilder<TripBloc, TripState>(
+        builder: (context, state) {
+          if (state is TripInitial) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is TripLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is TripLoaded) {
+            if (state.trips.isEmpty) {
+              return Center(
+                child: Text("Create your first trip to get started!"),
+              );
+            } else {
+              return ListView.separated(
+                padding: EdgeInsets.all(8),
+                itemCount: state.trips.length,
+                separatorBuilder: (context, index) => SizedBox(height: 12),
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () => {
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.viewTrip,
+                        arguments: ViewTripArguments(
+                          tripDetails: state.trips[index],
+                        ),
+                      ),
+                    },
+                    child: TripCards(tripModel: state.trips[index]),
+                  );
+                },
+              );
+            }
+          } else if (state is TripError) {
+            return Text("Error: ${state.message}");
+          } else {
+            return const Text("Something went wrong!");
+          }
         },
       ),
     );
