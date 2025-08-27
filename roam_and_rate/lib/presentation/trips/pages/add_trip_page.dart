@@ -42,6 +42,18 @@ class _AddTripPageState extends State<AddTripPage> {
     "currency": true,
   };
 
+  bool isNumeric(String s) {
+    if (s.isEmpty) {
+      return false;
+    }
+    try {
+      double.parse(s);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   void validateDetails() {
     formValid["tripName"] =
         _tripNameController.text.trim().isNotEmpty &&
@@ -50,9 +62,10 @@ class _AddTripPageState extends State<AddTripPage> {
         _locationController.text.trim().isNotEmpty &&
         _locationController.text.length > 1;
     formValid["budget"] =
-        _budgetController.text.trim().isNotEmpty &&
-        _budgetController.text.length > 1;
-    formValid["date"] = selectedRange != null;
+        isNumeric(_budgetController.text.trim()) ||
+        _budgetController.text.trim().isEmpty;
+    formValid["date"] =
+        selectedRange?.start != null || selectedRange?.end != null;
     formValid["category"] =
         selectedCategory != null && selectedCategory!.isNotEmpty;
     formValid["currency"] =
@@ -69,7 +82,7 @@ class _AddTripPageState extends State<AddTripPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Trip Name",
+              "Trip Name *",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
             CustomInputField(
@@ -77,10 +90,21 @@ class _AddTripPageState extends State<AddTripPage> {
               inputIcon: FaIcon(FontAwesomeIcons.suitcase),
               controller: _tripNameController,
             ),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _tripNameController,
+              builder: (context, value, child) {
+                return Text(
+                  formValid["name"] == true
+                      ? ""
+                      : "Name cannot be blank or be less than 2 characters!",
+                  style: TextStyle(color: CustomColours.darkError),
+                );
+              },
+            ),
             SizedBox(height: 20),
             // Location Input field
             Text(
-              "Location",
+              "Location *",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
             CustomInputField(
@@ -88,10 +112,21 @@ class _AddTripPageState extends State<AddTripPage> {
               inputIcon: FaIcon(FontAwesomeIcons.locationDot),
               controller: _locationController,
             ),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _locationController,
+              builder: (context, value, child) {
+                return Text(
+                  formValid["location"] == true
+                      ? ""
+                      : "Location cannot be blank!",
+                  style: TextStyle(color: CustomColours.darkError),
+                );
+              },
+            ),
             SizedBox(height: 20),
             // Currency Dropdown
             Text(
-              "Currency",
+              "Currency *",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
             CustomiseableDropdown<String>(
@@ -110,11 +145,26 @@ class _AddTripPageState extends State<AddTripPage> {
               },
               itemBuilder: (currency) => Text(currency),
             ),
+            Text(
+              formValid["currency"] == true ? "" : "Currency cannot be blank!",
+              style: TextStyle(color: CustomColours.darkError),
+            ),
             SizedBox(height: 20),
             // Budget Input Field
             Text(
               "Budget",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
+            ),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _budgetController,
+              builder: (context, value, child) {
+                return Text(
+                  formValid["budget"] == true
+                      ? ""
+                      : "Budget can only contain numbers!",
+                  style: TextStyle(color: CustomColours.darkError),
+                );
+              },
             ),
             CustomInputField(
               inputText: "What was your budget",
@@ -126,7 +176,7 @@ class _AddTripPageState extends State<AddTripPage> {
             SizedBox(height: 20),
 
             Text(
-              "Select trip dates",
+              "Select trip dates *",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
             InkWell(
@@ -168,9 +218,13 @@ class _AddTripPageState extends State<AddTripPage> {
                 ),
               ),
             ),
+            Text(
+              formValid["selectedRange"] == true ? "" : "Date cannot be blank!",
+              style: TextStyle(color: CustomColours.darkError),
+            ),
             SizedBox(height: 20),
             Text(
-              "Category",
+              "Category *",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
             CustomiseableDropdown<String>(
@@ -188,6 +242,10 @@ class _AddTripPageState extends State<AddTripPage> {
                 });
               },
               itemBuilder: (category) => Text(category),
+            ),
+            Text(
+              formValid["category"] == true ? "" : "Category cannot be blank!",
+              style: TextStyle(color: CustomColours.darkError),
             ),
             SizedBox(height: 50),
             BlocConsumer<TripBloc, TripState>(
@@ -221,13 +279,14 @@ class _AddTripPageState extends State<AddTripPage> {
                     if (formValid.values.every((v) => v)) {
                       final TripModel newTrip = TripModel(
                         userId: "",
-                        tripName: _tripNameController.text,
-                        location: _locationController.text,
+                        tripName: _tripNameController.text.trim(),
+                        location: _locationController.text.trim(),
                         currency: selectedCurrency!,
                         category: selectedCategory!,
                         createdAt: DateTime.now(),
                         startDate: selectedRange!.start,
                         endDate: selectedRange!.end,
+                        budget: double.parse(_budgetController.text.trim()),
                       );
                       context.read<TripBloc>().add(AddTrip(newTrip));
                     }
