@@ -2758,6 +2758,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $RatingsTable ratings = $RatingsTable(this);
   late final $ExpensesTable expenses = $ExpensesTable(this);
   late final UserDao userDao = UserDao(this as AppDatabase);
+  late final TripDao tripDao = TripDao(this as AppDatabase);
+  late final RatingDao ratingDao = RatingDao(this as AppDatabase);
+  late final ExpenseDao expenseDao = ExpenseDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

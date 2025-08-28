@@ -30,6 +30,10 @@ class TripBloc extends Bloc<TripEvent, TripState> {
     try {
       await _repository.addTrip(event.trip);
       emit(TripAdded());
+      // emit(
+      //   TripLoaded(await _repository.getTrips()),
+      // ); // Emit TripLoaded state here
+      // emit(TripLoaded(event.trips));
     } catch (e) {
       emit(TripError("Failed to add trip: $e"));
     }

@@ -4,16 +4,19 @@ import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/core/themes/theme.dart';
+import 'package:roam_and_rate/data/local/SessionManager.dart';
 import 'package:roam_and_rate/data/local/daos/trip_dao.dart';
 import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/repositories/trip_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/user_repository_impl.dart';
 
-void main() {
+Future<void> main() async {
   final db = AppDatabase.instance;
   final userRepository = UserRepositoryImpl(UserDao(db));
   final tripRepository = TripRepositoryImpl(TripDao(db));
+  WidgetsFlutterBinding.ensureInitialized();
+  await SessionManager().init();
   runApp(
     MultiBlocProvider(
       providers: [

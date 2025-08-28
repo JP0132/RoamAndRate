@@ -58,6 +58,14 @@ class _TripsPageState extends State<TripsPage> {
       createdAt: DateTime.now(),
     ),
   ];
+
+  List<TripModel> _trips = [];
+
+  void _deleteTrip(String tripId) {
+    // Remove the split data from the lists
+    _trips.removeWhere((trip) => trip.tripId == tripId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +82,7 @@ class _TripsPageState extends State<TripsPage> {
                 child: Text("Create your first trip to get started!"),
               );
             } else {
+              _trips = state.trips;
               return ListView.separated(
                 padding: EdgeInsets.all(8),
                 itemCount: state.trips.length,
@@ -89,7 +98,12 @@ class _TripsPageState extends State<TripsPage> {
                         ),
                       ),
                     },
-                    child: TripCards(tripModel: state.trips[index]),
+                    child: TripCards(
+                      tripModel: _trips[index],
+                      onDelete: (tripId) {
+                        _trips.removeWhere((trip) => trip.tripId == tripId);
+                      },
+                    ),
                   );
                 },
               );

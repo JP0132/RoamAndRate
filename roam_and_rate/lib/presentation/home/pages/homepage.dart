@@ -5,12 +5,14 @@ import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/data/local/SessionManager.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/repositories/user_repository.dart';
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/rating_cards.dart';
 import 'package:roam_and_rate/presentation/home/widgets/swipeable_card_stack.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -77,6 +79,13 @@ class _HomePageState extends State<HomePage> {
                 } else if (state is UserLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is UserLoaded) {
+                  SessionManager().setUserId(
+                    state.users
+                            .where((user) => user.admin == true)
+                            .first
+                            .userId ??
+                        '',
+                  );
                   return Text(
                     "Welcome, ${state.users.where((user) => user.admin == true).first.username}",
                   );
@@ -100,6 +109,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text("Create your first trip to get started!"),
                     );
                   } else {
+                    print("What I am testing ${state.trips.first.userId}");
                     return SwipeableStack(
                       cards: [
                         ...state.trips.map(

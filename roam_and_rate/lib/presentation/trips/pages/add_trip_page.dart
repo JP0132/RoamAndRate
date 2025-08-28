@@ -10,11 +10,13 @@ import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
+import 'package:roam_and_rate/data/local/SessionManager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddTripPage extends StatefulWidget {
   const AddTripPage({super.key});
@@ -255,6 +257,7 @@ class _AddTripPageState extends State<AddTripPage> {
                     const SnackBar(
                       content: Text("Trip created!"),
                       backgroundColor: CustomColours.darkSuccess,
+                      behavior: SnackBarBehavior.floating,
                     ),
                   );
                   Navigator.pop(context);
@@ -263,6 +266,7 @@ class _AddTripPageState extends State<AddTripPage> {
                     SnackBar(
                       content: Text("Failed to create trip: ${state.message}"),
                       backgroundColor: CustomColours.darkError,
+                      behavior: SnackBarBehavior.floating,
                     ),
                   );
                 }
@@ -278,7 +282,7 @@ class _AddTripPageState extends State<AddTripPage> {
                     });
                     if (formValid.values.every((v) => v)) {
                       final TripModel newTrip = TripModel(
-                        userId: "",
+                        userId: SessionManager().userId!,
                         tripName: _tripNameController.text.trim(),
                         location: _locationController.text.trim(),
                         currency: selectedCurrency!,

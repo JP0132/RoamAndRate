@@ -14,6 +14,9 @@ extension TripEntityMapper on Trip {
       startDate: startDate,
       endDate: endDate,
       createdAt: createdAt,
+      budget: budget,
+      notes: notes,
+      backgroundColor: bgColour,
     );
   }
 }
