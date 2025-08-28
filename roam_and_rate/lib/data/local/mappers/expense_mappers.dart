@@ -16,6 +16,9 @@ extension ExpenseEntityMapper on Expense {
       currency: currency,
       category: category,
       type: type,
+      tags: tags,
+      // image: images!,
+      // notes: notes!,
     );
   }
 }
@@ -34,6 +37,8 @@ extension ExpenseModelMapper on ExpenseModel {
       dateAdded: dateTimeAdded,
       type: type,
       tags: tags,
+      notes: Value(notes),
+      images: Value(image),
     );
   }
 }

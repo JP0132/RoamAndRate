@@ -9,7 +9,7 @@ class RateModel {
   final DateTime? dateVisited;
   final DateTime? datePlanned;
   final String value;
-  final List<String?> tags;
+  final List<String> tags;
   final String notes;
   final String image;
 
