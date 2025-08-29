@@ -11,6 +11,7 @@ extension RatingEntityMapper on Rating {
       location: "",
       category: '',
       status: '',
+      createdAt: createdAt!,
     );
   }
 }

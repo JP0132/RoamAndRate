@@ -1,4 +1,3 @@
-import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,7 +15,6 @@ import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddTripPage extends StatefulWidget {
   const AddTripPage({super.key});
@@ -92,17 +90,12 @@ class _AddTripPageState extends State<AddTripPage> {
               inputIcon: FaIcon(FontAwesomeIcons.suitcase),
               controller: _tripNameController,
             ),
-            ValueListenableBuilder<TextEditingValue>(
-              valueListenable: _tripNameController,
-              builder: (context, value, child) {
-                return Text(
-                  formValid["name"] == true
-                      ? ""
-                      : "Name cannot be blank or be less than 2 characters!",
-                  style: TextStyle(color: CustomColours.darkError),
-                );
-              },
-            ),
+            if (formValid["tripName"] == false)
+              Text(
+                "Trip Name cannot be blank or be less than 2 characters!",
+                style: TextStyle(color: Colors.red),
+              ),
+
             SizedBox(height: 20),
             // Location Input field
             Text(

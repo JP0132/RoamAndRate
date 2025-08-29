@@ -9,8 +9,8 @@ class ExpenseLoading extends ExpenseState {}
 class ExpenseAdded extends ExpenseState {}
 
 class ExpenseLoaded extends ExpenseState {
-  final List<ExpenseModel> trips;
-  ExpenseLoaded(this.trips);
+  final List<ExpenseModel> expenses;
+  ExpenseLoaded(this.expenses);
 }
 
 class ExpenseError extends ExpenseState {

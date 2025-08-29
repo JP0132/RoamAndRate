@@ -1,11 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/application/rating/rating_bloc.dart';
+import 'package:roam_and_rate/application/rating/rating_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
+import 'package:roam_and_rate/presentation/ratings/widgets/rating_container.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
@@ -31,7 +35,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
   double _currentRating = 0.0;
 
   final List<String> statuses = [
-    "Plan to Vist",
+    "Plan to Visit",
     "Visited",
     "On-hold",
     "Dropped",
@@ -103,6 +107,39 @@ class _AddRatingPageState extends State<AddRatingPage> {
     });
   }
 
+  final Map<String, bool> formValid = {
+    "place name": true,
+    "location": true,
+    "category": true,
+    "status": true,
+    "date": true,
+  };
+
+  void validateDetails() {
+    // formValid["tripName"] =
+    //     _tripNameController.text.trim().isNotEmpty &&
+    //     _tripNameController.text.length > 1;
+    // formValid["location"] =
+    //     _locationController.text.trim().isNotEmpty &&
+    //     _locationController.text.length > 1;
+    // formValid["budget"] =
+    //     isNumeric(_budgetController.text.trim()) ||
+    //     _budgetController.text.trim().isEmpty;
+    // formValid["date"] =
+    //     selectedRange?.start != null || selectedRange?.end != null;
+    // formValid["category"] =
+    //     selectedCategory != null && selectedCategory!.isNotEmpty;
+    // formValid["currency"] =
+    //     selectedCurrency != null && selectedCurrency!.isNotEmpty;
+  }
+
+  String getStatusLabel(String? status) {
+    if (status == "Visited") return "Date Visited *";
+    if (status == "Revisiting") return "Date Revisited *";
+    if (status == "Plan to Visit") return "Planned Date *";
+    return "Rating"; // default fallback
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,7 +160,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
             children: [
               // Input field to enter the name of the place
               Text(
-                "Place Name",
+                "Place Name *",
                 style: TextStyle(
                   fontSize: 14,
                   color: CustomColours.darkPrimary,
@@ -138,7 +175,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
 
               // Input field to enter the location/address of the place
               Text(
-                "Location",
+                "Location *",
                 style: TextStyle(
                   fontSize: 14,
                   color: CustomColours.darkPrimary,
@@ -161,7 +198,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Category",
+                          "Category *",
                           style: TextStyle(
                             fontSize: 14,
                             color: CustomColours.darkPrimary,
@@ -176,8 +213,8 @@ class _AddRatingPageState extends State<AddRatingPage> {
                           padding: EdgeInsets.all(20),
                           borderRadius: 20,
                           menuMaxHeight: 200,
-                          selectedItemColour: Colors.orange,
-                          selectedItemTextColour: Colors.white,
+                          selectedItemColour: CustomColours.darkPrimary,
+                          selectedItemTextColour: CustomColours.darkBackground,
                           unselectedItemTextColour: Colors.grey[300],
                           selectedTextOverflow: TextOverflow.ellipsis,
                           selectedTextMaxLines: 1,
@@ -200,7 +237,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Status",
+                          "Status *",
                           style: TextStyle(
                             fontSize: 14,
                             color: CustomColours.darkPrimary,
@@ -237,126 +274,133 @@ class _AddRatingPageState extends State<AddRatingPage> {
 
               SizedBox(height: 20),
 
-              // Select the rating of the place
-              // TODO: If the status is marked as planned then remove the rating field for now
-              Text(
-                "Rating",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: CustomColours.darkPrimary,
+              if (!{"Dropped", "On-hold", ""}.contains(selectedStatus)) ...[
+                Text(
+                  "Rating",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: CustomColours.darkPrimary,
+                  ),
                 ),
-              ),
-              RatingInput(
-                initalRating: 0,
-                onRatingChanged: (newRating) {
-                  setState(() {
-                    _currentRating = newRating;
-                  });
-                },
-              ),
-              SizedBox(height: 20),
+                RatingContainer(
+                  selectedParticipants: [""],
+                  participants: ["You", "person 1", "person 2"],
+                  ratings: [0.0],
+                ),
+                // RatingInput(
+                //   initalRating: 0,
+                //   onRatingChanged: (newRating) {
+                //     setState(() {
+                //       _currentRating = newRating;
+                //     });
+                //   },
+                // ),
+                SizedBox(height: 20),
 
-              Row(
-                children: [
-                  // Select the date you visted
-                  // TODO: If status is marked as planned then disable the field
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Date Visited",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: CustomColours.darkPrimary,
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () => _showCustomStyledPicker(),
-
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: CustomColours.darkSurface,
-
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(20),
-                              ),
+                Row(
+                  children: [
+                    // Select the date you visted
+                    // TODO: If status is marked as planned then disable the field
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            getStatusLabel(selectedStatus),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: CustomColours.darkPrimary,
                             ),
+                          ),
+                          InkWell(
+                            onTap: () => _showCustomStyledPicker(),
 
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: CustomColours.darkSurface,
 
-                              child: InputDecorator(
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
 
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.only(right: 20),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
 
-                                    child: Icon(
-                                      Icons.calendar_today,
-                                      color: CustomColours.darkPrimary,
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.only(right: 20),
+
+                                      child: Icon(
+                                        Icons.calendar_today,
+                                        color: CustomColours.darkPrimary,
+                                      ),
+                                    ),
+                                  ),
+
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+
+                                    child: Text(
+                                      DateFormat(
+                                        'dd/MM/yyyy',
+                                      ).format(selectedDate!),
+
+                                      textAlign: TextAlign.justify,
+
+                                      style: TextStyle(fontSize: 16),
                                     ),
                                   ),
                                 ),
-
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-
-                                  child: Text(
-                                    DateFormat(
-                                      'dd/MM/yyyy',
-                                    ).format(selectedDate!),
-
-                                    textAlign: TextAlign.justify,
-
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
 
-                  SizedBox(width: 10), // Space between containers
-                  // Dropdown to select the value, if the cost was worth it
-                  // TODO: Add dollar symbols
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Value",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: CustomColours.darkPrimary,
+                    SizedBox(width: 10), // Space between containers
+                    // Dropdown to select the value, if the cost was worth it
+                    // TODO: Add dollar symbols
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Value",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: CustomColours.darkPrimary,
+                            ),
                           ),
-                        ),
-                        CustomiseableDropdown<String>(
-                          items: value,
-                          hint: "How well priced was it?",
-                          value: selectedValue,
-                          backgroundColour: CustomColours.darkSurface,
-                          borderColour: Colors.transparent,
-                          padding: EdgeInsets.all(20),
-                          borderRadius: 20,
-                          menuMaxHeight: 200,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedValue = value;
-                            });
-                          },
-                          itemBuilder: (value) => Text(value),
-                        ),
-                      ],
+                          CustomiseableDropdown<String>(
+                            items: value,
+                            hint: "How well priced was it?",
+                            value: selectedValue,
+                            backgroundColour: CustomColours.darkSurface,
+                            borderColour: Colors.transparent,
+                            padding: EdgeInsets.all(20),
+                            borderRadius: 20,
+                            menuMaxHeight: 200,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedValue = value;
+                              });
+                            },
+                            itemBuilder: (value) => Text(value),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
+                  ],
+                ),
+                SizedBox(height: 20),
+              ],
+
+              // Select the rating of the place
               Text(
                 "Tags",
                 style: TextStyle(
@@ -405,20 +449,54 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       ),
               ),
               SizedBox(height: 50),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30),
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColours.darkPrimary,
-                    foregroundColor: CustomColours.darkBackground,
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  child: Text(
-                    "Submit",
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-                  ),
-                ),
+              BlocConsumer<RatingBloc, RatingState>(
+                listener: (context, state) {
+                  if (state is RatingAdded) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Rating created!"),
+                        backgroundColor: CustomColours.darkSuccess,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    Navigator.pop(context);
+                  } else if (state is RatingError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Failed to create trip: ${state.message}",
+                        ),
+                        backgroundColor: CustomColours.darkError,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is RatingLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                  return ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        validateDetails();
+                      });
+                      if (formValid.values.every((v) => v)) {}
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: CustomColours.darkPrimary,
+                      foregroundColor: CustomColours.darkBackground,
+                      padding: EdgeInsets.all(8.0),
+                    ),
+                    child: Text(
+                      "Submit",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

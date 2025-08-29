@@ -20,8 +20,8 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
   @override
   Future<List<ExpenseModel>> getExpenses() async {
-    final trips = await dao.getAllExpenses();
-    return trips.map((trip) => trip.toModel()).toList();
+    final expenses = await dao.getAllExpenses();
+    return expenses.map((expense) => expense.toModel()).toList();
   }
 
   @override

@@ -69,7 +69,7 @@ class _RatingInputState extends State<RatingInput> {
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: CustomColours.darkSecondarySurface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Row(

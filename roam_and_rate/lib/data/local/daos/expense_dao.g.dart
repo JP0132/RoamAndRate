@@ -6,5 +6,6 @@ part of 'expense_dao.dart';
 mixin _$ExpenseDaoMixin on DatabaseAccessor<AppDatabase> {
   $UsersTable get users => attachedDatabase.users;
   $TripsTable get trips => attachedDatabase.trips;
+  $ParticipantsTable get participants => attachedDatabase.participants;
   $ExpensesTable get expenses => attachedDatabase.expenses;
 }

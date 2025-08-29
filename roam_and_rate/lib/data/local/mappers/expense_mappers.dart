@@ -17,7 +17,9 @@ extension ExpenseEntityMapper on Expense {
       category: category,
       type: type,
       tags: tags,
-      // image: images!,
+      participantId: participantId,
+      toBeSplit: toBeSplit,
+      // image: images!
       // notes: notes!,
     );
   }
@@ -28,6 +30,7 @@ extension ExpenseModelMapper on ExpenseModel {
     return ExpensesCompanion.insert(
       id: expenseId != null ? Value(tripId) : const Value.absent(),
       tripId: tripId,
+      participantId: participantId,
       expenseName: name,
       category: category,
       paid: paid,
@@ -39,6 +42,7 @@ extension ExpenseModelMapper on ExpenseModel {
       tags: tags,
       notes: Value(notes),
       images: Value(image),
+      toBeSplit: toBeSplit,
     );
   }
 }
