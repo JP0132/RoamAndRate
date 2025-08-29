@@ -23,7 +23,7 @@ class _RatingInputState extends State<RatingInput> {
   final _controller = SuperTooltipController();
 
   final List<String> defaultRatingDescriptions = [
-    'Gem',
+    'Stellar',
     'Great',
     'Very good',
     'Good',
@@ -169,23 +169,22 @@ class _RatingInputState extends State<RatingInput> {
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children:
-                              defaultRatingDescriptions.reversed
-                                  .toList()
-                                  .asMap()
-                                  .entries
-                                  .map((entry) {
-                                    int rating = entry.key + 1;
-                                    String description = entry.value;
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: 4),
-                                      child: Text(
-                                        "$rating - $description",
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                    );
-                                  })
-                                  .toList(),
+                          children: defaultRatingDescriptions.reversed
+                              .toList()
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                                int rating = entry.key + 1;
+                                String description = entry.value;
+                                return Padding(
+                                  padding: EdgeInsets.only(bottom: 4),
+                                  child: Text(
+                                    "$rating - $description",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                );
+                              })
+                              .toList(),
                         ),
                       ),
                     ),
