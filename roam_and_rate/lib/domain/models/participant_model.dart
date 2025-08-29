@@ -1,11 +1,11 @@
 class ParticipantModel {
-  final String id;
+  final String? id;
   final String particpantName;
   final bool isAdmin;
   final DateTime createdAt;
 
   const ParticipantModel({
-    required this.id,
+    this.id,
     required this.particpantName,
     required this.isAdmin,
     required this.createdAt,

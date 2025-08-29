@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/application/participant/participant_bloc.dart';
+import 'package:roam_and_rate/application/participant/participant_event.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_event.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/user_model.dart';
 import 'package:roam_and_rate/presentation/widgets/bottom_nav/bottom_navbar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
@@ -267,7 +270,17 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                           gender: selectedGender!,
                           admin: true,
                         );
+
+                        final ParticipantModel newParticipant =
+                            ParticipantModel(
+                              particpantName: _usernameController.text,
+                              isAdmin: true,
+                              createdAt: DateTime.now(),
+                            );
                         context.read<UserBloc>().add(AddUser(newUser));
+                        context.read<ParticipantBloc>().add(
+                          AddParticipant(newParticipant),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
