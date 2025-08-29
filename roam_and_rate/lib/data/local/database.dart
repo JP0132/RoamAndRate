@@ -13,11 +13,22 @@ import 'tables/users.dart';
 import 'tables/trips.dart';
 import 'tables/ratings.dart';
 import 'tables/expenses.dart';
+import 'tables/participants.dart';
+import 'tables/rating_details.dart';
+import 'tables/ratings_made.dart';
 
 part 'database.g.dart';
 
 @DriftDatabase(
-  tables: [Users, Trips, Ratings, Expenses],
+  tables: [
+    Users,
+    Trips,
+    Ratings,
+    Expenses,
+    Participants,
+    RatingDetails,
+    RatingsMade,
+  ],
   daos: [UserDao, TripDao, RatingDao, ExpenseDao],
 )
 class AppDatabase extends _$AppDatabase {

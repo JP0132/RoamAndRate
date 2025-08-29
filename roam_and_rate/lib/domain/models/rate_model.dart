@@ -6,8 +6,10 @@ class RateModel {
   final String category;
   final String status;
   final double rating;
+  final double expectedRating;
   final DateTime? dateVisited;
   final DateTime? datePlanned;
+  final DateTime createdAt;
   final String value;
   final List<String> tags;
   final String notes;
@@ -20,6 +22,7 @@ class RateModel {
     required this.location,
     required this.category,
     required this.status,
+    required this.createdAt,
     this.rating = 0.0,
     this.value = "",
     this.tags = const [],
@@ -27,6 +30,7 @@ class RateModel {
     this.image = "",
     this.dateVisited,
     this.datePlanned,
+    this.expectedRating = 0.0,
   });
 
   RateModel copyWith({
@@ -37,7 +41,10 @@ class RateModel {
     String? category,
     String? status,
     double? rating,
+    double? expectedRating,
     DateTime? dateVisited,
+    DateTime? datePlanned,
+    DateTime? createdAt,
     String? value,
     List<String>? tags,
     String? notes,
@@ -51,11 +58,14 @@ class RateModel {
       category: category ?? this.category,
       status: status ?? this.status,
       rating: rating ?? this.rating,
+      expectedRating: expectedRating ?? this.expectedRating,
       dateVisited: dateVisited ?? this.dateVisited,
+      datePlanned: datePlanned ?? this.datePlanned,
       value: value ?? this.value,
       tags: tags ?? this.tags,
       notes: notes ?? this.notes,
       image: image ?? this.image,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }
