@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/rating/rating_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/core/themes/theme.dart';
 import 'package:roam_and_rate/data/local/SessionManager.dart';
+import 'package:roam_and_rate/data/local/daos/rating_dao.dart';
 import 'package:roam_and_rate/data/local/daos/trip_dao.dart';
 import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
+import 'package:roam_and_rate/data/repositories/rating_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/trip_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/user_repository_impl.dart';
 
@@ -15,6 +18,7 @@ Future<void> main() async {
   final db = AppDatabase.instance;
   final userRepository = UserRepositoryImpl(UserDao(db));
   final tripRepository = TripRepositoryImpl(TripDao(db));
+  final ratingRepository = RatingRepositoryImpl(RatingDao(db));
   WidgetsFlutterBinding.ensureInitialized();
   await SessionManager().init();
   runApp(
@@ -22,6 +26,7 @@ Future<void> main() async {
       providers: [
         BlocProvider(create: (_) => UserBloc(userRepository)),
         BlocProvider(create: (_) => TripBloc(tripRepository)),
+        BlocProvider(create: (_) => RatingBloc(ratingRepository)),
       ],
       child: const MainApp(),
     ),
