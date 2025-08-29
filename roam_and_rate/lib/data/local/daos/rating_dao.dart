@@ -12,6 +12,10 @@ class RatingDao extends DatabaseAccessor<AppDatabase> with _$RatingDaoMixin {
 
   Stream<List<Rating>> watchAllRatings() => select(ratings).watch();
 
+  Stream<List<Rating>> watchByTrip(String tripId) {
+    return (select(ratings)..where((t) => t.tripId.equals(tripId))).watch();
+  }
+
   Future<void> insertRating(RatingsCompanion rating) =>
       into(ratings).insert(rating);
 

@@ -12,6 +12,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 
   Stream<List<Expense>> watchAllExpenses() => select(expenses).watch();
 
+  Stream<List<Expense>> watchByTrip(String tripId) {
+    return (select(expenses)..where((t) => t.tripId.equals(tripId))).watch();
+  }
+
   Future<void> insertExpense(ExpensesCompanion expense) =>
       into(expenses).insert(expense);
 
