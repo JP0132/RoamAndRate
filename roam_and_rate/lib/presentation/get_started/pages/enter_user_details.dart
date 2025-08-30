@@ -271,16 +271,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                           admin: true,
                         );
 
-                        final ParticipantModel newParticipant =
-                            ParticipantModel(
-                              particpantName: _usernameController.text,
-                              isAdmin: true,
-                              createdAt: DateTime.now(),
-                            );
                         context.read<UserBloc>().add(AddUser(newUser));
-                        context.read<ParticipantBloc>().add(
-                          AddParticipant(newParticipant),
-                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
