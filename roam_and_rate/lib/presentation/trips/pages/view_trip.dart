@@ -54,8 +54,13 @@ class _ViewTripState extends State<ViewTrip> {
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () =>
-                  Navigator.pushNamed(context, AppRouter.addExpense),
+              onPressed: () => Navigator.pushNamed(
+                context,
+                AppRouter.addExpense,
+                arguments: AddExpenseArguments(
+                  tripId: widget.tripDetails.tripId!,
+                ),
+              ),
               child: Text("Add Expense"),
             ),
             const SizedBox(height: 12),
