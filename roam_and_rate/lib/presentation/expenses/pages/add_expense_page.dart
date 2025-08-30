@@ -1,13 +1,22 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
+import 'package:roam_and_rate/application/expenses/expense_event.dart';
+import 'package:roam_and_rate/application/expenses/expense_state.dart';
+import 'package:roam_and_rate/application/participant/participant_bloc.dart';
+import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
+import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
+import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
@@ -15,7 +24,8 @@ import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 
 class AddExpensePage extends StatefulWidget {
-  const AddExpensePage({super.key});
+  final String tripId;
+  const AddExpensePage({super.key, required this.tripId});
 
   @override
   State<AddExpensePage> createState() => _AddExpensePageState();
@@ -28,10 +38,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final TextEditingController _costController = TextEditingController();
 
   DateTime? selectedDate = DateTime.now();
+  bool toBeSplit = false;
 
   final List<String> value = ["Cheap", "Just Right", "Expensive"];
   final List<String> types = ["card", "cash", "bank transfer"];
-  String? selectedValue = "";
+
+  List<ParticipantModel> _participants = [];
+  String selectedParticipant = "";
 
   final List<String> categories = [
     "Food & Drink",
@@ -95,6 +108,46 @@ class _AddExpensePageState extends State<AddExpensePage> {
     });
   }
 
+  bool isNumeric(String s) {
+    if (s.isEmpty) {
+      return false;
+    }
+    try {
+      double.parse(s);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  final Map<String, bool> formValid = {
+    "expenseName": true,
+    "paid": true,
+    "cost": true,
+    "category": true,
+    "currency": true,
+    "datePaid": true,
+    "type": true,
+  };
+
+  void validateDetails() {
+    formValid["expenseName"] =
+        _expenseNameController.text.trim().isNotEmpty &&
+        _expenseNameController.text.length > 1;
+    formValid["paid"] =
+        isNumeric(_paidController.text.trim()) ||
+        _paidController.text.trim().isNotEmpty;
+    formValid["cost"] =
+        isNumeric(_costController.text.trim()) ||
+        _costController.text.trim().isEmpty;
+    formValid["datePaid"] = selectedDate != null;
+    formValid["category"] =
+        selectedCategory != null && selectedCategory!.isNotEmpty;
+    formValid["currency"] =
+        selectedCurrency != null && selectedCurrency!.isNotEmpty;
+    formValid["type"] = selectedType != null && selectedType!.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,7 +168,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
             children: [
               // Input field to enter the name of the place
               Text(
-                "Expense Name",
+                "Expense Name *",
                 style: TextStyle(
                   fontSize: 14,
                   color: CustomColours.darkPrimary,
@@ -125,6 +178,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 inputText: "What you spent it on?",
                 inputIcon: FaIcon(FontAwesomeIcons.earthEurope),
                 controller: _expenseNameController,
+              ),
+              Text(
+                formValid["expenseName"] == true ? "" : "Name cannot be blank!",
+                style: TextStyle(color: CustomColours.darkError),
               ),
               SizedBox(height: 20),
 
@@ -136,7 +193,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Paid",
+                          "Paid *",
                           style: TextStyle(
                             fontSize: 14,
                             color: CustomColours.darkPrimary,
@@ -149,6 +206,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           numberKeyBoard: true,
                           regFilter: Values.decimalOnlyRegExp,
                         ),
+                        Text(
+                          formValid["paid"] == true
+                              ? ""
+                              : "Paid cannot be blank!",
+                          style: TextStyle(color: CustomColours.darkError),
+                        ),
                       ],
                     ),
                   ),
@@ -160,7 +223,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Cost",
+                          "Cost *",
                           style: TextStyle(
                             fontSize: 14,
                             color: CustomColours.darkPrimary,
@@ -173,6 +236,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           numberKeyBoard: true,
                           regFilter: Values.decimalOnlyRegExp,
                         ),
+                        Text(
+                          formValid["cost"] == true
+                              ? ""
+                              : "Cost cannot be blank!",
+                          style: TextStyle(color: CustomColours.darkError),
+                        ),
                       ],
                     ),
                   ),
@@ -181,7 +250,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               SizedBox(height: 20),
 
               Text(
-                "Currency",
+                "Currency *",
                 style: TextStyle(
                   fontSize: 14,
                   color: CustomColours.darkPrimary,
@@ -203,6 +272,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 },
                 itemBuilder: (currency) => Text(currency),
               ),
+              Text(
+                formValid["currency"] == true
+                    ? ""
+                    : "Currency cannot be blank!",
+                style: TextStyle(color: CustomColours.darkError),
+              ),
 
               Row(
                 children: [
@@ -213,7 +288,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Category",
+                          "Category *",
                           style: TextStyle(
                             fontSize: 14,
                             color: CustomColours.darkPrimary,
@@ -239,6 +314,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           },
                           itemBuilder: (value) => Text(value),
                         ),
+                        Text(
+                          formValid["category"] == true
+                              ? ""
+                              : "Category cannot be blank!",
+                          style: TextStyle(color: CustomColours.darkError),
+                        ),
                       ],
                     ),
                   ),
@@ -251,7 +332,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Payment Type",
+                          "Payment Type *",
                           style: TextStyle(
                             fontSize: 14,
                             color: CustomColours.darkPrimary,
@@ -277,6 +358,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           },
                           itemBuilder: (value) => Text(value),
                         ),
+                        Text(
+                          formValid["type"] == true
+                              ? ""
+                              : "Type cannot be blank!",
+                          style: TextStyle(color: CustomColours.darkError),
+                        ),
                       ],
                     ),
                   ),
@@ -284,9 +371,73 @@ class _AddExpensePageState extends State<AddExpensePage> {
               ),
 
               SizedBox(height: 20),
+              Text(
+                "Will this expense be splitted?",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
+              ),
+              Switch(
+                value: toBeSplit,
+                onChanged: (bool value) {
+                  setState(() {
+                    toBeSplit = value;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Who paid for it? *",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
+              ),
+
+              BlocBuilder<ParticipantBloc, ParticipantState>(
+                builder: (context, state) {
+                  if (state is ParticipantLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is ParticipantLoaded) {
+                    if (state.participants.isEmpty) {
+                      return Text("SOMETHING WENT WRONG");
+                    }
+
+                    _participants = state.participants;
+                    selectedParticipant = _participants
+                        .where((p) => p.isAdmin)
+                        .first
+                        .particpantName;
+                    return CustomiseableDropdown<String>(
+                      items: state.participants
+                          .map((p) => p.particpantName)
+                          .toList(),
+                      hint: "Who paid for it?",
+                      value: selectedParticipant,
+                      backgroundColour: CustomColours.darkSurface,
+                      borderColour: Colors.transparent,
+                      padding: EdgeInsets.all(20),
+                      borderRadius: 20,
+                      menuMaxHeight: 200,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedParticipant = value!;
+                        });
+                      },
+                      itemBuilder: (participant) => Text(participant),
+                    );
+                  } else if (state is ParticipantError) {
+                    return Text("Error: ${state.message}");
+                  } else {
+                    return const Text("Something went wrong!");
+                  }
+                },
+              ),
+              SizedBox(height: 20),
 
               Text(
-                "Date Paid",
+                "Date Paid *",
                 style: TextStyle(
                   fontSize: 14,
                   color: CustomColours.darkPrimary,
@@ -334,6 +485,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                 ),
               ),
+              Text(
+                formValid["datePaid"] == true
+                    ? ""
+                    : "Date Paid cannot be blank!",
+                style: TextStyle(color: CustomColours.darkError),
+              ),
 
               SizedBox(height: 20),
 
@@ -357,20 +514,74 @@ class _AddExpensePageState extends State<AddExpensePage> {
               SizedBox(height: 20),
               Center(child: _image == null ? Text("") : Image.file(_image!)),
               SizedBox(height: 50),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30),
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColours.darkPrimary,
-                    foregroundColor: CustomColours.darkBackground,
-                    padding: EdgeInsets.all(10.0),
-                  ),
-                  child: Text(
-                    "SUBMIT",
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-                  ),
-                ),
+              BlocConsumer<ExpenseBloc, ExpenseState>(
+                listener: (context, state) {
+                  if (state is ExpenseAdded) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Expense created!"),
+                        backgroundColor: CustomColours.darkSuccess,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    Navigator.pop(context);
+                  } else if (state is ExpenseError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Failed to create expense: ${state.message}",
+                        ),
+                        backgroundColor: CustomColours.darkError,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is ExpenseLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                  return ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        validateDetails();
+                      });
+                      if (formValid.values.every((v) => v)) {
+                        final ExpenseModel newExpense = ExpenseModel(
+                          name: _expenseNameController.text.trim(),
+                          tripId: widget.tripId,
+                          participantId: _participants
+                              .where(
+                                (p) => p.particpantName == selectedParticipant,
+                              )
+                              .first
+                              .particpantName,
+                          paid: double.parse(_paidController.text.trim()),
+                          cost: double.parse(_costController.text.trim()),
+                          dateTimeAdded: DateTime.now(),
+                          datePaid: selectedDate!,
+                          currency: selectedCurrency!,
+                          toBeSplit: toBeSplit,
+                          category: selectedCategory!,
+                          type: selectedType!,
+                        );
+                        context.read<ExpenseBloc>().add(AddExpense(newExpense));
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: CustomColours.darkPrimary,
+                      foregroundColor: CustomColours.darkBackground,
+                      padding: EdgeInsets.all(8.0),
+                    ),
+                    child: Text(
+                      "SUBMIT",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

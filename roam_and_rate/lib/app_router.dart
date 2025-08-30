@@ -6,6 +6,7 @@ import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
 import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
 import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:roam_and_rate/presentation/ratings/pages/add_rating.dart';
+import 'package:roam_and_rate/presentation/settings/pages/participant_page.dart';
 import 'package:roam_and_rate/presentation/splash/splash_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';
@@ -14,6 +15,12 @@ class ViewTripArguments {
   final TripModel tripDetails;
 
   ViewTripArguments({required this.tripDetails});
+}
+
+class AddExpenseArguments {
+  final String tripId;
+
+  AddExpenseArguments({required this.tripId});
 }
 
 class AppRouter {
@@ -26,6 +33,7 @@ class AppRouter {
   static const String viewTrip = '/viewTrip';
   static const String addRating = '/addRating';
   static const String addExpense = '/addExpense';
+  static const String participantSettings = '/participantSettings';
 
   static Route<dynamic> generateRoute(RouteSettings selectedRoute) {
     switch (selectedRoute.name) {
@@ -44,12 +52,17 @@ class AppRouter {
       case addRating:
         return MaterialPageRoute(builder: (_) => AddRatingPage());
       case addExpense:
-        return MaterialPageRoute(builder: (_) => AddExpensePage());
+        final args = selectedRoute.arguments as AddExpenseArguments;
+        return MaterialPageRoute(
+          builder: (_) => AddExpensePage(tripId: args.tripId),
+        );
       case viewTrip:
         final args = selectedRoute.arguments as ViewTripArguments;
         return MaterialPageRoute(
           builder: (_) => ViewTrip(tripDetails: args.tripDetails),
         );
+      case participantSettings:
+        return MaterialPageRoute(builder: (_) => ParticipantPage());
 
       default:
         // Handle unknown routes
