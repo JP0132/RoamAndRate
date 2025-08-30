@@ -11,3 +11,8 @@ class DeleteParticipant extends ParticipantEvent {
   final String participantId;
   DeleteParticipant(this.participantId);
 }
+
+class ParticipantsUpdated extends ParticipantEvent {
+  final List<ParticipantModel> participants;
+  ParticipantsUpdated(this.participants);
+}

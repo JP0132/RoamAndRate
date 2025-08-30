@@ -17,7 +17,7 @@ extension ParticipantModelMapper on ParticipantModel {
   ParticipantsCompanion toCompanion() {
     return ParticipantsCompanion.insert(
       name: particpantName,
-      id: Value(id!),
+      id: id != null ? Value(id!) : const Value.absent(),
       isMainUser: Value(isAdmin),
       createdAt: createdAt,
     );

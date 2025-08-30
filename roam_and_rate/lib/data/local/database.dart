@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:roam_and_rate/core/utils/helper/string_list_converter.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
+import 'package:roam_and_rate/data/local/daos/participant_dao.dart';
 import 'package:roam_and_rate/data/local/daos/rating_dao.dart';
 import 'package:roam_and_rate/data/local/daos/trip_dao.dart';
 import 'package:roam_and_rate/data/local/daos/user_dao.dart';
@@ -28,8 +29,9 @@ part 'database.g.dart';
     Participants,
     RatingDetails,
     RatingsMade,
+    Participants,
   ],
-  daos: [UserDao, TripDao, RatingDao, ExpenseDao],
+  daos: [UserDao, TripDao, RatingDao, ExpenseDao, ParticipantDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal([QueryExecutor? executor])

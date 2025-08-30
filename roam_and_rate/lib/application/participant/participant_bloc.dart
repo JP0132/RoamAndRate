@@ -8,22 +8,24 @@ import 'package:roam_and_rate/domain/repositories/participant_repository.dart';
 
 class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
   final ParticipantRepository _repository;
-
   StreamSubscription<List<ParticipantModel>>? _subscription;
 
-  ParticipantBloc(this._repository) : super(ParticipantInitial()) {
-    on<AddParticipant>(_onAddParticipant);
-    on<DeleteParticipant>(_onDeleteParticipant);
-
+  ParticipantBloc(this._repository) : super(ParticipantLoading()) {
     _subscription = _repository.watchParticipants().listen(
       (participants) {
-        add(_ParticipantsUpdated(participants));
+        print("📢 Stream emitted ${participants.length} participants");
+        add(ParticipantsUpdated(participants));
       },
       onError: (error) {
+        print("❌ Stream error: $error");
         addError(error, StackTrace.current);
       },
     );
-    on<_ParticipantsUpdated>((event, emit) {
+
+    on<AddParticipant>(_onAddParticipant);
+    on<DeleteParticipant>(_onDeleteParticipant);
+
+    on<ParticipantsUpdated>((event, emit) {
       emit(ParticipantLoaded(event.participants));
     });
   }
@@ -34,7 +36,7 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
   ) async {
     try {
       await _repository.addParticipant(event.participant);
-      emit(ParticipantAdded());
+      // rely on the stream → no emit needed
     } catch (e) {
       emit(ParticipantError("Failed to add participant: $e"));
     }
@@ -46,7 +48,7 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
   ) async {
     try {
       await _repository.deleteParticipant(event.participantId);
-      // stream auto-updates
+      // rely on the stream → no emit needed
     } catch (e) {
       emit(ParticipantError("Failed to delete participant: $e"));
     }
@@ -57,9 +59,4 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
     _subscription?.cancel();
     return super.close();
   }
-}
-
-class _ParticipantsUpdated extends ParticipantEvent {
-  final List<ParticipantModel> participants;
-  _ParticipantsUpdated(this.participants);
 }
