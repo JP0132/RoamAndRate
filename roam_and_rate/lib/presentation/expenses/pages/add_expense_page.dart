@@ -48,7 +48,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   final List<String> categories = [
     "Food & Drink",
-    "Toursit Attraction",
+    "Tourist Attraction",
     "Accomadation",
     "Shopping",
     "Nature & Outdoors",
@@ -547,7 +547,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         validateDetails();
                       });
                       if (formValid.values.every((v) => v)) {
-                        final ExpenseModel newExpense = ExpenseModel(
+                        ExpenseModel newExpense = ExpenseModel(
                           name: _expenseNameController.text.trim(),
                           tripId: widget.tripId,
                           participantId: _participants
@@ -555,7 +555,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 (p) => p.particpantName == selectedParticipant,
                               )
                               .first
-                              .particpantName,
+                              .id!,
                           paid: double.parse(_paidController.text.trim()),
                           cost: double.parse(_costController.text.trim()),
                           dateTimeAdded: DateTime.now(),
@@ -564,7 +564,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           toBeSplit: toBeSplit,
                           category: selectedCategory!,
                           type: selectedType!,
+                          notes: _notesController.text.isNotEmpty
+                              ? _notesController.text
+                              : "",
+                          tags: addedTags.isNotEmpty ? addedTags : [],
                         );
+
                         context.read<ExpenseBloc>().add(AddExpense(newExpense));
                       }
                     },
