@@ -223,7 +223,7 @@ class _AddTripPageState extends State<AddTripPage> {
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
             CustomiseableDropdown<String>(
-              items: Categories.categories.map((cat) => cat.name).toList(),
+              items: Categories.tripCategories.map((cat) => cat.name).toList(),
               hint: "Type of trip",
               value: selectedCategory,
               backgroundColour: CustomColours.darkSurface,
