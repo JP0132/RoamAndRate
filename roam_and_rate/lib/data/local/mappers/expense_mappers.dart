@@ -19,8 +19,8 @@ extension ExpenseEntityMapper on Expense {
       tags: tags,
       participantId: participantId,
       toBeSplit: toBeSplit,
-      // image: images!
-      // notes: notes!,
+      image: images!,
+      notes: notes!,
     );
   }
 }

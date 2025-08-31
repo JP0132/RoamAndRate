@@ -30,4 +30,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       (rows) => rows.map((e) => e.toModel()).toList(),
     );
   }
+
+  @override
+  Future<void> editExpense(ExpenseModel expense) async {
+    await dao.updateExpense(expense);
+  }
 }

@@ -14,6 +14,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   ExpenseBloc(this._repository) : super(ExpenseInitial()) {
     on<AddExpense>(_onAddExpense);
     on<DeleteExpense>(_onDeleteExpense);
+    on<EditExpense>(_onEditExpense);
 
     _subscription = _repository.watchExpenses().listen(
       (expenses) {
@@ -33,10 +34,24 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     Emitter<ExpenseState> emit,
   ) async {
     try {
+      print("📢 Stream emitted ${event.expense.notes} participants");
       await _repository.addExpense(event.expense);
       emit(ExpenseAdded());
     } catch (e) {
       emit(ExpenseError("Failed to add expense: $e"));
+    }
+  }
+
+  Future<void> _onEditExpense(
+    EditExpense event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    try {
+      print("📢 Stream emitted ${event.expense} EXPENSES");
+      await _repository.editExpense(event.expense);
+      emit(ExpenseEdited());
+    } catch (e) {
+      emit(ExpenseError("Failed to edit expense: $e"));
     }
   }
 

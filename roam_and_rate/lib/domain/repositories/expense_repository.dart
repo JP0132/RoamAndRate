@@ -5,4 +5,5 @@ abstract class ExpenseRepository {
   Stream<List<ExpenseModel>> watchExpenses();
   Future<void> addExpense(ExpenseModel expense);
   Future<void> deleteExpense(String id);
+  Future<void> editExpense(ExpenseModel expense);
 }

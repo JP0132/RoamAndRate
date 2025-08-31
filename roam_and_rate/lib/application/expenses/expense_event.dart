@@ -11,3 +11,8 @@ class DeleteExpense extends ExpenseEvent {
   final String expenseId;
   DeleteExpense(this.expenseId);
 }
+
+class EditExpense extends ExpenseEvent {
+  final ExpenseModel expense;
+  EditExpense(this.expense);
+}

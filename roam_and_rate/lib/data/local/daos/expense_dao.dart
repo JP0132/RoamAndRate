@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
+import 'package:roam_and_rate/data/local/mappers/expense_mappers.dart';
 import 'package:roam_and_rate/data/local/tables/expenses.dart';
+import 'package:roam_and_rate/domain/models/expense_model.dart';
 import '../database.dart';
 
 part 'expense_dao.g.dart';
@@ -21,6 +23,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 
   Future<void> deleteExpense(String id) =>
       (delete(expenses)..where((expenseTbl) => expenseTbl.id.equals(id))).go();
+
+  Future<void> updateExpense(ExpenseModel expense) {
+    return (update(expenses)..where((tbl) => tbl.id.equals(expense.expenseId!)))
+        .write(expense.toCompanion());
+  }
 
   Future<List<Expense>> getExpensesByTripId(String id) => (select(
     expenses,
