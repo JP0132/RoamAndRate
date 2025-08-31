@@ -49,23 +49,6 @@ class _ViewTripState extends State<ViewTrip> {
           children: [
             TripCards(tripModel: widget.tripDetails),
 
-            // Tab to view the expenses and ratings
-            ElevatedButton(
-              onPressed: () =>
-                  Navigator.pushNamed(context, AppRouter.addRating),
-              child: Text("Add Rating"),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(
-                context,
-                AppRouter.addExpense,
-                arguments: AddExpenseArguments(
-                  tripId: widget.tripDetails.tripId!,
-                ),
-              ),
-              child: Text("Add Expense"),
-            ),
             const SizedBox(height: 12),
             // Toggle buttons (Ratings / Expenses)
             SizedBox(
@@ -227,6 +210,39 @@ class _ViewTripState extends State<ViewTrip> {
               ),
             ),
           ],
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Tab to view the expenses and ratings
+                ElevatedButton(
+                  onPressed: () =>
+                      Navigator.pushNamed(context, AppRouter.addRating),
+                  child: Text("Add Rating"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: CustomColours.darkSurface,
+                  ),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    AppRouter.addExpense,
+                    arguments: AddExpenseArguments(
+                      tripId: widget.tripDetails.tripId!,
+                    ),
+                  ),
+                  child: Text("Add Expense", style: TextStyle()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: CustomColours.darkSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
