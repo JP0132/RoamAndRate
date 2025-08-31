@@ -1,8 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
+import 'package:roam_and_rate/application/expenses/expense_event.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
@@ -42,14 +46,13 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
             builder: (con) {
               return ElevatedButton(
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => EditExpense(
-                  //       expenseDetails: widget.expenseDetails,
-                  //     ),
-                  //   ),
-                  // );
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.editExpense,
+                    arguments: EditExpenseArugments(
+                      expense: widget.expenseDetails,
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
@@ -82,17 +85,19 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                         ),
                         TextButton(
                           onPressed: () {
+                            context.read<ExpenseBloc>().add(
+                              DeleteExpense(widget.expenseDetails.expenseId!),
+                            );
                             // context.read<ExpenseBloc>().add(
                             //     DeleteExpenseRequested(
                             //         widget.expenseDetails));
-                            // ScaffoldMessenger.of(context).showSnackBar(
-                            //   const SnackBar(
-                            //     content:
-                            //         Text('Expense deleted successfully!'),
-                            //     backgroundColor: Colors.green,
-                            //   ),
-                            // );
-                            // Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Expense deleted successfully!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            Navigator.pop(context);
                           },
                           child: const Text(
                             "DELETE",

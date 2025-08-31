@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/add_expense_page.dart';
+import 'package:roam_and_rate/presentation/expenses/pages/edit_expense_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
 import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
@@ -23,6 +25,11 @@ class AddExpenseArguments {
   AddExpenseArguments({required this.tripId});
 }
 
+class EditExpenseArugments {
+  final ExpenseModel expense;
+  EditExpenseArugments({required this.expense});
+}
+
 class AppRouter {
   static const String splash = '/';
   static const String home = '/home';
@@ -34,6 +41,7 @@ class AppRouter {
   static const String addRating = '/addRating';
   static const String addExpense = '/addExpense';
   static const String participantSettings = '/participantSettings';
+  static const String editExpense = '/editExpense';
 
   static Route<dynamic> generateRoute(RouteSettings selectedRoute) {
     switch (selectedRoute.name) {
@@ -55,6 +63,11 @@ class AppRouter {
         final args = selectedRoute.arguments as AddExpenseArguments;
         return MaterialPageRoute(
           builder: (_) => AddExpensePage(tripId: args.tripId),
+        );
+      case editExpense:
+        final args = selectedRoute.arguments as EditExpenseArugments;
+        return MaterialPageRoute(
+          builder: (_) => EditExpensePage(expenseToEdit: args.expense),
         );
       case viewTrip:
         final args = selectedRoute.arguments as ViewTripArguments;
