@@ -104,7 +104,7 @@ class _RatingContainerState extends State<RatingContainer> {
         SizedBox(height: 10),
         CustomiseableDropdown<String>(
           items: widget.participants,
-          hint: "Select which category?",
+          hint: "Whose rating?",
           value: widget.selectedParticipants[index - 1],
           backgroundColour: CustomColours.darkSecondarySurface,
           borderColour: Colors.transparent,
