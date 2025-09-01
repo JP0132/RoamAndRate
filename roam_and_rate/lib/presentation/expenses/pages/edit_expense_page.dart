@@ -18,7 +18,7 @@ import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
-import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
+import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
@@ -274,7 +274,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   color: CustomColours.darkPrimary,
                 ),
               ),
-              CustomiseableDropdown<String>(
+              CustomisableDropdown<String>(
                 items: CurrencyData.fiatCurrenciesNames,
                 hint: "What currency did you use",
                 value: selectedCurrency,
@@ -312,7 +312,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             color: CustomColours.darkPrimary,
                           ),
                         ),
-                        CustomiseableDropdown<String>(
+                        CustomisableDropdown<String>(
                           items: categories,
                           hint: "Select which category?",
                           value: selectedCategory,
@@ -356,7 +356,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             color: CustomColours.darkPrimary,
                           ),
                         ),
-                        CustomiseableDropdown<String>(
+                        CustomisableDropdown<String>(
                           items: types,
                           hint: "Select payment type",
                           value: selectedType,
@@ -428,7 +428,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                           (p) => p.id == widget.expenseToEdit.participantId,
                         )
                         .particpantName;
-                    return CustomiseableDropdown<String>(
+                    return CustomisableDropdown<String>(
                       items: state.participants
                           .map((p) => p.particpantName)
                           .toList(),

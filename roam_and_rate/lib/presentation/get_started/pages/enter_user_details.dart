@@ -13,7 +13,7 @@ import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/user_model.dart';
 import 'package:roam_and_rate/presentation/widgets/bottom_nav/bottom_navbar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
-import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
+import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 
@@ -210,7 +210,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                 ),
               ),
               SizedBox(height: 10),
-              CustomiseableDropdown<String>(
+              CustomisableDropdown<String>(
                 items: genderOptions,
                 value: selectedGender,
                 backgroundColour: CustomColours.darkSurface,

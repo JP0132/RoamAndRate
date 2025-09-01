@@ -14,7 +14,7 @@ import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_container.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
-import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
+import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_input.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
@@ -214,7 +214,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                             color: CustomColours.darkPrimary,
                           ),
                         ),
-                        CustomiseableDropdown<String>(
+                        CustomisableDropdown<String>(
                           items: categories,
                           hint: "Select which category?",
                           value: selectedCategory,
@@ -253,7 +253,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                             color: CustomColours.darkPrimary,
                           ),
                         ),
-                        CustomiseableDropdown<String>(
+                        CustomisableDropdown<String>(
                           items: statuses,
                           hint: "What is the status?",
                           value: selectedStatus,
@@ -409,7 +409,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                               color: CustomColours.darkPrimary,
                             ),
                           ),
-                          CustomiseableDropdown<String>(
+                          CustomisableDropdown<String>(
                             items: value,
                             hint: "How well priced was it?",
                             value: selectedValue,

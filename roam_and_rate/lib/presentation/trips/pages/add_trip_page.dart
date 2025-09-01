@@ -13,7 +13,7 @@ import 'package:roam_and_rate/data/local/SessionManager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
-import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
+import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 
 class AddTripPage extends StatefulWidget {
@@ -124,7 +124,7 @@ class _AddTripPageState extends State<AddTripPage> {
               "Currency *",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
-            CustomiseableDropdown<String>(
+            CustomisableDropdown<String>(
               items: CurrencyData.fiatCurrenciesNames,
               hint: "What currency did you use",
               value: selectedCurrency,
@@ -222,7 +222,7 @@ class _AddTripPageState extends State<AddTripPage> {
               "Category *",
               style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
             ),
-            CustomiseableDropdown<String>(
+            CustomisableDropdown<String>(
               items: Categories.tripCategories.map((cat) => cat.name).toList(),
               hint: "Type of trip",
               value: selectedCategory,
