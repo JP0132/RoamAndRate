@@ -16,3 +16,8 @@ class ParticipantsUpdated extends ParticipantEvent {
   final List<ParticipantModel> participants;
   ParticipantsUpdated(this.participants);
 }
+
+class EditParticipant extends ParticipantEvent {
+  final ParticipantModel participant;
+  EditParticipant(this.participant);
+}

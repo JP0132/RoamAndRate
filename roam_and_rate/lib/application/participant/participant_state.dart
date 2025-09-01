@@ -8,6 +8,8 @@ class ParticipantLoading extends ParticipantState {}
 
 class ParticipantAdded extends ParticipantState {}
 
+class ParticipantEdited extends ParticipantState {}
+
 class ParticipantLoaded extends ParticipantState {
   final List<ParticipantModel> participants;
   ParticipantLoaded(this.participants);

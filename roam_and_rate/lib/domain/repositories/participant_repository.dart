@@ -5,4 +5,5 @@ abstract class ParticipantRepository {
   Stream<List<ParticipantModel>> watchParticipants();
   Future<void> addParticipant(ParticipantModel participant);
   Future<void> deleteParticipant(String id);
+  Future<void> editParticipant(ParticipantModel participant);
 }

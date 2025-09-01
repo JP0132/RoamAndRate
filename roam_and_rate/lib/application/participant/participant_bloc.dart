@@ -24,6 +24,7 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
 
     on<AddParticipant>(_onAddParticipant);
     on<DeleteParticipant>(_onDeleteParticipant);
+    on<EditParticipant>(_onEditParticipant);
 
     on<ParticipantsUpdated>((event, emit) {
       emit(ParticipantLoaded(event.participants));
@@ -39,6 +40,18 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
       // rely on the stream → no emit needed
     } catch (e) {
       emit(ParticipantError("Failed to add participant: $e"));
+    }
+  }
+
+  Future<void> _onEditParticipant(
+    EditParticipant event,
+    Emitter<ParticipantState> emit,
+  ) async {
+    try {
+      await _repository.editParticipant(event.participant);
+      // rely on the stream → no emit needed
+    } catch (e) {
+      emit(ParticipantError("Failed to edit participant: $e"));
     }
   }
 

@@ -30,4 +30,9 @@ class ParticipantRepositoryImpl implements ParticipantRepository {
       (rows) => rows.map((e) => e.toModel()).toList(),
     );
   }
+
+  @override
+  Future<void> editParticipant(ParticipantModel participant) async {
+    await dao.updateParticipant(participant);
+  }
 }
