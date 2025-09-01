@@ -5,10 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/application/participant/participant_bloc.dart';
+import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/rating/rating_bloc.dart';
 import 'package:roam_and_rate/application/rating/rating_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_container.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customiseable_dropdown.dart';
@@ -138,6 +141,13 @@ class _AddRatingPageState extends State<AddRatingPage> {
     if (status == "Revisiting") return "Date Revisited *";
     if (status == "Plan to Visit") return "Planned Date *";
     return "Rating"; // default fallback
+  }
+
+  List<ParticipantModel> _participants = [];
+  List<ParticipantModel> selectedParticipants = [];
+
+  void addParticipantRating(ParticipantModel participant) {
+    selectedParticipants.add(participant);
   }
 
   @override
@@ -282,11 +292,34 @@ class _AddRatingPageState extends State<AddRatingPage> {
                     color: CustomColours.darkPrimary,
                   ),
                 ),
-                RatingContainer(
-                  selectedParticipants: [""],
-                  participants: ["You", "person 1", "person 2"],
-                  ratings: [0.0],
+
+                BlocBuilder<ParticipantBloc, ParticipantState>(
+                  builder: (context, state) {
+                    if (state is ParticipantLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is ParticipantLoaded) {
+                      if (state.participants.isEmpty) {
+                        return Text("SOMETHING WENT WRONG");
+                      }
+
+                      _participants = state.participants;
+                      // selectedParticipant = _participants
+                      //     .where((p) => p.isAdmin)
+                      //     .first
+                      //     .particpantName;
+                      return RatingContainer(
+                        selectedParticipants: addParticipantRating,
+                        participants: _participants,
+                        ratings: [0.0],
+                      );
+                    } else if (state is ParticipantError) {
+                      return Text("Error: ${state.message}");
+                    } else {
+                      return const Text("Something went wrong!");
+                    }
+                  },
                 ),
+
                 // RatingInput(
                 //   initalRating: 0,
                 //   onRatingChanged: (newRating) {
