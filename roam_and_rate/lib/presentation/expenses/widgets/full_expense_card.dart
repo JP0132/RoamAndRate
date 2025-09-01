@@ -74,6 +74,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
+                      backgroundColor: CustomColours.darkSurface,
                       title: const Text("Delete Expense?"),
                       content: const Text(
                         "Are you sure you want to delete this expense, this action is irversiable",
@@ -94,14 +95,14 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Expense deleted successfully!'),
-                                backgroundColor: Colors.green,
+                                backgroundColor: CustomColours.darkSuccess,
                               ),
                             );
                             Navigator.pop(context);
                           },
                           child: const Text(
                             "DELETE",
-                            style: TextStyle(color: Colors.red),
+                            style: TextStyle(color: CustomColours.darkError),
                           ),
                         ),
                       ],
