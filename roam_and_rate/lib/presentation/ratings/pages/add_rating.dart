@@ -226,8 +226,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                           selectedItemColour: CustomColours.darkPrimary,
                           selectedItemTextColour: CustomColours.darkBackground,
                           unselectedItemTextColour: Colors.grey[300],
-                          selectedTextOverflow: TextOverflow.ellipsis,
-                          selectedTextMaxLines: 1,
+
                           onChanged: (category) {
                             setState(() {
                               selectedCategory = category;
@@ -262,13 +261,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                           padding: EdgeInsets.all(20),
                           borderRadius: 20,
                           menuMaxHeight: 200,
-                          selectedTextOverflow: TextOverflow.ellipsis,
-                          selectedTextMaxLines: 1,
-                          selectedTextColour: Colors.deepPurple,
-                          selectedTextStyle: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+
                           onChanged: (stat) {
                             setState(() {
                               selectedStatus = stat;

@@ -323,8 +323,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                           menuMaxHeight: 200,
                           selectedItemTextColour: CustomColours.darkPrimary,
                           unselectedItemTextColour: Colors.grey[300],
-                          selectedTextOverflow: TextOverflow.ellipsis,
-                          selectedTextMaxLines: 1,
+
                           onChanged: (category) {
                             setState(() {
                               selectedCategory = category;
@@ -367,8 +366,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                           menuMaxHeight: 200,
                           selectedItemTextColour: CustomColours.darkPrimary,
                           unselectedItemTextColour: Colors.grey[300],
-                          selectedTextOverflow: TextOverflow.ellipsis,
-                          selectedTextMaxLines: 1,
+
                           onChanged: (type) {
                             setState(() {
                               selectedType = type;

@@ -17,19 +17,13 @@ class CustomisableDropdown<T> extends StatefulWidget {
   final Widget? suffixIcon;
   final double? menuMaxHeight;
 
-  // New parameters for selected text customization
-  final TextStyle? selectedTextStyle;
-  final Color? selectedTextColour;
-  final String Function(T)? selectedTextBuilder; // To convert item to string
-  final TextOverflow selectedTextOverflow;
-  final int? selectedTextMaxLines;
-  final Color? selectedItemColour; // Background color of selected item in list
-  final Color? selectedItemTextColour; // Text color of selected item in list
-  final TextStyle? selectedItemTextStyle; // Text style of selected item in list
-  final Color? unselectedItemTextColour; // Text color of unselected items
-  final TextStyle? unselectedItemTextStyle; // Text style of unselected items
-  final Widget Function(T, bool isSelected)?
-  dropdownItemBuilder; // Custom builder with selection state
+  // Custom styling options
+  final Color? selectedItemColour;
+  final Color? selectedItemTextColour;
+  final TextStyle? selectedItemTextStyle;
+  final Color? unselectedItemTextColour;
+  final TextStyle? unselectedItemTextStyle;
+  final Widget Function(T, bool isSelected)? dropdownItemBuilder;
 
   const CustomisableDropdown({
     super.key,
@@ -45,13 +39,8 @@ class CustomisableDropdown<T> extends StatefulWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.menuMaxHeight = 300,
-    this.selectedTextStyle,
-    this.selectedTextBuilder,
-    this.selectedTextOverflow = TextOverflow.ellipsis,
-    this.selectedTextMaxLines = 1,
     this.backgroundColour,
     this.borderColour,
-    this.selectedTextColour,
     this.selectedItemColour,
     this.selectedItemTextColour,
     this.selectedItemTextStyle,
@@ -62,22 +51,14 @@ class CustomisableDropdown<T> extends StatefulWidget {
 
   @override
   State<CustomisableDropdown<T>> createState() =>
-      _CustomisableDropdowntate<T>();
+      _CustomisableDropdownState<T>();
 }
 
-class _CustomisableDropdowntate<T> extends State<CustomisableDropdown<T>> {
+class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
   final GlobalKey _buttonKey = GlobalKey();
+  final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   bool _isOpen = false;
-
-  @override
-  void dispose() {
-    if (_isOpen) {
-      _overlayEntry?.remove();
-      _overlayEntry = null;
-    }
-    super.dispose();
-  }
 
   void _toggleDropdown() {
     if (_isOpen) {
@@ -88,40 +69,106 @@ class _CustomisableDropdowntate<T> extends State<CustomisableDropdown<T>> {
   }
 
   void _openDropdown() {
-    if (!mounted) return;
     final overlay = Overlay.of(context);
+    final renderBox =
+        _buttonKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
 
-    _overlayEntry = _createOverlayEntry();
-    overlay.insert(_overlayEntry!);
-    setState(() {
-      _isOpen = true;
-    });
+    final buttonWidth = renderBox.size.width;
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          // Modal barrier to capture outside clicks
+          ModalBarrier(dismissible: true, onDismiss: _closeDropdown),
+          CompositedTransformFollower(
+            link: _layerLink,
+            showWhenUnlinked: false,
+            offset: Offset(0, renderBox.size.height + 4),
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              child: Container(
+                width: buttonWidth,
+                constraints: BoxConstraints(
+                  maxHeight: widget.menuMaxHeight ?? 300,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      widget.backgroundColour ?? Theme.of(context).canvasColor,
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  border: Border.all(color: widget.borderColour ?? Colors.grey),
+                ),
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  itemCount: widget.items.length,
+                  itemBuilder: (context, index) {
+                    final item = widget.items[index];
+                    final isSelected = item == widget.value;
+
+                    return InkWell(
+                      onTap: () {
+                        widget.onChanged(item);
+                        _closeDropdown();
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? (widget.selectedItemColour ??
+                                    Theme.of(
+                                      context,
+                                    ).primaryColor.withOpacity(0.2))
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: _buildDropdownItem(item, isSelected),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    overlay?.insert(_overlayEntry!);
+    setState(() => _isOpen = true);
   }
 
   void _closeDropdown() {
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
       _overlayEntry = null;
-    }
-    if (mounted) {
-      setState(() {
-        _isOpen = false;
-      });
+
+      // Schedule setState safely
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() => _isOpen = false);
+          }
+        });
+      }
     }
   }
 
-  // Build dropdown item with proper styling based on selection state
   Widget _buildDropdownItem(T item, bool isSelected) {
-    // If custom dropdown item builder is provided, use it
     if (widget.dropdownItemBuilder != null) {
       return widget.dropdownItemBuilder!(item, isSelected);
     }
 
-    // Default styling based on selection state
     TextStyle effectiveTextStyle;
     if (isSelected) {
       effectiveTextStyle = TextStyle(
-        color: widget.selectedItemTextColour ?? Colors.white,
+        color: widget.selectedItemTextColour ?? Theme.of(context).primaryColor,
+        fontWeight: FontWeight.bold, // Make selected text bold
       ).merge(widget.selectedItemTextStyle);
     } else {
       effectiveTextStyle = TextStyle(
@@ -131,7 +178,6 @@ class _CustomisableDropdowntate<T> extends State<CustomisableDropdown<T>> {
       ).merge(widget.unselectedItemTextStyle);
     }
 
-    // If the item is a string, create a Text widget with proper styling
     if (item is String) {
       return Text(
         item,
@@ -141,115 +187,58 @@ class _CustomisableDropdowntate<T> extends State<CustomisableDropdown<T>> {
       );
     }
 
-    // For other types, wrap the original itemBuilder result with styling
     return DefaultTextStyle(
       style: effectiveTextStyle,
       child: widget.itemBuilder(item),
     );
   }
 
-  OverlayEntry _createOverlayEntry() {
-    final context = _buttonKey.currentContext;
-    if (context == null) {
-      throw Exception("Button context is null. Cannot create overlay.");
-    }
-
-    final renderBox = context.findRenderObject();
-    if (renderBox == null || renderBox is! RenderBox || !renderBox.attached) {
-      throw Exception("RenderBox is invalid. Cannot create overlay.");
-    }
-
-    Size size = renderBox.size;
-    Offset offset = renderBox.localToGlobal(Offset.zero);
-
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        left: offset.dx,
-        top: offset.dy + size.height + 4,
-        width: size.width,
-        child: Material(
-          elevation: 4,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          child: Container(
-            constraints: BoxConstraints(maxHeight: widget.menuMaxHeight!),
-            decoration: BoxDecoration(
-              color: widget.backgroundColour ?? Theme.of(context).canvasColor,
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-              border: Border.all(color: widget.borderColour ?? Colors.grey),
-            ),
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemCount: widget.items.length,
-              itemBuilder: (context, index) {
-                final item = widget.items[index];
-                final isSelected = item == widget.value;
-
-                return InkWell(
-                  onTap: () {
-                    widget.onChanged(item);
-                    _closeDropdown();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: isSelected
-                        ? BoxDecoration(
-                            color:
-                                widget.selectedItemColour ??
-                                Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(4),
-                          )
-                        : null,
-                    child: _buildDropdownItem(item, isSelected),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    _closeDropdown();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      key: _buttonKey,
-      onTap: _toggleDropdown,
-      child: Container(
-        padding: widget.padding,
-        decoration: BoxDecoration(
-          color: widget.backgroundColour,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          border: Border.all(color: widget.borderColour ?? Colors.grey),
-        ),
-        child: Row(
-          children: [
-            if (widget.prefixIcon != null) ...[
-              widget.prefixIcon!,
-              SizedBox(width: 8),
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: GestureDetector(
+        key: _buttonKey,
+        onTap: _toggleDropdown,
+        child: Container(
+          padding: widget.padding,
+          decoration: BoxDecoration(
+            color: widget.backgroundColour,
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            border: Border.all(color: widget.borderColour ?? Colors.grey),
+          ),
+          child: Row(
+            children: [
+              if (widget.prefixIcon != null) ...[
+                widget.prefixIcon!,
+                const SizedBox(width: 8),
+              ],
+              Expanded(
+                child: widget.value != null
+                    ? (widget.selectedItemBuilder != null
+                          ? widget.selectedItemBuilder!(widget.value!)
+                          : widget.itemBuilder(widget.value!))
+                    : Text(
+                        widget.hint,
+                        style:
+                            widget.hintStyle ?? TextStyle(color: Colors.grey),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+              ),
+              widget.suffixIcon ??
+                  Icon(
+                    _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    size: 25,
+                  ),
             ],
-            Expanded(
-              child: widget.value != null
-                  ? (widget.selectedItemBuilder != null
-                        ? widget.selectedItemBuilder!(widget.value!)
-                        : widget.itemBuilder(widget.value!))
-                  : Text(
-                      widget.hint,
-                      style:
-                          widget.hintStyle ??
-                          TextStyle(color: CustomColours.darkSecondaryText),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-            ),
-            widget.suffixIcon ??
-                Icon(
-                  _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                  color: CustomColours.darkPrimary,
-                  size: 25,
-                ),
-          ],
+          ),
         ),
       ),
     );
