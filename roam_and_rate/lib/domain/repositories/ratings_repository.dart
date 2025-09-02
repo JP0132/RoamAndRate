@@ -13,6 +13,9 @@ abstract class RatingsRepository {
   Future<void> addRatingsMade(RatingsMadeModel ratingsMade);
   Future<void> deleteRatingsMade(String id);
   Future<void> editRatingsMade(RatingsMadeModel ratingsMade);
+  Future<List<RatingsMadeModel>> getRatingsMadeByRatingDetailsId(
+    String ratingDetailsId,
+  );
 
   Future<void> addRatingWithParticipants(
     RatingDetailsModel ratingDetails,

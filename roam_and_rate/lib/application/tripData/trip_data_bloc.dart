@@ -15,6 +15,7 @@ class TripDataBloc extends Bloc<TripDataEvent, TripDataState> {
 
   StreamSubscription? _expenseSub;
   StreamSubscription? _ratingSub;
+  StreamSubscription? _ratingsMadeSub;
 
   TripDataBloc(this.expenseDao, this.ratingDao, this.ratingsMadeDao)
     : super(const TripDataState()) {
@@ -25,11 +26,15 @@ class TripDataBloc extends Bloc<TripDataEvent, TripDataState> {
     on<TripRatingsUpdated>(
       (event, emit) => emit(state.copyWith(ratings: event.ratings)),
     );
+    on<TripRatingsMadeUpdated>(
+      (event, emit) => emit(state.copyWith(ratingsMade: event.ratingsMade)),
+    );
   }
 
   void _onStartWatching(StartWatchingTrip event, Emitter<TripDataState> emit) {
     _expenseSub?.cancel();
     _ratingSub?.cancel();
+    _ratingsMadeSub?.cancel();
 
     _expenseSub = expenseDao
         .watchByTrip(event.tripId)
@@ -37,12 +42,16 @@ class TripDataBloc extends Bloc<TripDataEvent, TripDataState> {
     _ratingSub = ratingDao
         .watchByTrip(event.tripId)
         .listen((data) => add(TripRatingsUpdated(data)));
+    _ratingsMadeSub = ratingsMadeDao.watchAllRatingsMade().listen(
+      (data) => add(TripRatingsMadeUpdated(data)),
+    );
   }
 
   @override
   Future<void> close() {
     _expenseSub?.cancel();
     _ratingSub?.cancel();
+    _ratingsMadeSub?.cancel();
     return super.close();
   }
 }

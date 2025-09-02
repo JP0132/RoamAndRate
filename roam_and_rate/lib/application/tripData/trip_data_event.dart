@@ -16,3 +16,8 @@ class TripRatingsUpdated extends TripDataEvent {
   final List<RatingDetail> ratings;
   TripRatingsUpdated(this.ratings);
 }
+
+class TripRatingsMadeUpdated extends TripDataEvent {
+  final List<RatingsMadeData> ratingsMade;
+  TripRatingsMadeUpdated(this.ratingsMade);
+}

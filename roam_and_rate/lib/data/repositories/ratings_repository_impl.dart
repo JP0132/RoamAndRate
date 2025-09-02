@@ -19,7 +19,13 @@ class RatingsRepositoryImpl implements RatingsRepository {
     // final id = ratingDetails.id ?? const Uuid().v4();
     // final withId = ratingDetails.copyWith(id: id);
     print("🚀 Repository.addRatingWithParticipants called");
-    await ratingDetailsDao.insertRatingDetails(ratingDetails.toCompanion());
+    if (ratingDetails.id == null) {
+      String id = const Uuid().v4();
+      final upadtedRD = ratingDetails.copyWith(id: id);
+      await ratingDetailsDao.insertRatingDetails(upadtedRD.toCompanion());
+    } else {
+      await ratingDetailsDao.insertRatingDetails(ratingDetails.toCompanion());
+    }
   }
 
   @override
@@ -117,5 +123,16 @@ class RatingsRepositoryImpl implements RatingsRepository {
 
       await ratingsMadeDao.insertRatingsMade(ratingsMade.toCompanion());
     }
+  }
+
+  @override
+  Future<List<RatingsMadeModel>> getRatingsMadeByRatingDetailsId(
+    String ratingDetailsId,
+  ) async {
+    final ratingsMade = await ratingsMadeDao.getAllRatingsMade();
+    return ratingsMade
+        .where((rm) => rm.id == ratingDetailsId)
+        .map((r) => fromDataToModel(r))
+        .toList();
   }
 }

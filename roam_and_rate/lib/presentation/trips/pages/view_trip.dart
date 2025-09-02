@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
+import 'package:roam_and_rate/application/rating/ratings_state.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_event.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
@@ -18,6 +20,7 @@ import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
+import 'package:roam_and_rate/presentation/ratings/widgets/full_rating_card.dart';
 import 'package:roam_and_rate/presentation/trips/widgets/tab_item.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
@@ -37,6 +40,8 @@ class _ViewTripState extends State<ViewTrip> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
+  double _totalSpent = 0;
+
   List<RatingDetailsModel> _ratings = [];
   List<ExpenseModel> _expenses = [];
 
@@ -49,39 +54,161 @@ class _ViewTripState extends State<ViewTrip> {
     });
   }
 
+  // void _filterTripData() {
+  //   List<String> searchTerms = _searchQuery
+  //       .split(',')
+  //       .map((term) => term.trim().toLowerCase())
+  //       .toList();
+
+  //   if (_searchQuery.isEmpty) {
+  //     _filteredExpenses = _expenses;
+  //     _filteredRatings = _ratings;
+  //   } else {
+  //     _filteredExpenses = _expenses.where((expense) {
+  //       final expenseNameLower = expense.name.toLowerCase();
+  //       // final searchQueryLower = _searchQuery.toLowerCase();
+
+  //       final tagsLower = expense.tags.map((tag) => tag.toLowerCase()).toList();
+  //       return searchTerms.any(
+  //         (term) =>
+  //             expenseNameLower.contains(term) ||
+  //             tagsLower.any((tag) => tag.contains(term)),
+  //       );
+  //     }).toList();
+  //     _filteredRatings = _ratings.where((rating) {
+  //       final ratingsNameLower = rating.placeName.toLowerCase();
+  //       // final searchQueryLower = _searchQuery.toLowerCase();
+
+  //       final tagsLower = rating.tags.map((tag) => tag.toLowerCase()).toList();
+  //       return searchTerms.any(
+  //         (term) =>
+  //             ratingsNameLower.contains(term) ||
+  //             tagsLower.any((tag) => tag.contains(term)),
+  //       );
+  //     }).toList();
+  //   }
+  //   if (_filteredExpenses.isNotEmpty) {
+  //     _calculateTotalSpent();
+  //   } else {
+  //     // Keep the initial total amount if the filter yields no results
+  //     _totalSpent = widget.tripDetails.budget;
+  //   }
+  // }
+
   void _filterTripData() {
+    if (_searchQuery.isEmpty) {
+      _filteredExpenses = _expenses;
+      _filteredRatings = _ratings;
+      _calculateTotalSpent();
+      return;
+    }
+
+    // Check for specific search patterns
+    if (_searchQuery.toLowerCase().startsWith('tags:')) {
+      _filterByTags();
+    } else if (_searchQuery.toLowerCase().startsWith('category:')) {
+      _filterByCategory();
+    } else {
+      _generalSearch();
+    }
+
+    if (_filteredExpenses.isNotEmpty) {
+      _calculateTotalSpent();
+    }
+  }
+
+  void _filterByTags() {
+    // Extract tags from search query (remove "tags:" prefix and trim)
+    final tags = _searchQuery
+        .substring(5)
+        .split(',')
+        .map((tag) => tag.trim().toLowerCase())
+        .toList();
+
+    _filteredExpenses = _expenses.where((expense) {
+      final expenseTags = expense.tags.map((tag) => tag.toLowerCase()).toList();
+      return tags.any(
+        (searchTag) => expenseTags.any((tag) => tag.contains(searchTag)),
+      );
+    }).toList();
+
+    _filteredRatings = _ratings.where((rating) {
+      final ratingTags = rating.tags.map((tag) => tag.toLowerCase()).toList();
+      return tags.any(
+        (searchTag) => ratingTags.any((tag) => tag.contains(searchTag)),
+      );
+    }).toList();
+  }
+
+  void _filterByCategory() {
+    // Extract categories from search query (remove "category:" prefix and trim)
+    final categories = _searchQuery
+        .substring(9)
+        .split(',')
+        .map((category) => category.trim().toLowerCase())
+        .toList();
+
+    // For expenses, you might not have a category field. Adjust based on your data model
+    _filteredExpenses = _expenses.where((expense) {
+      // If expenses have categories, use this:
+      return categories.any(
+        (category) => expense.category.toLowerCase().contains(category),
+      );
+    }).toList();
+
+    _filteredRatings = _ratings.where((rating) {
+      return categories.any(
+        (category) => rating.category.toLowerCase().contains(category),
+      );
+    }).toList();
+  }
+
+  void _generalSearch() {
     List<String> searchTerms = _searchQuery
         .split(',')
         .map((term) => term.trim().toLowerCase())
         .toList();
 
-    if (_searchQuery.isEmpty) {
-      _filteredExpenses = _expenses;
-      _filteredRatings = _ratings;
-    } else {
-      _filteredExpenses = _expenses.where((expense) {
-        final expenseNameLower = expense.name.toLowerCase();
-        // final searchQueryLower = _searchQuery.toLowerCase();
+    _filteredExpenses = _expenses.where((expense) {
+      final expenseNameLower = expense.name.toLowerCase();
+      final tagsLower = expense.tags.map((tag) => tag.toLowerCase()).toList();
 
-        final tagsLower = expense.tags.map((tag) => tag.toLowerCase()).toList();
-        return searchTerms.any(
-          (term) =>
-              expenseNameLower.contains(term) ||
-              tagsLower.any((tag) => tag.contains(term)),
-        );
-      }).toList();
-      _filteredRatings = _ratings.where((rating) {
-        final ratingsNameLower = rating.placeName.toLowerCase();
-        // final searchQueryLower = _searchQuery.toLowerCase();
+      return searchTerms.any(
+        (term) =>
+            expenseNameLower.contains(term) ||
+            tagsLower.any((tag) => tag.contains(term)),
+      );
+    }).toList();
 
-        final tagsLower = rating.tags.map((tag) => tag.toLowerCase()).toList();
-        return searchTerms.any(
-          (term) =>
-              ratingsNameLower.contains(term) ||
-              tagsLower.any((tag) => tag.contains(term)),
-        );
-      }).toList();
-    }
+    _filteredRatings = _ratings.where((rating) {
+      final ratingsNameLower = rating.placeName.toLowerCase();
+      final tagsLower = rating.tags.map((tag) => tag.toLowerCase()).toList();
+
+      return searchTerms.any(
+        (term) =>
+            ratingsNameLower.contains(term) ||
+            tagsLower.any((tag) => tag.contains(term)),
+      );
+    }).toList();
+  }
+
+  void _updateTotalSpent(double newTotal) {
+    // Schedule the setState to happen after the build is complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _totalSpent = newTotal;
+        });
+      }
+    });
+  }
+
+  void _calculateTotalSpent() {
+    _totalSpent = _filteredExpenses.fold(
+      0.0,
+      (sum, expense) => sum + expense.paid,
+    );
+    _updateTotalSpent(_totalSpent);
   }
 
   @override
@@ -114,6 +241,8 @@ class _ViewTripState extends State<ViewTrip> {
           children: [
             TripCards(tripModel: widget.tripDetails),
             SizedBox(height: 20),
+
+            Text("Total spent: $_totalSpent"),
 
             Container(
               height: 40.0,
@@ -214,14 +343,26 @@ class _ViewTripState extends State<ViewTrip> {
                       return const Center(child: Text("No ratings yet"));
                     }
 
-                    return ListView.builder(
+                    return ListView.separated(
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 12),
                       itemCount: _filteredRatings.length,
                       itemBuilder: (context, index) {
                         final rating = _filteredRatings[index];
-                        return RatingCards(
-                          name: rating.placeName,
-                          rating: int.parse((0.0 * 2).truncate().toString()),
-                          dateRated: rating.dateVisited ?? DateTime.now(),
+                        //print("😭😭😭 ${state.ratingsMade.first.rating}");
+                        final ratingsMade = state.ratingsMade
+                            .where((rm) => rm.ratingDetailsId == rating.id)
+                            .map((e) => e)
+                            .toList();
+
+                        // return RatingCards(
+                        //   name: rating.placeName,
+                        //   rating: int.parse((0.0 * 2).truncate().toString()),
+                        //   dateRated: rating.dateVisited ?? DateTime.now(),
+                        // );
+                        return FullRatingCard(
+                          ratingDetails: rating,
+                          participantRatings: ratingsMade,
                         );
                       },
                     );
