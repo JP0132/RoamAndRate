@@ -18,7 +18,7 @@ class Categories {
       name: "Tourist Attraction",
       icon: FontAwesomeIcons.mapLocationDot,
     ),
-    CategoryModel(name: "Accomadation", icon: FontAwesomeIcons.hotel),
+    CategoryModel(name: "Accommodation", icon: FontAwesomeIcons.hotel),
     CategoryModel(name: "Shopping", icon: FontAwesomeIcons.bagShopping),
     CategoryModel(name: "Nature & Outdoors", icon: FontAwesomeIcons.tree),
     CategoryModel(name: "Wellness", icon: FontAwesomeIcons.spa),

@@ -8,8 +8,10 @@ import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
+import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/database.dart';
+import 'package:roam_and_rate/domain/models/category_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/tag_widget.dart';
 
@@ -36,6 +38,15 @@ class _FullRatingCardState extends State<FullRatingCard> {
       (sum, r) => sum + (r.rating ?? 0.0),
     );
     return total / widget.participantRatings.length;
+  }
+
+  IconData? getCatIcon(String category) {
+    for (CategoryModel c in Categories.expenseCategories) {
+      if (c.name == category) {
+        return c.icon;
+      }
+    }
+    return FontAwesomeIcons.question;
   }
 
   @override
@@ -146,9 +157,9 @@ class _FullRatingCardState extends State<FullRatingCard> {
                     shape: BoxShape.circle,
                     color: CustomColours.darkPrimary,
                   ),
-                  child: const Icon(
-                    FontAwesomeIcons.locationDot,
-                    color: Colors.white,
+                  child: Icon(
+                    getCatIcon(widget.ratingDetails.category),
+                    color: CustomColours.darkBackground,
                   ),
                 ),
                 const SizedBox(width: 16),
