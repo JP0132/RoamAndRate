@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 const Map<int, String> ratingDescriptions = {
   10: 'Stellar',
   9: 'Great',
-  8: 'Very good',
+  8: 'V. good',
   7: 'Good',
   6: 'Fine',
   5: 'Average',

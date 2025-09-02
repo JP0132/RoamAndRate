@@ -8,11 +8,14 @@ import 'package:roam_and_rate/application/tripData/trip_data_event.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
-import 'package:roam_and_rate/data/local/daos/rating_dao.dart';
+import 'package:roam_and_rate/data/local/daos/rating_details_dao.dart';
+import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/mappers/expense_mappers.dart';
+import 'package:roam_and_rate/data/local/mappers/rating_details_mappers.dart';
+import 'package:roam_and_rate/data/local/tables/rating_details.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
-import 'package:roam_and_rate/domain/models/rate_model.dart';
+import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
 import 'package:roam_and_rate/presentation/trips/widgets/tab_item.dart';
@@ -31,25 +34,119 @@ class ViewTrip extends StatefulWidget {
 
 class _ViewTripState extends State<ViewTrip> {
   int _selectedIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
-  List<RateModel> _ratings = [];
+  List<RatingDetailsModel> _ratings = [];
   List<ExpenseModel> _expenses = [];
+
+  List<RatingDetailsModel> _filteredRatings = [];
+  List<ExpenseModel> _filteredExpenses = [];
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+      _filterTripData();
+    });
+  }
+
+  void _filterTripData() {
+    List<String> searchTerms = _searchQuery
+        .split(',')
+        .map((term) => term.trim().toLowerCase())
+        .toList();
+
+    if (_searchQuery.isEmpty) {
+      _filteredExpenses = _expenses;
+      _filteredRatings = _ratings;
+    } else {
+      _filteredExpenses = _expenses.where((expense) {
+        final expenseNameLower = expense.name.toLowerCase();
+        // final searchQueryLower = _searchQuery.toLowerCase();
+
+        final tagsLower = expense.tags.map((tag) => tag.toLowerCase()).toList();
+        return searchTerms.any(
+          (term) =>
+              expenseNameLower.contains(term) ||
+              tagsLower.any((tag) => tag.contains(term)),
+        );
+      }).toList();
+      _filteredRatings = _ratings.where((rating) {
+        final ratingsNameLower = rating.placeName.toLowerCase();
+        // final searchQueryLower = _searchQuery.toLowerCase();
+
+        final tagsLower = rating.tags.map((tag) => tag.toLowerCase()).toList();
+        return searchTerms.any(
+          (term) =>
+              ratingsNameLower.contains(term) ||
+              tagsLower.any((tag) => tag.contains(term)),
+        );
+      }).toList();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) {
         final db = AppDatabase.instance;
-        return TripDataBloc(ExpenseDao(db), RatingDao(db))
-          ..add(StartWatchingTrip(widget.tripDetails.tripId!));
+        return TripDataBloc(
+          ExpenseDao(db),
+          RatingDetailsDao(db),
+          RatingsMadeDao(db),
+        )..add(StartWatchingTrip(widget.tripDetails.tripId!));
       },
       child: Scaffold(
         appBar: AppBar(centerTitle: true, title: Text("Trip Details")),
         body: Column(
           children: [
             TripCards(tripModel: widget.tripDetails),
+            SizedBox(height: 20),
 
-            const SizedBox(height: 12),
+            Container(
+              height: 40.0,
+              decoration: BoxDecoration(
+                color: CustomColours.darkSurface,
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search, color: Colors.white),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: const InputDecoration(
+                            hintText: 'Search, use commas for multi search',
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(fontSize: 14),
+                          ),
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
             // Toggle buttons (Ratings / Expenses)
             SizedBox(
               height: 40,
@@ -109,26 +206,28 @@ class _ViewTripState extends State<ViewTrip> {
             Expanded(
               child: BlocBuilder<TripDataBloc, TripDataState>(
                 builder: (context, state) {
+                  _ratings = state.ratings.map((e) => e.toModel()).toList();
+                  _expenses = state.expenses.map((e) => e.toModel()).toList();
+                  _filterTripData();
                   if (_selectedIndex == 0) {
-                    if (state.ratings.isEmpty) {
+                    if (_filteredRatings.isEmpty) {
                       return const Center(child: Text("No ratings yet"));
                     }
+
                     return ListView.builder(
-                      itemCount: state.ratings.length,
+                      itemCount: _filteredRatings.length,
                       itemBuilder: (context, index) {
-                        final rating = state.ratings[index];
+                        final rating = _filteredRatings[index];
                         return RatingCards(
                           name: rating.placeName,
-                          rating: int.parse(
-                            (rating.rating! * 2).truncate() as String,
-                          ),
-                          dateRated: rating.dateVisited!,
+                          rating: int.parse((0.0 * 2).truncate().toString()),
+                          dateRated: rating.dateVisited ?? DateTime.now(),
                         );
                       },
                     );
                   } else {
-                    if (state.expenses.isEmpty) {
-                      return const Center(child: Text("No expenses yet"));
+                    if (_filteredExpenses.isEmpty) {
+                      return const Center(child: Text("No expenses found"));
                     }
                   }
                   // Set<DateTime> dates = {};
@@ -144,7 +243,7 @@ class _ViewTripState extends State<ViewTrip> {
 
                   // First get the unique sorted dates
                   final dates =
-                      state.expenses
+                      _filteredExpenses
                           .map(
                             (e) => DateTime(
                               e.datePaid.year,
@@ -157,7 +256,7 @@ class _ViewTripState extends State<ViewTrip> {
                         ..sort((a, b) => a.compareTo(b));
 
                   // Sort all expenses by date
-                  final sortedExpenses = [...state.expenses]
+                  final sortedExpenses = [..._filteredExpenses]
                     ..sort((a, b) => a.datePaid.compareTo(b.datePaid));
 
                   return ListView.builder(
@@ -197,9 +296,7 @@ class _ViewTripState extends State<ViewTrip> {
                           ...expensesForDate.map(
                             (expense) => Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
-                              child: FullExpenseCard(
-                                expenseDetails: expense.toModel(),
-                              ),
+                              child: FullExpenseCard(expenseDetails: expense),
                             ),
                           ),
                         ],
@@ -219,8 +316,13 @@ class _ViewTripState extends State<ViewTrip> {
               children: [
                 // Tab to view the expenses and ratings
                 ElevatedButton(
-                  onPressed: () =>
-                      Navigator.pushNamed(context, AppRouter.addRating),
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    AppRouter.addRating,
+                    arguments: AddRatingArguments(
+                      tripId: widget.tripDetails.tripId!,
+                    ),
+                  ),
                   child: Text("Add Rating"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: CustomColours.darkSurface,

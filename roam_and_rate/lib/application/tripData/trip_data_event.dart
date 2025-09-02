@@ -13,6 +13,6 @@ class TripExpensesUpdated extends TripDataEvent {
 }
 
 class TripRatingsUpdated extends TripDataEvent {
-  final List<Rating> ratings;
+  final List<RatingDetail> ratings;
   TripRatingsUpdated(this.ratings);
 }

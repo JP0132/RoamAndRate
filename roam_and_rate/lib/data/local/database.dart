@@ -4,7 +4,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:roam_and_rate/core/utils/helper/string_list_converter.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
 import 'package:roam_and_rate/data/local/daos/participant_dao.dart';
-import 'package:roam_and_rate/data/local/daos/rating_dao.dart';
+import 'package:roam_and_rate/data/local/daos/rating_details_dao.dart';
+import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
 import 'package:roam_and_rate/data/local/daos/trip_dao.dart';
 import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:uuid/uuid.dart';
@@ -12,7 +13,6 @@ import 'package:uuid/uuid.dart';
 // Tables
 import 'tables/users.dart';
 import 'tables/trips.dart';
-import 'tables/ratings.dart';
 import 'tables/expenses.dart';
 import 'tables/participants.dart';
 import 'tables/rating_details.dart';
@@ -24,14 +24,20 @@ part 'database.g.dart';
   tables: [
     Users,
     Trips,
-    Ratings,
     Expenses,
     Participants,
     RatingDetails,
     RatingsMade,
     Participants,
   ],
-  daos: [UserDao, TripDao, RatingDao, ExpenseDao, ParticipantDao],
+  daos: [
+    UserDao,
+    TripDao,
+    ExpenseDao,
+    ParticipantDao,
+    RatingsMadeDao,
+    RatingDetailsDao,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal([QueryExecutor? executor])

@@ -5,7 +5,7 @@ import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
-import 'package:roam_and_rate/data/local/SessionManager.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/repositories/user_repository.dart';
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';

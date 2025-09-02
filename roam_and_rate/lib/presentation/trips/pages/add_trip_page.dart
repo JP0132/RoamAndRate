@@ -9,7 +9,7 @@ import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
-import 'package:roam_and_rate/data/local/SessionManager.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';

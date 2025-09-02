@@ -1,5 +1,5 @@
 class RatingDetailsModel {
-  final String id;
+  final String? id;
   final String tripId;
   final String placeName;
   final String location;
@@ -14,7 +14,7 @@ class RatingDetailsModel {
   final String image;
 
   const RatingDetailsModel({
-    required this.id,
+    this.id,
     required this.tripId,
     required this.placeName,
     required this.location,

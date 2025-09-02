@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
 class RatingInput extends StatefulWidget {
-  final double initalRating;
-  final ValueChanged<double>? onRatingChanged;
+  final double initialRating;
+  final ValueChanged<double> onRatingChanged;
 
   const RatingInput({
     super.key,
-    required this.initalRating,
-    this.onRatingChanged,
+    required this.onRatingChanged,
+    required this.initialRating,
   });
 
   @override
@@ -25,7 +26,7 @@ class _RatingInputState extends State<RatingInput> {
   final List<String> defaultRatingDescriptions = [
     'Stellar',
     'Great',
-    'Very good',
+    'V. good',
     'Good',
     'Fine',
     'Average',
@@ -38,7 +39,7 @@ class _RatingInputState extends State<RatingInput> {
   @override
   void initState() {
     super.initState();
-    _currentRating = widget.initalRating;
+    _currentRating = widget.initialRating;
   }
 
   void _handleStarTap(int starIndex) {
@@ -56,7 +57,7 @@ class _RatingInputState extends State<RatingInput> {
       }
 
       _currentRating = newRating;
-      widget.onRatingChanged?.call(_currentRating);
+      widget.onRatingChanged(_currentRating);
     });
   }
 
@@ -87,7 +88,7 @@ class _RatingInputState extends State<RatingInput> {
               );
             }),
           ),
-          SizedBox(width: 20),
+          SizedBox(width: 10),
           Column(
             children: [
               Text(

@@ -1,14 +1,16 @@
 class RatingsMadeModel {
-  final String id;
+  final String? id;
   final String particpantId;
   final String ratingDetailsId;
   final double rating;
   final double expectedRating;
+  final DateTime createdAt;
 
   const RatingsMadeModel({
-    required this.id,
+    this.id,
     required this.particpantId,
     required this.ratingDetailsId,
+    required this.createdAt,
     this.rating = 0.0,
     this.expectedRating = 0.0,
   });
@@ -19,13 +21,15 @@ class RatingsMadeModel {
     String? ratingDetailsId,
     double? rating,
     double? expectedRating,
+    DateTime? createdAt,
   }) {
     return RatingsMadeModel(
       id: id ?? this.id,
-      particpantId: particpantId ?? this.id,
+      particpantId: particpantId ?? this.particpantId,
       ratingDetailsId: ratingDetailsId ?? this.ratingDetailsId,
       rating: rating ?? this.rating,
       expectedRating: expectedRating ?? this.expectedRating,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

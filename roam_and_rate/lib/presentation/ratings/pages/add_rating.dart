@@ -7,11 +7,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
-import 'package:roam_and_rate/application/rating/rating_bloc.dart';
-import 'package:roam_and_rate/application/rating/rating_state.dart';
+import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
+import 'package:roam_and_rate/application/rating/ratings_event.dart';
+import 'package:roam_and_rate/application/rating/ratings_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
+import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_container.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
@@ -21,7 +23,8 @@ import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 
 class AddRatingPage extends StatefulWidget {
-  const AddRatingPage({super.key});
+  final String tripId;
+  const AddRatingPage({super.key, required this.tripId});
 
   @override
   State<AddRatingPage> createState() => _AddRatingPageState();
@@ -144,10 +147,28 @@ class _AddRatingPageState extends State<AddRatingPage> {
   }
 
   List<ParticipantModel> _participants = [];
-  List<ParticipantModel> selectedParticipants = [];
+  Map<ParticipantModel, double> selectedParticipants = {};
+  void updateParticipantRatings(Map<ParticipantModel, double> ratings) {
+    print("😂😂😂😂adas ${selectedParticipants["Sejal"]}");
+    setState(() {
+      selectedParticipants = ratings;
+    });
+  }
 
-  void addParticipantRating(ParticipantModel participant) {
-    selectedParticipants.add(participant);
+  void handleRatingsUpdate(Map<ParticipantModel, double> ratings) {
+    setState(() {
+      selectedParticipants = ratings;
+    });
+
+    print("Received ratings update:");
+    if (ratings.isEmpty) {
+      print("  No ratings received");
+    } else {
+      ratings.forEach((participant, rating) {
+        print("  ${participant.particpantName}: $rating");
+      });
+    }
+    print("Total entries: ${ratings.length}");
   }
 
   @override
@@ -254,20 +275,23 @@ class _AddRatingPageState extends State<AddRatingPage> {
                         ),
                         CustomisableDropdown<String>(
                           items: statuses,
-                          hint: "What is the status?",
+                          hint: "Select which Status?",
                           value: selectedStatus,
                           backgroundColour: CustomColours.darkSurface,
                           borderColour: Colors.transparent,
                           padding: EdgeInsets.all(20),
                           borderRadius: 20,
                           menuMaxHeight: 200,
+                          selectedItemColour: CustomColours.darkPrimary,
+                          selectedItemTextColour: CustomColours.darkBackground,
+                          unselectedItemTextColour: Colors.grey[300],
 
-                          onChanged: (stat) {
+                          onChanged: (value) {
                             setState(() {
-                              selectedStatus = stat;
+                              selectedStatus = value;
                             });
                           },
-                          itemBuilder: (stat) => Text(stat),
+                          itemBuilder: (value) => Text(value),
                         ),
                       ],
                     ),
@@ -301,9 +325,11 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       //     .first
                       //     .particpantName;
                       return RatingContainer(
-                        selectedParticipants: addParticipantRating,
+                        selectedParticipants: updateParticipantRatings,
                         participants: _participants,
                         ratings: [0.0],
+                        onRatingsUpdate:
+                            handleRatingsUpdate, // Change this line
                       );
                     } else if (state is ParticipantError) {
                       return Text("Error: ${state.message}");
@@ -475,9 +501,9 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       ),
               ),
               SizedBox(height: 50),
-              BlocConsumer<RatingBloc, RatingState>(
+              BlocConsumer<RatingsBloc, RatingsState>(
                 listener: (context, state) {
-                  if (state is RatingAdded) {
+                  if (state is RatingDetailsAdded) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Rating created!"),
@@ -486,16 +512,15 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       ),
                     );
                     Navigator.pop(context);
-                  } else if (state is RatingError) {
+                  } else if (state is RatingWithParticipantsAdded) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Failed to create trip: ${state.message}",
-                        ),
-                        backgroundColor: CustomColours.darkError,
+                      const SnackBar(
+                        content: Text("Rating created!"),
+                        backgroundColor: CustomColours.darkSuccess,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
+                    Navigator.pop(context);
                   }
                 },
                 builder: (context, state) {
@@ -507,6 +532,42 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       setState(() {
                         validateDetails();
                       });
+                      RatingDetailsModel newRatingDetails = RatingDetailsModel(
+                        tripId: widget.tripId,
+                        placeName: _placeNameController.text.trim(),
+                        location: _locationController.text.trim(),
+                        category: selectedCategory!,
+                        status: selectedStatus!,
+                        tags: addedTags,
+                        notes: _notesController.text.trim(),
+                        createdAt: DateTime.now(),
+                      );
+                      if (!{
+                        "Dropped",
+                        "On-hold",
+                        "",
+                      }.contains(selectedStatus)) {
+                        Map<String, double> newRatingMade = {};
+                        selectedParticipants.forEach((participant, rating) {
+                          newRatingMade[participant.id!] = rating;
+                        });
+                        RatingDetailsModel updatedRatingDetails =
+                            newRatingDetails.copyWith(
+                              dateVisited: selectedDate,
+
+                              value: selectedValue,
+                            );
+                        context.read<RatingsBloc>().add(
+                          AddRatingWithParticipants(
+                            updatedRatingDetails,
+                            newRatingMade,
+                          ),
+                        );
+                      } else {
+                        context.read<RatingsBloc>().add(
+                          AddRatingDetails(newRatingDetails),
+                        );
+                      }
                       if (formValid.values.every((v) => v)) {}
                     },
                     style: ElevatedButton.styleFrom(

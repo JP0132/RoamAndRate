@@ -30,6 +30,12 @@ class EditExpenseArugments {
   EditExpenseArugments({required this.expense});
 }
 
+class AddRatingArguments {
+  final String tripId;
+
+  AddRatingArguments({required this.tripId});
+}
+
 class AppRouter {
   static const String splash = '/';
   static const String home = '/home';
@@ -58,7 +64,10 @@ class AppRouter {
       case addTrip:
         return MaterialPageRoute(builder: (_) => AddTripPage());
       case addRating:
-        return MaterialPageRoute(builder: (_) => AddRatingPage());
+        final args = selectedRoute.arguments as AddRatingArguments;
+        return MaterialPageRoute(
+          builder: (_) => AddRatingPage(tripId: args.tripId),
+        );
       case addExpense:
         final args = selectedRoute.arguments as AddExpenseArguments;
         return MaterialPageRoute(
