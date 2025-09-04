@@ -21,7 +21,6 @@ import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/full_rating_card.dart';
-import 'package:roam_and_rate/presentation/trips/widgets/tab_item.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/rating_cards.dart';
