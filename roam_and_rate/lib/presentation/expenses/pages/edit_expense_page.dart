@@ -49,10 +49,11 @@ class _EditExpensePageState extends State<EditExpensePage> {
   final List<String> categories = [
     "Food & Drink",
     "Tourist Attraction",
-    "Accomadation",
+    "Accommodation",
     "Shopping",
     "Nature & Outdoors",
     "Wellness",
+    "Transport",
     "Other",
   ];
   String? selectedCategory;
@@ -122,6 +123,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
 
     addedTags = widget.expenseToEdit.tags;
     toBeSplit = widget.expenseToEdit.toBeSplit;
+    selectedParticipant = widget.expenseToEdit.participantId;
 
     super.initState();
   }
@@ -421,19 +423,13 @@ class _EditExpensePageState extends State<EditExpensePage> {
                     }
 
                     _participants = state.participants;
-                    selectedParticipant = _participants
-                        .firstWhere(
-                          (p) => p.id == widget.expenseToEdit.participantId,
-                        )
-                        .particpantName;
                     return CustomisableDropdown<String>(
-                      items: state.participants
-                          .map((p) => p.particpantName)
-                          .toList(),
+                      items: _participants.map((p) => p.id!).toList(),
                       hint: "Who paid for it?",
                       value: selectedParticipant,
                       backgroundColour: CustomColours.darkSurface,
                       borderColour: Colors.transparent,
+                      selectedItemTextColour: CustomColours.darkPrimary,
                       padding: EdgeInsets.all(20),
                       borderRadius: 20,
                       menuMaxHeight: 200,
@@ -442,7 +438,12 @@ class _EditExpensePageState extends State<EditExpensePage> {
                           selectedParticipant = value!;
                         });
                       },
-                      itemBuilder: (participant) => Text(participant),
+                      itemBuilder: (participantId) {
+                        final participant = _participants.firstWhere(
+                          (p) => p.id == participantId,
+                        );
+                        return Text(participant.particpantName);
+                      },
                     );
                   } else if (state is ParticipantError) {
                     return Text("Error: ${state.message}");
@@ -567,14 +568,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                         ExpenseModel edittedExpense = widget.expenseToEdit
                             .copyWith(
                               name: _expenseNameController.text.trim(),
-
-                              participantId: _participants
-                                  .where(
-                                    (p) =>
-                                        p.particpantName == selectedParticipant,
-                                  )
-                                  .first
-                                  .id!,
+                              participantId: selectedParticipant,
                               paid: double.parse(_paidController.text.trim()),
                               cost: double.parse(_costController.text.trim()),
                               dateTimeAdded: DateTime.now(),

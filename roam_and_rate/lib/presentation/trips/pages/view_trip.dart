@@ -25,6 +25,7 @@ import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dar
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/rating_cards.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
+import 'package:super_tooltip/super_tooltip.dart';
 
 class ViewTrip extends StatefulWidget {
   final TripModel tripDetails;
@@ -46,11 +47,16 @@ class _ViewTripState extends State<ViewTrip> {
 
   List<RatingDetailsModel> _filteredRatings = [];
   List<ExpenseModel> _filteredExpenses = [];
+  final _controller = SuperTooltipController();
   void _onSearchChanged() {
     setState(() {
       _searchQuery = _searchController.text;
       _filterTripData();
     });
+  }
+
+  void makeTooltip() {
+    _controller.showTooltip();
   }
 
   // void _filterTripData() {
@@ -261,11 +267,49 @@ class _ViewTripState extends State<ViewTrip> {
                         child: TextField(
                           controller: _searchController,
                           decoration: const InputDecoration(
-                            hintText: 'Search, use commas for multi search',
+                            hintText: 'Search',
                             border: InputBorder.none,
                             hintStyle: TextStyle(fontSize: 14),
                           ),
                           style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ),
+                    Spacer(),
+                    GestureDetector(
+                      onTap: () async {
+                        await _controller.showTooltip();
+                      },
+                      child: SuperTooltip(
+                        showBarrier: true,
+                        popupDirection: TooltipDirection.left,
+                        controller: _controller,
+                        content: SizedBox(
+                          width: 250,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "The search bar can be used to filter by names and tags.",
+                              ),
+                              SizedBox(height: 12),
+                              Text("Types of searches:"),
+                              SizedBox(height: 4),
+                              Text("• Used commas to multi-search."),
+                              Text(
+                                "• Use the keyword 'tags:' to search tags only.",
+                              ),
+                              Text(
+                                "• Use the keyword 'category:' to search categories only.",
+                              ),
+                            ],
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.info_outline,
+                          color: CustomColours.darkPrimary,
+                          size: 24,
                         ),
                       ),
                     ),

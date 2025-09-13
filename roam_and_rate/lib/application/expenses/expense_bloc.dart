@@ -34,7 +34,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     Emitter<ExpenseState> emit,
   ) async {
     try {
-      print("📢 Stream emitted ${event.expense.notes} participants");
+      print("📢 Stream emitted ${event.expense.participantId} participants");
       await _repository.addExpense(event.expense);
       emit(ExpenseAdded());
     } catch (e) {

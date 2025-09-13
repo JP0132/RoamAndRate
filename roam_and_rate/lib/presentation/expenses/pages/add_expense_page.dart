@@ -52,6 +52,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     "Accomadation",
     "Shopping",
     "Nature & Outdoors",
+    "Transport",
     "Wellness",
     "Other",
   ];
@@ -261,6 +262,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 hint: "What currency did you use",
                 value: selectedCurrency,
                 backgroundColour: CustomColours.darkSurface,
+                selectedItemTextColour: CustomColours.darkPrimary,
                 borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
                 borderRadius: 20,
@@ -403,14 +405,17 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     }
 
                     _participants = state.participants;
-                    selectedParticipant = _participants
-                        .where((p) => p.isAdmin)
-                        .first
-                        .particpantName;
+                    if (!_participants.any(
+                      (p) => p.id == selectedParticipant,
+                    )) {
+                      final admin = _participants.firstWhere(
+                        (p) => p.isAdmin,
+                        orElse: () => _participants.first,
+                      );
+                      selectedParticipant = admin.id!;
+                    }
                     return CustomisableDropdown<String>(
-                      items: state.participants
-                          .map((p) => p.particpantName)
-                          .toList(),
+                      items: _participants.map((p) => p.id!).toList(),
                       hint: "Who paid for it?",
                       value: selectedParticipant,
                       backgroundColour: CustomColours.darkSurface,
@@ -418,12 +423,18 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       padding: EdgeInsets.all(20),
                       borderRadius: 20,
                       menuMaxHeight: 200,
+                      selectedItemTextColour: CustomColours.darkPrimary,
                       onChanged: (value) {
                         setState(() {
                           selectedParticipant = value!;
                         });
                       },
-                      itemBuilder: (participant) => Text(participant),
+                      itemBuilder: (id) {
+                        final participant = _participants.firstWhere(
+                          (p) => p.id == id,
+                        );
+                        return Text(participant.particpantName);
+                      },
                     );
                   } else if (state is ParticipantError) {
                     return Text("Error: ${state.message}");
@@ -548,12 +559,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         ExpenseModel newExpense = ExpenseModel(
                           name: _expenseNameController.text.trim(),
                           tripId: widget.tripId,
-                          participantId: _participants
-                              .where(
-                                (p) => p.particpantName == selectedParticipant,
-                              )
-                              .first
-                              .id!,
+                          participantId: selectedParticipant,
                           paid: double.parse(_paidController.text.trim()),
                           cost: double.parse(_costController.text.trim()),
                           dateTimeAdded: DateTime.now(),

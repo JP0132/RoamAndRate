@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_event.dart';
+import 'package:roam_and_rate/application/participant/participant_bloc.dart';
+import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
@@ -193,6 +195,32 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                             fontWeight: FontWeight.w500,
                             color: CustomColours.darkSecondaryText,
                           ),
+                        ),
+                        BlocBuilder<ParticipantBloc, ParticipantState>(
+                          builder: (context, state) {
+                            if (state is ParticipantLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (state is ParticipantLoaded) {
+                              if (state.participants.isEmpty) {
+                                return Text("SOMETHING WENT WRONG");
+                              }
+
+                              return Text(
+                                "Payee: ${state.participants.firstWhere((p) => p.id == widget.expenseDetails.participantId).particpantName}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: CustomColours.darkSecondaryText,
+                                ),
+                              );
+                            } else if (state is ParticipantError) {
+                              return Text("Error: ${state.message}");
+                            } else {
+                              return const Text("Something went wrong!");
+                            }
+                          },
                         ),
                       ],
                     ),

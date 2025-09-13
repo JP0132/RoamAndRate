@@ -28,7 +28,7 @@ extension ExpenseEntityMapper on Expense {
 extension ExpenseModelMapper on ExpenseModel {
   ExpensesCompanion toCompanion() {
     return ExpensesCompanion.insert(
-      id: expenseId != null ? Value(expenseId) : const Value.absent(),
+      id: expenseId != null ? Value(expenseId!) : const Value.absent(),
       tripId: tripId,
       participantId: participantId,
       expenseName: name,
