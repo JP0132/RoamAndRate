@@ -79,8 +79,15 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
-          // Modal barrier to capture outside clicks
-          ModalBarrier(dismissible: true, onDismiss: _closeDropdown),
+          // full-screen translucent barrier that closes the dropdown on tap
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _closeDropdown,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+
           CompositedTransformFollower(
             link: _layerLink,
             showWhenUnlinked: false,
@@ -159,6 +166,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     }
   }
 
+  // ---------- _buildDropdownItem ----------
   Widget _buildDropdownItem(T item, bool isSelected) {
     if (widget.dropdownItemBuilder != null) {
       return widget.dropdownItemBuilder!(item, isSelected);
@@ -168,7 +176,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     if (isSelected) {
       effectiveTextStyle = TextStyle(
         color: widget.selectedItemTextColour ?? Theme.of(context).primaryColor,
-        fontWeight: FontWeight.bold, // Make selected text bold
+        fontWeight: FontWeight.bold,
       ).merge(widget.selectedItemTextStyle);
     } else {
       effectiveTextStyle = TextStyle(
@@ -178,15 +186,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
       ).merge(widget.unselectedItemTextStyle);
     }
 
-    if (item is String) {
-      return Text(
-        item,
-        style: effectiveTextStyle,
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-      );
-    }
-
+    // Use the provided itemBuilder for displaying every item (so caller can map id -> name)
     return DefaultTextStyle(
       style: effectiveTextStyle,
       child: widget.itemBuilder(item),
