@@ -10,14 +10,17 @@ import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.
 class RatingContainer extends StatefulWidget {
   final Function selectedParticipants;
   final List<ParticipantModel> participants;
+  final List<String>? ratingParticipants;
   final List<double> ratings;
-  final Function(Map<ParticipantModel, double>) onRatingsUpdate;
+  final bool editMode;
+  final Function(Map<String, double>) onRatingsUpdate;
   const RatingContainer({
     super.key,
     required this.selectedParticipants,
     required this.participants,
     required this.ratings,
-    required this.onRatingsUpdate,
+    required this.onRatingsUpdate, this.editMode = false,
+    this.ratingParticipants = const [],
   });
 
   @override
@@ -26,14 +29,28 @@ class RatingContainer extends StatefulWidget {
 
 class _RatingContainerState extends State<RatingContainer> {
   // Number of ratings
-  List<int> widgetIndexes = [1];
+  List<int> widgetIndexes = [];
   List<ParticipantModel?> selectedParticipants = [];
   List<double> ratings = [];
 
   @override
   void initState() {
-    selectedParticipants = List.from(selectedParticipants)..add(null);
-    ratings = List.filled(widgetIndexes.length, 0.0);
+    if (widget.editMode) {
+      widgetIndexes = List.generate(widget.ratings.length, (index) => index + 1);
+      ratings = List.from(widget.ratings);
+      selectedParticipants = widget.ratingParticipants!.map((pId) {
+        return widget.participants.firstWhere(
+          (p) => p.id == pId,
+        );
+      }).toList();
+      
+    } else{
+      widgetIndexes = [1];
+      selectedParticipants = List.from(selectedParticipants)..add(null);
+      ratings = List.filled(widgetIndexes.length, 0.0);
+      
+    }
+
     super.initState();
   }
 
@@ -77,9 +94,9 @@ class _RatingContainerState extends State<RatingContainer> {
   // In rating_container.dart, modify the _sendUpdate method:
   void _sendUpdate() {
     // Create a map of participant-rating pairs only when both are set
-    final Map<ParticipantModel, double> result = {};
+    final Map<String, double> result = {};
     for (int i = 0; i < selectedParticipants.length; i++) {
-      final participant = selectedParticipants[i];
+      final participant = selectedParticipants[i]?.id;
       final rating = ratings[i];
 
       // Only include if both participant and rating are set

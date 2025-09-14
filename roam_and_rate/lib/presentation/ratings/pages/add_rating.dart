@@ -147,28 +147,28 @@ class _AddRatingPageState extends State<AddRatingPage> {
   }
 
   List<ParticipantModel> _participants = [];
-  Map<ParticipantModel, double> selectedParticipants = {};
-  void updateParticipantRatings(Map<ParticipantModel, double> ratings) {
-    print("😂😂😂😂adas ${selectedParticipants["Sejal"]}");
+  Map<String, double> selectedParticipants = {};
+  void updateParticipantRatings(Map<String, double> ratings) {
+    //print("😂😂😂😂adas ${selectedParticipants["Sejal"]}");
     setState(() {
       selectedParticipants = ratings;
     });
   }
 
-  void handleRatingsUpdate(Map<ParticipantModel, double> ratings) {
+  void handleRatingsUpdate(Map<String, double> ratings) {
     setState(() {
       selectedParticipants = ratings;
     });
 
-    print("Received ratings update:");
-    if (ratings.isEmpty) {
-      print("  No ratings received");
-    } else {
-      ratings.forEach((participant, rating) {
-        print("  ${participant.particpantName}: $rating");
-      });
-    }
-    print("Total entries: ${ratings.length}");
+    // print("Received ratings update:");
+    // if (ratings.isEmpty) {
+    //   print("  No ratings received");
+    // } else {
+    //   ratings.forEach((participant, rating) {
+    //     print("  ${participant.particpantName}: $rating");
+    //   });
+    // }
+    // print("Total entries: ${ratings.length}");
   }
 
   @override
@@ -549,7 +549,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                       }.contains(selectedStatus)) {
                         Map<String, double> newRatingMade = {};
                         selectedParticipants.forEach((participant, rating) {
-                          newRatingMade[participant.id!] = rating;
+                          newRatingMade[participant] = rating;
                         });
                         RatingDetailsModel updatedRatingDetails =
                             newRatingDetails.copyWith(
