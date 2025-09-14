@@ -21,6 +21,7 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
     on<DeleteRatingsMade>(_onDeleteRatingsMade);
     on<EditRatingsMade>(_onEditRatingsMade);
     on<AddRatingWithParticipants>(_onAddRatingWithParticipants);
+    on<EditRatingWithParticipants>(_onEditRatingWithParticipants);
 
     // Set up subscriptions for streaming data
     _ratingDetailsSubscription = _repository.watchRatingDetails().listen(
@@ -142,6 +143,24 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
       print("😂😂😂😂😂😂😂😂 DID YOU EMIT?");
     } catch (e) {
       emit(RatingError("Failed to add rating with participants: $e"));
+    }
+  }
+
+  Future<void> _onEditRatingWithParticipants(
+    EditRatingWithParticipants event,
+    Emitter<RatingsState> emit,
+  ) async {
+    try {
+      print("🚀 Bloc received EditRatingWithParticipants");
+
+      await _repository.editRatingWithParticipants(
+        event.ratingDetails,
+        event.participantRatings,
+      );
+
+      emit(RatingWithParticipantsEdited());
+    } catch (e) {
+      emit(RatingError("Failed to edit rating with participants: $e"));
     }
   }
 

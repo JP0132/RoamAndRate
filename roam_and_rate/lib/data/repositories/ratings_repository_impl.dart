@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:roam_and_rate/data/local/daos/rating_details_dao.dart';
 import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
@@ -125,6 +126,8 @@ class RatingsRepositoryImpl implements RatingsRepository {
     }
   }
 
+  
+
   @override
   Future<List<RatingsMadeModel>> getRatingsMadeByRatingDetailsId(
     String ratingDetailsId,
@@ -134,5 +137,49 @@ class RatingsRepositoryImpl implements RatingsRepository {
         .where((rm) => rm.id == ratingDetailsId)
         .map((r) => fromDataToModel(r))
         .toList();
+  }
+  
+  @override
+  Future<void> editRatingWithParticipants(RatingDetailsModel ratingDetails, Map<String, double> participantRatings) async {
+    final ratingDetailsId = ratingDetails.id;
+    await editRatingDetails(ratingDetails);
+    
+    if (ratingDetailsId != null) {
+      final existingRatings = await ratingsMadeDao.getRatingsMadeByDetailsId(ratingDetailsId);
+      final existingParticipantIds = existingRatings.map((e) => e.participantId).toSet();
+
+      for(final rating in existingRatings) {
+        if (!participantRatings.containsKey(rating.participantId)) {
+          // If a participant is no longer in the updated list, delete their rating
+          await deleteRatingsMade(rating.id);
+        }
+      }
+
+      // Update existing ratings and add new ones
+      for (final entry in participantRatings.entries) {
+        if (existingParticipantIds.contains(entry.key)) {
+          // Update existing rating
+          final existingRating = existingRatings.firstWhere((r) => r.participantId == entry.key);
+          final updatedRating = existingRating.copyWith(
+            rating: Value(entry.value),
+            expectedRating: Value(existingRating.expectedRating ?? 0.0),
+            participantId: existingRating.participantId,
+          );
+          await editRatingsMade(fromDataToModel(updatedRating));
+        } 
+        else {
+          // Add new rating
+          final newRating = RatingsMadeModel(
+            particpantId: entry.key,
+            ratingDetailsId: ratingDetailsId,
+            rating: entry.value,
+            expectedRating: 0.0,
+            createdAt: DateTime.now(),
+          );
+          await addRatingsMade(newRating);
+        }
+      }
+    }
+    
   }
 }

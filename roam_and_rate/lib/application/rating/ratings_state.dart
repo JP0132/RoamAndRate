@@ -17,6 +17,8 @@ class RatingsMadeEdited extends RatingsState {}
 
 class RatingWithParticipantsAdded extends RatingsState {}
 
+class RatingWithParticipantsEdited extends RatingsState {}
+
 class RatingDetailsLoaded extends RatingsState {
   final List<RatingDetailsModel> ratingDetails;
   RatingDetailsLoaded(this.ratingDetails);

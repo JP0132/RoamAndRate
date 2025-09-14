@@ -21,4 +21,9 @@ abstract class RatingsRepository {
     RatingDetailsModel ratingDetails,
     Map<String, double> participantRatings,
   );
+
+  Future<void> editRatingWithParticipants(
+    RatingDetailsModel ratingDetails,
+    Map<String, double> participantRatings,
+  );
 }

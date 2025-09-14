@@ -39,3 +39,10 @@ class AddRatingWithParticipants extends RatingsEvent {
 
   AddRatingWithParticipants(this.ratingDetails, this.participantRatings);
 }
+
+class EditRatingWithParticipants extends RatingsEvent {
+  final RatingDetailsModel ratingDetails;
+  final Map<String, double> participantRatings;
+
+  EditRatingWithParticipants(this.ratingDetails, this.participantRatings);
+}
