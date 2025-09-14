@@ -14,6 +14,7 @@ import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
+import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_container.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
@@ -23,11 +24,12 @@ import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 
 class EditRatingPage extends StatefulWidget {
   final RatingDetailsModel rating;
+  final RatingsMadeModel? ratingMade;
   final Map<String, double>? participantRatings;
   const EditRatingPage({
     super.key,
     required this.rating,
-    this.participantRatings,
+    this.participantRatings, this.ratingMade,
   });
 
   @override
@@ -152,28 +154,29 @@ class _EditRatingPageState extends State<EditRatingPage> {
   }
 
   List<ParticipantModel> _participants = [];
-  Map<ParticipantModel, double> selectedParticipants = {};
-  void updateParticipantRatings(Map<ParticipantModel, double> ratings) {
+  Map<String, double> selectedParticipants = {};
+
+  void updateParticipantRatings(Map<String, double> ratings) {
     print("😂😂😂😂adas ${selectedParticipants["Sejal"]}");
     setState(() {
       selectedParticipants = ratings;
     });
   }
 
-  void handleRatingsUpdate(Map<ParticipantModel, double> ratings) {
+  void handleRatingsUpdate(Map<String, double> ratings) {
     setState(() {
       selectedParticipants = ratings;
     });
 
-    print("Received ratings update:");
-    if (ratings.isEmpty) {
-      print("  No ratings received");
-    } else {
-      ratings.forEach((participant, rating) {
-        print("  ${participant.particpantName}: $rating");
-      });
-    }
-    print("Total entries: ${ratings.length}");
+    // print("Received ratings update:");
+    // if (ratings.isEmpty) {
+    //   print("  No ratings received");
+    // } else {
+    //   ratings.forEach((participant, rating) {
+    //     print("  ${participant.particpantName}: $rating");
+    //   });
+    // }
+    // print("Total entries: ${ratings.length}");
   }
 
   @override
@@ -187,23 +190,9 @@ class _EditRatingPageState extends State<EditRatingPage> {
     selectedDate = widget.rating.dateVisited ?? DateTime.now();
     selectedValue = widget.rating.value;
     addedTags = widget.rating.tags;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget.participantRatings != null) {
-      // when bloc loads, map ids → models
-      final blocState = context.read<ParticipantBloc>().state;
-      if (blocState is ParticipantLoaded) {
-        selectedParticipants = blocState.participants
-            .where((p) => widget.participantRatings!.keys.contains(p.id))
-            .fold<Map<ParticipantModel, double>>({}, (map, p) {
-              map[p] = widget.participantRatings![p.id]!;
-              return map;
-            });
-      }
-    }
+    selectedParticipants = widget.participantRatings != null
+        ? widget.participantRatings!
+        : {};
   }
 
   @override
@@ -345,6 +334,8 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   ),
                 ),
 
+                // BlocBuilder<RatingsBloc, Ratings()
+
                 BlocBuilder<ParticipantBloc, ParticipantState>(
                   builder: (context, state) {
                     if (state is ParticipantLoading) {
@@ -362,7 +353,9 @@ class _EditRatingPageState extends State<EditRatingPage> {
                       return RatingContainer(
                         selectedParticipants: updateParticipantRatings,
                         participants: _participants,
-                        ratings: [0.0],
+                        ratings: selectedParticipants.values.toList(),
+                        ratingParticipants: selectedParticipants.keys.toList(),
+                        editMode: true,
                         onRatingsUpdate:
                             handleRatingsUpdate, // Change this line
                       );
@@ -487,7 +480,6 @@ class _EditRatingPageState extends State<EditRatingPage> {
                 SizedBox(height: 20),
               ],
 
-              // Select the rating of the place
               Text(
                 "Tags",
                 style: TextStyle(
@@ -538,7 +530,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
               SizedBox(height: 50),
               BlocConsumer<RatingsBloc, RatingsState>(
                 listener: (context, state) {
-                  if (state is RatingDetailsAdded) {
+                  if (state is RatingDetailsEdited) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Rating created!"),
@@ -547,7 +539,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                       ),
                     );
                     Navigator.pop(context);
-                  } else if (state is RatingWithParticipantsAdded) {
+                  } else if (state is RatingWithParticipantsEdited) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Rating created!"),
@@ -576,7 +568,6 @@ class _EditRatingPageState extends State<EditRatingPage> {
                             status: selectedStatus!,
                             tags: addedTags,
                             notes: _notesController.text.trim(),
-                            createdAt: DateTime.now(),
                           );
 
                       if (!{
@@ -584,9 +575,9 @@ class _EditRatingPageState extends State<EditRatingPage> {
                         "On-hold",
                         "",
                       }.contains(selectedStatus)) {
-                        Map<String, double> newRatingMade = {};
+                        Map<String, double> updatedRatingMade = {};
                         selectedParticipants.forEach((participant, rating) {
-                          newRatingMade[participant.id!] = rating;
+                          updatedRatingMade[participant] = rating;
                         });
                         RatingDetailsModel updatedRating = updatedRatingDetails
                             .copyWith(
@@ -594,14 +585,14 @@ class _EditRatingPageState extends State<EditRatingPage> {
                               value: selectedValue,
                             );
                         context.read<RatingsBloc>().add(
-                          AddRatingWithParticipants(
-                            updatedRatingDetails,
-                            newRatingMade,
+                          EditRatingWithParticipants(
+                            updatedRating,
+                            updatedRatingMade,
                           ),
                         );
                       } else {
                         context.read<RatingsBloc>().add(
-                          AddRatingDetails(newRatingDetails),
+                          EditRatingDetails(updatedRatingDetails),
                         );
                       }
                       if (formValid.values.every((v) => v)) {}
