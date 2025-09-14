@@ -61,14 +61,18 @@ class _FullRatingCardState extends State<FullRatingCard> {
             builder: (con) {
               return ElevatedButton(
                 onPressed: () {
-                  // Navigator.pushNamed(
-                  //   context,
-                  //   AppRouter.editRating,
-                  //   arguments: EditRatingArguments(
-                  //     rating: widget.ratingDetails,
-                  //     participants: widget.participantRatings,
-                  //   ),
-                  // );
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.editRating,
+                    arguments: EditRatingArguments(
+                      rating: widget.ratingDetails,
+                      participantRatings: {
+                        for (var r in widget.participantRatings)
+                          r.participantId: r.rating ?? 0.0
+                      },
+                      
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
