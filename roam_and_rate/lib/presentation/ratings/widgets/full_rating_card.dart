@@ -11,6 +11,7 @@ import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_event.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
@@ -50,6 +51,19 @@ class _FullRatingCardState extends State<FullRatingCard> {
     return FontAwesomeIcons.question;
   }
 
+  final List<String> defaultRatingDescriptions = [
+    'Stellar',
+    'Great',
+    'V. good',
+    'Good',
+    'Fine',
+    'Average',
+    'Bad',
+    'Very Bad',
+    'Horrible',
+    'Avoid',
+  ];
+
   @override
   Widget build(BuildContext context) {
     final avgRating = _calculateAverageRating();
@@ -69,9 +83,8 @@ class _FullRatingCardState extends State<FullRatingCard> {
                       rating: widget.ratingDetails,
                       participantRatings: {
                         for (var r in widget.participantRatings)
-                          r.participantId: r.rating ?? 0.0
+                          r.participantId: r.rating ?? 0.0,
                       },
-                      
                     ),
                   );
                 },
@@ -108,8 +121,8 @@ class _FullRatingCardState extends State<FullRatingCard> {
                         TextButton(
                           onPressed: () {
                             context.read<RatingsBloc>().add(
-                                  DeleteRating(widget.ratingDetails.id!),
-                                );
+                              DeleteRating(widget.ratingDetails.id!),
+                            );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Rating deleted successfully!'),
@@ -240,24 +253,99 @@ class _FullRatingCardState extends State<FullRatingCard> {
                     //     .where((p) => p.isAdmin)
                     //     .first
                     //     .particpantName;
-                    return Wrap(
-                      spacing: 12,
-                      children: widget.participantRatings.map((p) {
+                    return Column(
+                      children: widget.participantRatings.asMap().entries.map((
+                        entry,
+                      ) {
+                        final index = entry.key;
+                        final pRating = entry.value;
                         final _participantName = _participants.firstWhere(
-                          (pn) => pn.id == p.participantId,
+                          (pn) => pn.id == pRating.participantId,
                         );
-                        return Chip(
-                          backgroundColor: CustomColours.darkPrimary,
-                          label: Text(
-                            "${_participantName.particpantName}: ${p.rating}",
-                            style: const TextStyle(
-                              color: CustomColours.darkBackground,
-                              fontSize: 12,
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom:
+                                index == widget.participantRatings.length - 1
+                                ? 0
+                                : 4,
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: CustomColours.darkSecondarySurface,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Text("${_participantName.particpantName}"),
+                                Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: List.generate(5, (starIdx) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 2.0,
+                                          ),
+                                          child: _buildStar(
+                                            starIdx,
+                                            pRating.rating ?? 0.0,
+                                          ),
+                                        );
+                                      }),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "${(pRating.rating! * 2).truncate()} / 10",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: CustomColours.darkPrimaryText,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      Helperfunctions.getRatingDescription(
+                                        (pRating.rating! * 2).truncate(),
+                                      ),
+                                      style: TextStyle(
+                                        color: CustomColours.darkPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         );
                       }).toList(),
                     );
+
+                    // Wrap(
+                    //   spacing: 12,
+                    //   children: widget.participantRatings.map((p) {
+                    //     final _participantName = _participants.firstWhere(
+                    //       (pn) => pn.id == p.participantId,
+                    //     );
+                    //     return Chip(
+                    //       backgroundColor: CustomColours.darkPrimary,
+                    //       label: Text(
+                    //         "${_participantName.particpantName}: ${p.rating}",
+                    //         style: const TextStyle(
+                    //           color: CustomColours.darkBackground,
+                    //           fontSize: 12,
+                    //         ),
+                    //       ),
+                    //     );
+                    //   }).toList(),
+                    // );
                   } else if (state is ParticipantError) {
                     return Text("Error: ${state.message}");
                   } else {
@@ -312,5 +400,32 @@ class _FullRatingCardState extends State<FullRatingCard> {
         ),
       ),
     );
+  }
+
+  Widget _buildStar(int index, double currentRating) {
+    double starValue = index + 1.0;
+
+    if (currentRating >= starValue) {
+      // Full star
+      return Icon(
+        Icons.star,
+        size: 25,
+        color: CustomColours.darkPrimaryVariant,
+      );
+    } else if (currentRating >= starValue - 0.5) {
+      // Half star
+      return Icon(
+        Icons.star_half,
+        size: 25,
+        color: CustomColours.darkPrimaryVariant,
+      );
+    } else {
+      // Empty star
+      return Icon(
+        Icons.star_border,
+        size: 25,
+        color: CustomColours.darkPrimaryVariant,
+      );
+    }
   }
 }
