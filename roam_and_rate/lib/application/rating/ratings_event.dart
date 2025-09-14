@@ -28,6 +28,11 @@ class DeleteRatingsMade extends RatingsEvent {
   DeleteRatingsMade(this.ratingsMadeId);
 }
 
+class DeleteRating extends RatingsEvent {
+  final String ratingDetailsId;
+  DeleteRating(this.ratingDetailsId);
+}
+
 class EditRatingsMade extends RatingsEvent {
   final RatingsMadeModel ratingsMade;
   EditRatingsMade(this.ratingsMade);

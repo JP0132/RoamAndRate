@@ -182,4 +182,16 @@ class RatingsRepositoryImpl implements RatingsRepository {
     }
     
   }
+  
+  @override
+  Future<void> deleteRating(String ratingDetailsId) async{
+    final existingRatings = await ratingsMadeDao.getRatingsMadeByDetailsId(ratingDetailsId);
+    if(existingRatings.isNotEmpty){
+      for(final rating in existingRatings){
+        await deleteRatingsMade(rating.id);
+      }
+    }
+    await deleteRatingDetails(ratingDetailsId);
+
+  }
 }

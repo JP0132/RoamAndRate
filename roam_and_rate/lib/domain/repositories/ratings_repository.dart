@@ -12,6 +12,7 @@ abstract class RatingsRepository {
   Stream<List<RatingsMadeModel>> watchRatingsMade();
   Future<void> addRatingsMade(RatingsMadeModel ratingsMade);
   Future<void> deleteRatingsMade(String id);
+  Future<void> deleteRating(String ratingDetailsId);
   Future<void> editRatingsMade(RatingsMadeModel ratingsMade);
   Future<List<RatingsMadeModel>> getRatingsMadeByRatingDetailsId(
     String ratingDetailsId,

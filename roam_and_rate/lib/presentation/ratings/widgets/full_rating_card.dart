@@ -8,6 +8,7 @@ import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
+import 'package:roam_and_rate/application/rating/ratings_event.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/database.dart';
@@ -106,16 +107,16 @@ class _FullRatingCardState extends State<FullRatingCard> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // context.read<RatingsBloc>().add(
-                            //       DeleteRating(widget.ratingDetails.id!),
-                            //     );
-                            // ScaffoldMessenger.of(context).showSnackBar(
-                            //   const SnackBar(
-                            //     content: Text('Rating deleted successfully!'),
-                            //     backgroundColor: CustomColours.darkSuccess,
-                            //   ),
-                            // );
-                            // Navigator.pop(context);
+                            context.read<RatingsBloc>().add(
+                                  DeleteRating(widget.ratingDetails.id!),
+                                );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Rating deleted successfully!'),
+                                backgroundColor: CustomColours.darkSuccess,
+                              ),
+                            );
+                            Navigator.pop(context);
                           },
                           child: const Text(
                             "DELETE",

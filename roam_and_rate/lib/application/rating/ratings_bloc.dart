@@ -19,6 +19,7 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
     on<EditRatingDetails>(_onEditRatingDetails);
     on<AddRatingsMade>(_onAddRatingsMade);
     on<DeleteRatingsMade>(_onDeleteRatingsMade);
+    on<DeleteRating>(_onDeleteRating);
     on<EditRatingsMade>(_onEditRatingsMade);
     on<AddRatingWithParticipants>(_onAddRatingWithParticipants);
     on<EditRatingWithParticipants>(_onEditRatingWithParticipants);
@@ -84,6 +85,18 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
       // stream auto-updates
     } catch (e) {
       emit(RatingError("Failed to delete rating details: $e"));
+    }
+  }
+
+  Future<void> _onDeleteRating(
+    DeleteRating event,
+    Emitter<RatingsState> emit,
+  ) async {
+    try {
+      await _repository.deleteRating(event.ratingDetailsId);
+      // stream auto-updates
+    } catch (e) {
+      emit(RatingError("Failed to delete rating: $e"));
     }
   }
 
