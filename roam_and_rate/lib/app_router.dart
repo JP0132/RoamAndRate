@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/rating_details_model.dart';
+import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/add_expense_page.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/edit_expense_page.dart';
@@ -8,6 +10,7 @@ import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
 import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
 import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:roam_and_rate/presentation/ratings/pages/add_rating.dart';
+import 'package:roam_and_rate/presentation/ratings/pages/edit_rating.dart';
 import 'package:roam_and_rate/presentation/settings/pages/participant_page.dart';
 import 'package:roam_and_rate/presentation/splash/splash_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
@@ -36,6 +39,14 @@ class AddRatingArguments {
   AddRatingArguments({required this.tripId});
 }
 
+class EditRatingArguments {
+  final RatingDetailsModel rating;
+  final RatingsMadeModel? ratingMade;
+  final Map<String, double>? participantRatings; 
+
+  EditRatingArguments({required this.rating, this.ratingMade, this.participantRatings});
+}
+
 class AppRouter {
   static const String splash = '/';
   static const String home = '/home';
@@ -48,6 +59,7 @@ class AppRouter {
   static const String addExpense = '/addExpense';
   static const String participantSettings = '/participantSettings';
   static const String editExpense = '/editExpense';
+  static const String editRating = '/editRating';
 
   static Route<dynamic> generateRoute(RouteSettings selectedRoute) {
     switch (selectedRoute.name) {
@@ -67,6 +79,15 @@ class AppRouter {
         final args = selectedRoute.arguments as AddRatingArguments;
         return MaterialPageRoute(
           builder: (_) => AddRatingPage(tripId: args.tripId),
+        );
+      case editRating:
+        final args = selectedRoute.arguments as EditRatingArguments;
+        return MaterialPageRoute(
+          builder: (_) => EditRatingPage(
+            rating: args.rating,
+            ratingMade: args.ratingMade,
+            participantRatings: args.participantRatings,
+          ),
         );
       case addExpense:
         final args = selectedRoute.arguments as AddExpenseArguments;
