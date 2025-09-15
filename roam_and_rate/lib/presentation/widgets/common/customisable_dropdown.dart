@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
 
 class CustomisableDropdown<T> extends StatefulWidget {
   final List<T> items;
@@ -75,17 +74,35 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     if (renderBox == null) return;
 
     final buttonWidth = renderBox.size.width;
+    final buttonOffset = renderBox.localToGlobal(Offset.zero);
+    //final screenHeight = MediaQuery.of(context).size.height;
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
-          Positioned.fill(
-            child: Listener(
+          // 1️⃣ Top area outside dropdown
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: buttonOffset.dy,
+            child: GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onPointerDown: (_) => _closeDropdown(),
-              // don't swallow pointer move/scroll events
+              onTap: _closeDropdown,
             ),
           ),
+          // 2️⃣ Bottom area outside dropdown
+          Positioned(
+            top: buttonOffset.dy + renderBox.size.height,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _closeDropdown,
+            ),
+          ),
+          // 3️⃣ The dropdown menu itself
           CompositedTransformFollower(
             link: _layerLink,
             showWhenUnlinked: false,
@@ -128,7 +145,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
                               ? (widget.selectedItemColour ??
                                     Theme.of(
                                       context,
-                                    ).primaryColor.withOpacity(0.2))
+                                    ).primaryColor.withValues(alpha: 0.2))
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -144,7 +161,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
       ),
     );
 
-    overlay?.insert(_overlayEntry!);
+    overlay.insert(_overlayEntry!);
     setState(() => _isOpen = true);
   }
 
