@@ -79,15 +79,13 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
-          // full-screen translucent barrier that closes the dropdown on tap
           Positioned.fill(
-            child: GestureDetector(
+            child: Listener(
               behavior: HitTestBehavior.translucent,
-              onTap: _closeDropdown,
-              child: Container(color: Colors.transparent),
+              onPointerDown: (_) => _closeDropdown(),
+              // don't swallow pointer move/scroll events
             ),
           ),
-
           CompositedTransformFollower(
             link: _layerLink,
             showWhenUnlinked: false,

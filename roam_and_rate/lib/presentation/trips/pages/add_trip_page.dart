@@ -230,7 +230,7 @@ class _AddTripPageState extends State<AddTripPage> {
               borderColour: Colors.transparent,
               padding: EdgeInsets.all(20),
               borderRadius: 20,
-              menuMaxHeight: 200,
+              menuMaxHeight: 100,
               onChanged: (value) {
                 setState(() {
                   selectedCategory = value;
