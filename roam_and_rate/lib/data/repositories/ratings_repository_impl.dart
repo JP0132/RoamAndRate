@@ -126,8 +126,6 @@ class RatingsRepositoryImpl implements RatingsRepository {
     }
   }
 
-  
-
   @override
   Future<List<RatingsMadeModel>> getRatingsMadeByRatingDetailsId(
     String ratingDetailsId,
@@ -138,17 +136,24 @@ class RatingsRepositoryImpl implements RatingsRepository {
         .map((r) => fromDataToModel(r))
         .toList();
   }
-  
+
   @override
-  Future<void> editRatingWithParticipants(RatingDetailsModel ratingDetails, Map<String, double> participantRatings) async {
+  Future<void> editRatingWithParticipants(
+    RatingDetailsModel ratingDetails,
+    Map<String, double> participantRatings,
+  ) async {
     final ratingDetailsId = ratingDetails.id;
     await editRatingDetails(ratingDetails);
-    
-    if (ratingDetailsId != null) {
-      final existingRatings = await ratingsMadeDao.getRatingsMadeByDetailsId(ratingDetailsId);
-      final existingParticipantIds = existingRatings.map((e) => e.participantId).toSet();
 
-      for(final rating in existingRatings) {
+    if (ratingDetailsId != null) {
+      final existingRatings = await ratingsMadeDao.getRatingsMadeByDetailsId(
+        ratingDetailsId,
+      );
+      final existingParticipantIds = existingRatings
+          .map((e) => e.participantId)
+          .toSet();
+
+      for (final rating in existingRatings) {
         if (!participantRatings.containsKey(rating.participantId)) {
           // If a participant is no longer in the updated list, delete their rating
           await deleteRatingsMade(rating.id);
@@ -159,15 +164,16 @@ class RatingsRepositoryImpl implements RatingsRepository {
       for (final entry in participantRatings.entries) {
         if (existingParticipantIds.contains(entry.key)) {
           // Update existing rating
-          final existingRating = existingRatings.firstWhere((r) => r.participantId == entry.key);
+          final existingRating = existingRatings.firstWhere(
+            (r) => r.participantId == entry.key,
+          );
           final updatedRating = existingRating.copyWith(
             rating: Value(entry.value),
             expectedRating: Value(existingRating.expectedRating ?? 0.0),
             participantId: existingRating.participantId,
           );
           await editRatingsMade(fromDataToModel(updatedRating));
-        } 
-        else {
+        } else {
           // Add new rating
           final newRating = RatingsMadeModel(
             particpantId: entry.key,
@@ -180,18 +186,26 @@ class RatingsRepositoryImpl implements RatingsRepository {
         }
       }
     }
-    
   }
-  
+
   @override
-  Future<void> deleteRating(String ratingDetailsId) async{
-    final existingRatings = await ratingsMadeDao.getRatingsMadeByDetailsId(ratingDetailsId);
-    if(existingRatings.isNotEmpty){
-      for(final rating in existingRatings){
+  Future<void> deleteRating(String ratingDetailsId) async {
+    final existingRatings = await ratingsMadeDao.getRatingsMadeByDetailsId(
+      ratingDetailsId,
+    );
+    if (existingRatings.isNotEmpty) {
+      for (final rating in existingRatings) {
         await deleteRatingsMade(rating.id);
       }
     }
     await deleteRatingDetails(ratingDetailsId);
+  }
 
+  @override
+  Future<Map<String, dynamic>> getRatingsAndDetails() async {
+    final ratingDetails = await getRatingDetails();
+    final ratingsMade = await getRatingsMade();
+
+    return {"ratingDetails": ratingDetails, "ratingsMade": ratingsMade};
   }
 }

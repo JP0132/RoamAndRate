@@ -51,3 +51,5 @@ class EditRatingWithParticipants extends RatingsEvent {
 
   EditRatingWithParticipants(this.ratingDetails, this.participantRatings);
 }
+
+class FetchRatingsAndDetails extends RatingsEvent {}

@@ -35,3 +35,10 @@ class RatingError extends RatingsState {
   final String message;
   RatingError(this.message);
 }
+
+class RatingsAndDetailsLoaded extends RatingsState {
+  final List<RatingDetailsModel> ratingDetails;
+  final List<RatingsMadeModel> ratingsMade;
+
+  RatingsAndDetailsLoaded(this.ratingDetails, this.ratingsMade);
+}

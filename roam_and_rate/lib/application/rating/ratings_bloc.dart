@@ -23,6 +23,7 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
     on<EditRatingsMade>(_onEditRatingsMade);
     on<AddRatingWithParticipants>(_onAddRatingWithParticipants);
     on<EditRatingWithParticipants>(_onEditRatingWithParticipants);
+    on<FetchRatingsAndDetails>(_onFetchRatingsAndDetails);
 
     // Set up subscriptions for streaming data
     _ratingDetailsSubscription = _repository.watchRatingDetails().listen(
@@ -133,6 +134,21 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
       // stream auto-updates
     } catch (e) {
       emit(RatingError("Failed to delete ratings made: $e"));
+    }
+  }
+
+  Future<void> _onFetchRatingsAndDetails(
+    FetchRatingsAndDetails event,
+    Emitter<RatingsState> emit,
+  ) async {
+    try {
+      final data = await _repository.getRatingsAndDetails();
+      final ratingDetails = data["ratingDetails"] as List<RatingDetailsModel>;
+      final ratingsMade = data["ratingsMade"] as List<RatingsMadeModel>;
+
+      emit(RatingsAndDetailsLoaded(ratingDetails, ratingsMade));
+    } catch (e) {
+      emit(RatingError("Failed to fetch ratings and details: $e"));
     }
   }
 

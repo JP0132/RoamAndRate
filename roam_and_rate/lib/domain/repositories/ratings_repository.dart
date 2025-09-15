@@ -7,6 +7,7 @@ abstract class RatingsRepository {
   Future<void> addRatingDetails(RatingDetailsModel ratingDetails);
   Future<void> deleteRatingDetails(String id);
   Future<void> editRatingDetails(RatingDetailsModel ratingDetails);
+  Future<Map<String, dynamic>> getRatingsAndDetails();
 
   Future<List<RatingsMadeModel>> getRatingsMade();
   Stream<List<RatingsMadeModel>> watchRatingsMade();

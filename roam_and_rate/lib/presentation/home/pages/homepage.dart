@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
+import 'package:roam_and_rate/application/expenses/expense_state.dart';
+import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
+import 'package:roam_and_rate/application/rating/ratings_event.dart';
+import 'package:roam_and_rate/application/rating/ratings_state.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
@@ -63,6 +68,16 @@ class _HomePageState extends State<HomePage> {
       createdAt: DateTime.now(),
     ),
   ];
+
+  bool _expandedExpenses = false;
+  bool _expandedRatings = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<RatingsBloc>().add(FetchRatingsAndDetails());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,37 +142,121 @@ class _HomePageState extends State<HomePage> {
             ),
 
             SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [Text("Expenses"), Text("View All")],
+            ),
+            SizedBox(height: 20),
+            BlocBuilder<ExpenseBloc, ExpenseState>(
+              builder: (context, state) {
+                if (state is ExpenseInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is ExpenseLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is ExpenseLoaded) {
+                  if (state.expenses.isEmpty) {
+                    return Text("No Expenses found");
+                  }
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      final visibleExpenses = _expandedExpenses
+                          ? state.expenses
+                          : state.expenses.take(3);
+                      return Column(
+                        children: [
+                          ...visibleExpenses.map(
+                            (expense) => ExpenseCard(
+                              transactionName: expense.name,
+                              type: expense.type,
+                              datePaid: expense.datePaid,
+                              paid: expense.paid,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else if (state is ExpenseError) {
+                  return Text("Error: ${state.message}");
+                } else {
+                  return const Text("Something went wrong!");
+                }
+              },
+            ),
+            SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [Text("Ratings"), Text("View All")],
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: RatingCards(
-                  name: "Vasco de Gama",
-                  rating: 10,
-                  dateRated: DateTime.now(),
-                ),
-              ),
+            SizedBox(height: 20),
+            BlocBuilder<RatingsBloc, RatingsState>(
+              builder: (context, state) {
+                if (state is RatingInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is RatingLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is RatingsAndDetailsLoaded) {
+                  if (state.ratingDetails.isEmpty) {
+                    return Text("No Ratings Made");
+                  }
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      final visibleRating = _expandedRatings
+                          ? state.ratingDetails
+                          : state.ratingDetails.take(3);
+                      return Column(
+                        children: [
+                          ...visibleRating.map(
+                            (rating) => RatingCards(
+                              name: rating.placeName,
+                              rating: 0,
+                              dateRated: DateTime.now(),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else if (state is RatingError) {
+                  return Text("Error: ${state.message}");
+                } else {
+                  return const Text("Something went wrong!");
+                }
+              },
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Text("Transactions"), Text("View All")],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: ExpenseCard(
-                  transactionName: "Vasco de Gama",
-                  paid: 56.95,
-                  datePaid: DateTime.now(),
-                  type: 'Card',
-                ),
-              ),
-            ),
+
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [Text("Ratings"), Text("View All")],
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: SizedBox(
+            //     width: double.infinity,
+            //     child: RatingCards(
+            //       name: "Vasco de Gama",
+            //       rating: 10,
+            //       dateRated: DateTime.now(),
+            //     ),
+            //   ),
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [Text("Transactions"), Text("View All")],
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: SizedBox(
+            //     width: double.infinity,
+            //     child: ExpenseCard(
+            //       transactionName: "Vasco de Gama",
+            //       paid: 56.95,
+            //       datePaid: DateTime.now(),
+            //       type: 'Card',
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
