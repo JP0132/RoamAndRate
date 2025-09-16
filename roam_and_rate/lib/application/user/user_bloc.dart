@@ -14,6 +14,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     // Listen to DB changes
     on<AddUser>(_onAddUser);
     on<DeleteUser>(_onDeleteUser);
+    on<FetchAdminUser>(_onFetchAdminUser);
 
     _subscription = repository.watchUsers().listen(
       (users) {
@@ -45,6 +46,15 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       // stream auto-updates
     } catch (e) {
       emit(UserError("Failed to delete user: $e"));
+    }
+  }
+
+  Future<void> _onFetchAdminUser(FetchAdminUser event, Emitter<UserState> emit) async {
+    try {
+      final adminUser = await repository.fetchAdminUser();
+      emit(AdminUserFetched(adminUser));
+    } catch (e) {
+      emit(UserError("Failed to fetch admin user: $e"));
     }
   }
 

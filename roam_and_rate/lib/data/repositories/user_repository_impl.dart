@@ -41,4 +41,11 @@ class UserRepositoryImpl implements UserRepository {
   Future<void> deleteUser(String id) async {
     await dao.deleteUser(id);
   }
+  
+  @override
+  Future<UserModel> fetchAdminUser() async{
+    final users = await dao.getAllUsers(); 
+    final adminUser = users.firstWhere((user) => user.admin == true, orElse: () => throw Exception('No admin user found'));
+    return adminUser.toModel();
+  }
 }

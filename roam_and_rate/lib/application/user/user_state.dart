@@ -6,6 +6,11 @@ class UserInitial extends UserState {}
 
 class UserLoading extends UserState {}
 
+class AdminUserFetched extends UserState {
+  final UserModel adminUser;
+  AdminUserFetched(this.adminUser);
+}
+
 class UserAdded extends UserState {}
 
 class UserLoaded extends UserState {

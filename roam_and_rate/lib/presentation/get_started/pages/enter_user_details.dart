@@ -241,6 +241,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                         backgroundColor: CustomColours.darkSuccess,
                       ),
                     );
+                    //context.read<UserBloc>().add(FetchUsers());
                     SmoothTransitionPage(context, CustomBottomNavbar());
                   } else if (state is UserError) {
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -8,6 +8,7 @@ import 'package:roam_and_rate/application/rating/ratings_state.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
+import 'package:roam_and_rate/application/user/user_event.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
@@ -76,6 +77,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<RatingsBloc>().add(FetchRatingsAndDetails());
+    context.read<UserBloc>().add(FetchAdminUser());
   }
 
   @override
@@ -93,16 +95,12 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is UserLoading) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (state is UserLoaded) {
+                } else if (state is AdminUserFetched) {
                   SessionManager().setUserId(
-                    state.users
-                            .where((user) => user.admin == true)
-                            .first
-                            .userId ??
-                        '',
+                      state.adminUser.userId!
                   );
                   return Text(
-                    "Welcome, ${state.users.where((user) => user.admin == true).first.username}",
+                    "Welcome, ${state.adminUser.username}",
                   );
                 } else if (state is UserError) {
                   return Text("Error: ${state.message}");
