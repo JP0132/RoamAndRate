@@ -45,7 +45,7 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<UserModel> fetchAdminUser() async{
     final users = await dao.getAllUsers(); 
-    final adminUser = users.firstWhere((user) => user.admin == true, orElse: () => throw Exception('No admin user found'));
+    final adminUser = users.firstWhere((user) => user.admin == true);
     return adminUser.toModel();
   }
 }

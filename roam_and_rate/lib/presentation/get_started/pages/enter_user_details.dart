@@ -8,6 +8,7 @@ import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_event.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/user_model.dart';
@@ -16,6 +17,7 @@ import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dar
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EnterUserDetails extends StatefulWidget {
   const EnterUserDetails({super.key});
@@ -67,6 +69,16 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
           selectedDate!.isAtSameMomentAs(minValidDate);
     }
     return false;
+  }
+
+  void checkIfFormSubmitted() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
+    if (isFirstTime) {
+      await prefs.setBool('isFirstTime', false);
+    }
   }
 
   @override
@@ -234,15 +246,25 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
 
               BlocConsumer<UserBloc, UserState>(
                 listener: (context, state) {
-                  if (state is UserAdded) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("User created!"),
-                        backgroundColor: CustomColours.darkSuccess,
-                      ),
-                    );
-                    //context.read<UserBloc>().add(FetchUsers());
-                    SmoothTransitionPage(context, CustomBottomNavbar());
+                  if (state is UserLoaded) {
+                    // Check if our newly added user is in the list
+                    try {
+                      final newUser = state.users.firstWhere(
+                        (user) => user.username == _usernameController.text,
+                      );
+
+                      SessionManager().setUserId(newUser.userId!);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("User created!"),
+                          backgroundColor: CustomColours.darkSuccess,
+                        ),
+                      );
+                      SmoothTransitionPage(context, CustomBottomNavbar());
+                    } catch (e) {
+                      // User not found in the list yet, wait for next update
+                      // You can add a loading indicator or just do nothing
+                    }
                   } else if (state is UserError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -271,7 +293,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                           gender: selectedGender!,
                           admin: true,
                         );
-
+                        checkIfFormSubmitted();
                         context.read<UserBloc>().add(AddUser(newUser));
                       }
                     },

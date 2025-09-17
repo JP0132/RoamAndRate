@@ -76,10 +76,6 @@ class _SplashPageState extends State<SplashPage>
 
     bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
 
-    if (isFirstTime) {
-      await prefs.setBool('isFirstTime', false);
-    }
-
     if (mounted) {
       if (isFirstTime) {
         SmoothTransitionPage(context, OnboardingPage());

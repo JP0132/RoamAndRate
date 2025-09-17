@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<RatingsBloc>().add(FetchRatingsAndDetails());
-    context.read<UserBloc>().add(FetchAdminUser());
+    //context.read<UserBloc>().add(FetchAdminUser());
   }
 
   @override
@@ -95,13 +95,22 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is UserLoading) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (state is AdminUserFetched) {
-                  SessionManager().setUserId(
-                      state.adminUser.userId!
-                  );
-                  return Text(
-                    "Welcome, ${state.adminUser.username}",
-                  );
+                } else if (state is UserLoaded) {
+                  // Check if we have any users
+                  if (state.users.isEmpty) {
+                    return const Text("No users found");
+                  }
+
+                  // Find the admin user
+                  try {
+                    final adminUser = state.users.firstWhere(
+                      (user) => user.admin == true,
+                    );
+                    SessionManager().setUserId(adminUser.userId!);
+                    return Text("Welcome, ${adminUser.username}");
+                  } catch (e) {
+                    return const Text("No admin user found");
+                  }
                 } else if (state is UserError) {
                   return Text("Error: ${state.message}");
                 } else {

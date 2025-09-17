@@ -34,7 +34,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Future<void> _onAddUser(AddUser event, Emitter<UserState> emit) async {
     try {
       await repository.addUser(event.user);
-      emit(UserAdded());
+      //emit(UserAdded());
     } catch (e) {
       emit(UserError("Failed to add user: $e"));
     }
@@ -51,6 +51,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   Future<void> _onFetchAdminUser(FetchAdminUser event, Emitter<UserState> emit) async {
     try {
+      emit(UserLoading());
       final adminUser = await repository.fetchAdminUser();
       emit(AdminUserFetched(adminUser));
     } catch (e) {
