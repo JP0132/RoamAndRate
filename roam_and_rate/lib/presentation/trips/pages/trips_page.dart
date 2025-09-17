@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_state.dart';
@@ -79,7 +80,19 @@ class _TripsPageState extends State<TripsPage> {
           } else if (state is TripLoaded) {
             if (state.trips.isEmpty) {
               return Center(
-                child: Text("Create your first trip to get started!"),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Create your first trip to get started!"),
+                    SizedBox(height: 40),
+                    Icon(
+                      FontAwesomeIcons.arrowDown,
+                      size: 100,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               );
             } else {
               _trips = state.trips;
