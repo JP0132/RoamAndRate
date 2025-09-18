@@ -63,6 +63,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     if (_isOpen) {
       _closeDropdown();
     } else {
+      FocusScope.of(context).unfocus();
       _openDropdown();
     }
   }

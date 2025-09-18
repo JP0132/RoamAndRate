@@ -29,7 +29,8 @@ class EditRatingPage extends StatefulWidget {
   const EditRatingPage({
     super.key,
     required this.rating,
-    this.participantRatings, this.ratingMade,
+    this.participantRatings,
+    this.ratingMade,
   });
 
   @override
@@ -206,175 +207,46 @@ class _EditRatingPageState extends State<EditRatingPage> {
         foregroundColor: CustomColours.darkBackground,
         child: FaIcon(FontAwesomeIcons.camera, size: 35),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Input field to enter the name of the place
-              Text(
-                "Place Name *",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: CustomColours.darkPrimary,
-                ),
-              ),
-              CustomInputField(
-                inputText: "Place Name",
-                inputIcon: FaIcon(FontAwesomeIcons.earthEurope),
-                controller: _placeNameController,
-              ),
-              SizedBox(height: 20),
-
-              // Input field to enter the location/address of the place
-              Text(
-                "Location *",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: CustomColours.darkPrimary,
-                ),
-              ),
-              CustomInputField(
-                inputText: "Location",
-                inputIcon: FaIcon(FontAwesomeIcons.locationDot),
-                controller: _locationController,
-              ),
-
-              SizedBox(height: 20),
-
-              Row(
-                children: [
-                  // Select the date you visted
-                  // TODO: If status is marked as planned then disable the field
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Category *",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: CustomColours.darkPrimary,
-                          ),
-                        ),
-                        CustomisableDropdown<String>(
-                          items: categories,
-                          hint: "Select which category?",
-                          value: selectedCategory,
-                          backgroundColour: CustomColours.darkSurface,
-                          borderColour: Colors.transparent,
-                          padding: EdgeInsets.all(20),
-                          borderRadius: 20,
-                          menuMaxHeight: 200,
-                          selectedItemColour: CustomColours.darkPrimary,
-                          selectedItemTextColour: CustomColours.darkBackground,
-                          unselectedItemTextColour: Colors.grey[300],
-
-                          onChanged: (category) {
-                            setState(() {
-                              selectedCategory = category;
-                            });
-                          },
-                          itemBuilder: (value) => Text(value),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(width: 10), // Space between containers
-                  // Dropdown to select the value, if the cost was worth it
-                  // TODO: Add dollar symbols
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Status *",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: CustomColours.darkPrimary,
-                          ),
-                        ),
-                        CustomisableDropdown<String>(
-                          items: statuses,
-                          hint: "Select which Status?",
-                          value: selectedStatus,
-                          backgroundColour: CustomColours.darkSurface,
-                          borderColour: Colors.transparent,
-                          padding: EdgeInsets.all(20),
-                          borderRadius: 20,
-                          menuMaxHeight: 200,
-                          selectedItemColour: CustomColours.darkPrimary,
-                          selectedItemTextColour: CustomColours.darkBackground,
-                          unselectedItemTextColour: Colors.grey[300],
-
-                          onChanged: (value) {
-                            setState(() {
-                              selectedStatus = value;
-                            });
-                          },
-                          itemBuilder: (value) => Text(value),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 20),
-
-              if (!{"Dropped", "On-hold", ""}.contains(selectedStatus)) ...[
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Input field to enter the name of the place
                 Text(
-                  "Rating",
+                  "Place Name *",
                   style: TextStyle(
                     fontSize: 14,
                     color: CustomColours.darkPrimary,
                   ),
                 ),
+                CustomInputField(
+                  inputText: "Place Name",
+                  inputIcon: FaIcon(FontAwesomeIcons.earthEurope),
+                  controller: _placeNameController,
+                ),
+                SizedBox(height: 20),
 
-                // BlocBuilder<RatingsBloc, Ratings()
-
-                BlocBuilder<ParticipantBloc, ParticipantState>(
-                  builder: (context, state) {
-                    if (state is ParticipantLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is ParticipantLoaded) {
-                      if (state.participants.isEmpty) {
-                        return Text("SOMETHING WENT WRONG");
-                      }
-
-                      _participants = state.participants;
-                      // selectedParticipant = _participants
-                      //     .where((p) => p.isAdmin)
-                      //     .first
-                      //     .particpantName;
-                      return RatingContainer(
-                        selectedParticipants: updateParticipantRatings,
-                        participants: _participants,
-                        ratings: selectedParticipants.values.toList(),
-                        ratingParticipants: selectedParticipants.keys.toList(),
-                        editMode: true,
-                        onRatingsUpdate:
-                            handleRatingsUpdate, // Change this line
-                      );
-                    } else if (state is ParticipantError) {
-                      return Text("Error: ${state.message}");
-                    } else {
-                      return const Text("Something went wrong!");
-                    }
-                  },
+                // Input field to enter the location/address of the place
+                Text(
+                  "Location *",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: CustomColours.darkPrimary,
+                  ),
+                ),
+                CustomInputField(
+                  inputText: "Location",
+                  inputIcon: FaIcon(FontAwesomeIcons.locationDot),
+                  controller: _locationController,
                 ),
 
-                // RatingInput(
-                //   initalRating: 0,
-                //   onRatingChanged: (newRating) {
-                //     setState(() {
-                //       _currentRating = newRating;
-                //     });
-                //   },
-                // ),
                 SizedBox(height: 20),
 
                 Row(
@@ -386,57 +258,32 @@ class _EditRatingPageState extends State<EditRatingPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            getStatusLabel(selectedStatus),
+                            "Category *",
                             style: TextStyle(
                               fontSize: 14,
                               color: CustomColours.darkPrimary,
                             ),
                           ),
-                          InkWell(
-                            onTap: () => _showCustomStyledPicker(),
+                          CustomisableDropdown<String>(
+                            items: categories,
+                            hint: "Select which category?",
+                            value: selectedCategory,
+                            backgroundColour: CustomColours.darkSurface,
+                            borderColour: Colors.transparent,
+                            padding: EdgeInsets.all(20),
+                            borderRadius: 20,
+                            menuMaxHeight: 200,
+                            selectedItemColour: CustomColours.darkPrimary,
+                            selectedItemTextColour:
+                                CustomColours.darkBackground,
+                            unselectedItemTextColour: Colors.grey[300],
 
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: CustomColours.darkSurface,
-
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20),
-                                ),
-                              ),
-
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.only(right: 20),
-
-                                      child: Icon(
-                                        Icons.calendar_today,
-                                        color: CustomColours.darkPrimary,
-                                      ),
-                                    ),
-                                  ),
-
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-
-                                    child: Text(
-                                      DateFormat(
-                                        'dd/MM/yyyy',
-                                      ).format(selectedDate!),
-
-                                      textAlign: TextAlign.justify,
-
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            onChanged: (category) {
+                              setState(() {
+                                selectedCategory = category;
+                              });
+                            },
+                            itemBuilder: (value) => Text(value),
                           ),
                         ],
                       ),
@@ -450,24 +297,29 @@ class _EditRatingPageState extends State<EditRatingPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Value",
+                            "Status *",
                             style: TextStyle(
                               fontSize: 14,
                               color: CustomColours.darkPrimary,
                             ),
                           ),
                           CustomisableDropdown<String>(
-                            items: value,
-                            hint: "How well priced was it?",
-                            value: selectedValue,
+                            items: statuses,
+                            hint: "Select which Status?",
+                            value: selectedStatus,
                             backgroundColour: CustomColours.darkSurface,
                             borderColour: Colors.transparent,
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
+                            selectedItemColour: CustomColours.darkPrimary,
+                            selectedItemTextColour:
+                                CustomColours.darkBackground,
+                            unselectedItemTextColour: Colors.grey[300],
+
                             onChanged: (value) {
                               setState(() {
-                                selectedValue = value;
+                                selectedStatus = value;
                               });
                             },
                             itemBuilder: (value) => Text(value),
@@ -477,142 +329,306 @@ class _EditRatingPageState extends State<EditRatingPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
-              ],
 
-              Text(
-                "Tags",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: CustomColours.darkPrimary,
-                ),
-              ),
-              WTagField(onTagsChanged: handleTagsChanged, addedTags: addedTags),
-              SizedBox(height: 20),
-              Text(
-                "Notes",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: CustomColours.darkPrimary,
-                ),
-              ),
-              WLargeTextfield(hintText: "Notes", controller: _notesController),
-              SizedBox(height: 20),
-              Center(
-                child: _image == null
-                    ? Text("No Image added")
-                    : Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                        child: Stack(
+                SizedBox(height: 20),
+
+                if (!{"Dropped", "On-hold", ""}.contains(selectedStatus)) ...[
+                  Text(
+                    "Rating",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: CustomColours.darkPrimary,
+                    ),
+                  ),
+
+                  // BlocBuilder<RatingsBloc, Ratings()
+                  BlocBuilder<ParticipantBloc, ParticipantState>(
+                    builder: (context, state) {
+                      if (state is ParticipantLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is ParticipantLoaded) {
+                        if (state.participants.isEmpty) {
+                          return Text("SOMETHING WENT WRONG");
+                        }
+
+                        _participants = state.participants;
+                        // selectedParticipant = _participants
+                        //     .where((p) => p.isAdmin)
+                        //     .first
+                        //     .particpantName;
+                        return RatingContainer(
+                          selectedParticipants: updateParticipantRatings,
+                          participants: _participants,
+                          ratings: selectedParticipants.values.toList(),
+                          ratingParticipants: selectedParticipants.keys
+                              .toList(),
+                          editMode: true,
+                          onRatingsUpdate:
+                              handleRatingsUpdate, // Change this line
+                        );
+                      } else if (state is ParticipantError) {
+                        return Text("Error: ${state.message}");
+                      } else {
+                        return const Text("Something went wrong!");
+                      }
+                    },
+                  ),
+
+                  // RatingInput(
+                  //   initalRating: 0,
+                  //   onRatingChanged: (newRating) {
+                  //     setState(() {
+                  //       _currentRating = newRating;
+                  //     });
+                  //   },
+                  // ),
+                  SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      // Select the date you visted
+                      // TODO: If status is marked as planned then disable the field
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.file(_image!),
-                            Positioned(
-                              top: 0.0,
-                              right: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: IconButton(
-                                  icon: Icon(Icons.cancel, color: Colors.red),
-                                  onPressed: () => {
-                                    setState(() {
-                                      _image = null;
-                                    }),
-                                  },
+                            Text(
+                              getStatusLabel(selectedStatus),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: CustomColours.darkPrimary,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => _showCustomStyledPicker(),
+
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: CustomColours.darkSurface,
+
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20),
+                                  ),
+                                ),
+
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+
+                                  child: InputDecorator(
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+
+                                      prefixIcon: Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 20,
+                                        ),
+
+                                        child: Icon(
+                                          Icons.calendar_today,
+                                          color: CustomColours.darkPrimary,
+                                        ),
+                                      ),
+                                    ),
+
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+
+                                      child: Text(
+                                        DateFormat(
+                                          'dd/MM/yyyy',
+                                        ).format(selectedDate!),
+
+                                        textAlign: TextAlign.justify,
+
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-              ),
-              SizedBox(height: 50),
-              BlocConsumer<RatingsBloc, RatingsState>(
-                listener: (context, state) {
-                  if (state is RatingDetailsEdited) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Rating created!"),
-                        backgroundColor: CustomColours.darkSuccess,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    Navigator.pop(context);
-                  } else if (state is RatingWithParticipantsEdited) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Rating created!"),
-                        backgroundColor: CustomColours.darkSuccess,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    Navigator.pop(context);
-                  }
-                },
-                builder: (context, state) {
-                  if (state is RatingLoading) {
-                    return const CircularProgressIndicator();
-                  }
-                  return ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        validateDetails();
-                      });
 
-                      RatingDetailsModel updatedRatingDetails = widget.rating
-                          .copyWith(
-                            placeName: _placeNameController.text.trim(),
-                            location: _locationController.text.trim(),
-                            category: selectedCategory!,
-                            status: selectedStatus!,
-                            tags: addedTags,
-                            notes: _notesController.text.trim(),
-                          );
-
-                      if (!{
-                        "Dropped",
-                        "On-hold",
-                        "",
-                      }.contains(selectedStatus)) {
-                        Map<String, double> updatedRatingMade = {};
-                        selectedParticipants.forEach((participant, rating) {
-                          updatedRatingMade[participant] = rating;
-                        });
-                        RatingDetailsModel updatedRating = updatedRatingDetails
-                            .copyWith(
-                              dateVisited: selectedDate,
+                      SizedBox(width: 10), // Space between containers
+                      // Dropdown to select the value, if the cost was worth it
+                      // TODO: Add dollar symbols
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Value",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: CustomColours.darkPrimary,
+                              ),
+                            ),
+                            CustomisableDropdown<String>(
+                              items: value,
+                              hint: "How well priced was it?",
                               value: selectedValue,
-                            );
-                        context.read<RatingsBloc>().add(
-                          EditRatingWithParticipants(
-                            updatedRating,
-                            updatedRatingMade,
-                          ),
-                        );
-                      } else {
-                        context.read<RatingsBloc>().add(
-                          EditRatingDetails(updatedRatingDetails),
-                        );
-                      }
-                      if (formValid.values.every((v) => v)) {}
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: CustomColours.darkPrimary,
-                      foregroundColor: CustomColours.darkBackground,
-                      padding: EdgeInsets.all(8.0),
-                    ),
-                    child: Text(
-                      "Submit",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
+                              backgroundColour: CustomColours.darkSurface,
+                              borderColour: Colors.transparent,
+                              padding: EdgeInsets.all(20),
+                              borderRadius: 20,
+                              menuMaxHeight: 200,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedValue = value;
+                                });
+                              },
+                              itemBuilder: (value) => Text(value),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                ],
+
+                Text(
+                  "Tags",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: CustomColours.darkPrimary,
+                  ),
+                ),
+                WTagField(
+                  onTagsChanged: handleTagsChanged,
+                  addedTags: addedTags,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  "Notes",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: CustomColours.darkPrimary,
+                  ),
+                ),
+                WLargeTextfield(
+                  hintText: "Notes",
+                  controller: _notesController,
+                ),
+                SizedBox(height: 20),
+                Center(
+                  child: _image == null
+                      ? Text("No Image added")
+                      : Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: Stack(
+                            children: [
+                              Image.file(_image!),
+                              Positioned(
+                                top: 0.0,
+                                right: 0.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: IconButton(
+                                    icon: Icon(Icons.cancel, color: Colors.red),
+                                    onPressed: () => {
+                                      setState(() {
+                                        _image = null;
+                                      }),
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+                SizedBox(height: 50),
+                BlocConsumer<RatingsBloc, RatingsState>(
+                  listener: (context, state) {
+                    if (state is RatingDetailsEdited) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Rating created!"),
+                          backgroundColor: CustomColours.darkSuccess,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      Navigator.pop(context);
+                    } else if (state is RatingWithParticipantsEdited) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Rating created!"),
+                          backgroundColor: CustomColours.darkSuccess,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      Navigator.pop(context);
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is RatingLoading) {
+                      return const CircularProgressIndicator();
+                    }
+                    return ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          validateDetails();
+                        });
+
+                        RatingDetailsModel updatedRatingDetails = widget.rating
+                            .copyWith(
+                              placeName: _placeNameController.text.trim(),
+                              location: _locationController.text.trim(),
+                              category: selectedCategory!,
+                              status: selectedStatus!,
+                              tags: addedTags,
+                              notes: _notesController.text.trim(),
+                            );
+
+                        if (!{
+                          "Dropped",
+                          "On-hold",
+                          "",
+                        }.contains(selectedStatus)) {
+                          Map<String, double> updatedRatingMade = {};
+                          selectedParticipants.forEach((participant, rating) {
+                            updatedRatingMade[participant] = rating;
+                          });
+                          RatingDetailsModel updatedRating =
+                              updatedRatingDetails.copyWith(
+                                dateVisited: selectedDate,
+                                value: selectedValue,
+                              );
+                          context.read<RatingsBloc>().add(
+                            EditRatingWithParticipants(
+                              updatedRating,
+                              updatedRatingMade,
+                            ),
+                          );
+                        } else {
+                          context.read<RatingsBloc>().add(
+                            EditRatingDetails(updatedRatingDetails),
+                          );
+                        }
+                        if (formValid.values.every((v) => v)) {}
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: CustomColours.darkPrimary,
+                        foregroundColor: CustomColours.darkBackground,
+                        padding: EdgeInsets.all(8.0),
+                      ),
+                      child: Text(
+                        "Submit",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
