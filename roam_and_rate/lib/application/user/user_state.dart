@@ -13,6 +13,8 @@ class AdminUserFetched extends UserState {
 
 class UserAdded extends UserState {}
 
+class UserEdited extends UserState {}
+
 class UserLoaded extends UserState {
   final List<UserModel> users;
   UserLoaded(this.users);

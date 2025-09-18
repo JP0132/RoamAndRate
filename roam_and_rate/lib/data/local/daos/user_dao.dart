@@ -16,4 +16,12 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
 
   Future<void> deleteUser(String id) =>
       (delete(users)..where((userTbl) => userTbl.id.equals(id))).go();
+
+  Future<void> updateUser(UsersCompanion user){
+    return (update(
+      users,
+    )..where((tbl) => tbl.id.equals(user.id.value))).write(user);
+  }
+
+ 
 }

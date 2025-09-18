@@ -8,6 +8,11 @@ class AddUser extends UserEvent {
   AddUser(this.user);
 }
 
+class EditUser extends UserEvent {
+  final UserModel user;
+  EditUser(this.user);
+}
+
 class DeleteUser extends UserEvent {
   final String userId;
   DeleteUser(this.userId);

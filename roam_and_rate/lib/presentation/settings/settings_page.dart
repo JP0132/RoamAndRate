@@ -12,7 +12,11 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   void handleParticipantBtn() {
-    Navigator.pushNamed(context, AppRouter.participantSettings);
+     Navigator.pushNamed(context, AppRouter.participantSettings);
+  }
+
+  void handleUserDetailsBtn() {
+    Navigator.pushNamed(context, AppRouter.userDetails);
   }
 
   @override
@@ -28,6 +32,8 @@ class _SettingsPageState extends State<SettingsPage> {
               btnText: "Participants",
               onTap: handleParticipantBtn,
             ),
+            SizedBox(height: 10),
+            SettingsBtn(btnText: "User's Details", btnIcon: FontAwesomeIcons.user, onTap: handleUserDetailsBtn),
           ],
         ),
       ),
@@ -49,7 +55,7 @@ class SettingsBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.pushNamed(context, AppRouter.participantSettings),
+      onTap: () => onTap(),
       splashColor: CustomColours.darkPrimary,
       child: Padding(
         padding: const EdgeInsets.all(8.0),

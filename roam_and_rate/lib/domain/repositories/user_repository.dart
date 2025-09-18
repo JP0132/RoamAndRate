@@ -6,4 +6,5 @@ abstract class UserRepository {
   Stream<List<UserModel>> watchUsers();
   Future<void> addUser(UserModel user);
   Future<void> deleteUser(String id);
+  Future<void> editUser(UserModel user);
 }

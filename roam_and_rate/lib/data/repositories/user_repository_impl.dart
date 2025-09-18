@@ -48,4 +48,9 @@ class UserRepositoryImpl implements UserRepository {
     final adminUser = users.firstWhere((user) => user.admin == true);
     return adminUser.toModel();
   }
+  
+  @override
+  Future<void> editUser(UserModel user) {
+    return dao.updateUser(user.toCompanion());
+  }
 }
