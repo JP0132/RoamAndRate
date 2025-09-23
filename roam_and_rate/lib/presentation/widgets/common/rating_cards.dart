@@ -13,7 +13,7 @@ class RatingCards extends StatefulWidget {
   final String name;
   final String category;
   //final int rating;
-  final DateTime dateRated;
+  final DateTime? dateRated;
   final List<RatingsMadeModel> ratingsMade;
 
   const RatingCards({
@@ -83,7 +83,11 @@ class _RatingCardsState extends State<RatingCards> {
                       ),
                     ),
                     Text(
-                      DateFormat('EE, dd MMM yyyy').format(widget.dateRated),
+                      widget.dateRated == null
+                          ? 'Unrated'
+                          : DateFormat(
+                              'EE, dd MMM yyyy',
+                            ).format(widget.dateRated!),
                       style: TextStyle(
                         fontSize: 12,
                         color: CustomColours.darkSecondaryText,
@@ -110,7 +114,7 @@ class _RatingCardsState extends State<RatingCards> {
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: CustomColours.darkSecondaryText,    
+                                      color: CustomColours.darkSecondaryText,
                                       width: 1,
                                     ),
                                   ),

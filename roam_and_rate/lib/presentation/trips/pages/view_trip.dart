@@ -247,7 +247,7 @@ class _ViewTripState extends State<ViewTrip> {
             TripCards(tripModel: widget.tripDetails),
             SizedBox(height: 20),
 
-            Text("Total spent: $_totalSpent"),
+            Text("Total spent: $_totalSpent", style: TextStyle(color: CustomColours.darkPrimary, fontWeight: FontWeight.bold, fontSize: 16)),
 
             Container(
               height: 40.0,

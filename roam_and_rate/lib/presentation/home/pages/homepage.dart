@@ -12,6 +12,8 @@ import 'package:roam_and_rate/application/user/user_event.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
+import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/repositories/user_repository.dart';
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
@@ -148,13 +150,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
 
-            SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Text("Expenses"), Text("View All")],
-            ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             BlocBuilder<ExpenseBloc, ExpenseState>(
               builder: (context, state) {
                 if (state is ExpenseInitial) {
@@ -163,26 +159,75 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ExpenseLoaded) {
                   if (state.expenses.isEmpty) {
-                    return Text("No Expenses found");
-                  }
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      final visibleExpenses = _expandedExpenses
-                          ? state.expenses
-                          : state.expenses.take(3);
-                      return Column(
-                        children: [
-                          ...visibleExpenses.map(
-                            (expense) => ExpenseCard(
-                              transactionName: expense.name,
-                              type: expense.type,
-                              datePaid: expense.datePaid,
-                              paid: expense.paid,
+                    return Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(bottom: 8.0),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: CustomColours.darkSecondaryText,
+                                width: 1,
+                              ),
                             ),
                           ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Expenses",
+                                style: TextStyle(
+                                  color: CustomColours.darkPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text("No Expenses Added Yet"),
+                      ],
+                    );
+                  }
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Expenses",
+                            style: TextStyle(color: CustomColours.darkPrimary),
+                          ),
+                          Text(
+                            state.expenses.isEmpty || state.expenses.length <= 3
+                                ? ""
+                                : _expandedExpenses
+                                ? "View Less"
+                                : "View All",
+                          ),
                         ],
-                      );
-                    },
+                      ),
+                      SizedBox(height: 20),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final visibleExpenses = _expandedExpenses
+                              ? state.expenses
+                              : state.expenses.take(3);
+                          return Column(
+                            children: [
+                              ...visibleExpenses.map(
+                                (expense) => ExpenseCard(
+                                  transactionName: expense.name,
+                                  type: expense.type,
+                                  datePaid: expense.datePaid,
+                                  paid: expense.paid,
+                                  category: expense.category,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
                   );
                 } else if (state is ExpenseError) {
                   return Text("Error: ${state.message}");
@@ -192,11 +237,6 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Text("Ratings"), Text("View All")],
-            ),
-            SizedBox(height: 20),
             BlocBuilder<RatingsBloc, RatingsState>(
               builder: (context, state) {
                 if (state is RatingInitial) {
@@ -205,32 +245,111 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is RatingsAndDetailsLoaded) {
                   if (state.ratingDetails.isEmpty) {
-                    return Text("No Ratings Made");
-                  }
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      final visibleRating = _expandedRatings
-                          ? state.ratingDetails
-                          : state.ratingDetails.take(3);
-
-                      return Column(
-                        children: [
-                          ...visibleRating.map(
-                            (rating) => RatingCards(
-                              name: rating.placeName,
-                              ratingsMade: state.ratingsMade
-                                  .where(
-                                    (rm) => rm.ratingDetailsId == rating.id,
-                                  )
-                                  .map((e) => e)
-                                  .toList(),
-                              dateRated: rating.dateVisited!,
-                              category: rating.category,
+                    return Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(bottom: 8.0),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: CustomColours.darkSecondaryText,
+                                width: 1,
+                              ),
                             ),
                           ),
-                        ],
-                      );
-                    },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Ratings",
+                                style: TextStyle(
+                                  color: CustomColours.darkPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text("No Ratings Added Yet"),
+                      ],
+                    );
+                  }
+                  return Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 8.0),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: CustomColours.darkSecondaryText,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Ratings",
+                              style: TextStyle(
+                                color: CustomColours.darkPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _expandedRatings = !_expandedRatings;
+                                });
+                              },
+                              child: Text(
+                                state.ratingDetails.isEmpty ||
+                                        state.ratingDetails.length <= 3
+                                    ? ""
+                                    : _expandedRatings
+                                    ? "View Less"
+                                    : "View All",
+                                style: TextStyle(
+                                  color: CustomColours.darkPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final visibleRating = _expandedRatings
+                              ? state.ratingDetails
+                              : state.ratingDetails.take(3);
+
+                          return Column(
+                            children: [
+                              for (var rating in visibleRating)
+                                Column(
+                                  children: [
+                                    RatingCards(
+                                      name: rating.placeName,
+                                      ratingsMade: state.ratingsMade
+                                          .where(
+                                            (rm) =>
+                                                rm.ratingDetailsId == rating.id,
+                                          )
+                                          .map((e) => e)
+                                          .toList(),
+                                      dateRated: rating.dateVisited,
+                                      category: rating.category,
+                                    ),
+                                    SizedBox(height: 12),
+                                  ],
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
                   );
                 } else if (state is RatingError) {
                   return Text("Error: ${state.message}");
@@ -239,38 +358,7 @@ class _HomePageState extends State<HomePage> {
                 }
               },
             ),
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [Text("Ratings"), Text("View All")],
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: SizedBox(
-            //     width: double.infinity,
-            //     child: RatingCards(
-            //       name: "Vasco de Gama",
-            //       rating: 10,
-            //       dateRated: DateTime.now(),
-            //     ),
-            //   ),
-            // ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [Text("Transactions"), Text("View All")],
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: SizedBox(
-            //     width: double.infinity,
-            //     child: ExpenseCard(
-            //       transactionName: "Vasco de Gama",
-            //       paid: 56.95,
-            //       datePaid: DateTime.now(),
-            //       type: 'Card',
-            //     ),
-            //   ),
-            // ),
+            SizedBox(height: 200),
           ],
         ),
       ),

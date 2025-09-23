@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
+import 'package:roam_and_rate/domain/models/category_model.dart';
 
 class ExpenseCard extends StatefulWidget {
   final String transactionName;
   final String type;
   final DateTime datePaid;
   final double paid;
+  final String category;
   const ExpenseCard({
     super.key,
     required this.transactionName,
     required this.type,
     required this.datePaid,
     required this.paid,
+    required this.category,
   });
 
   @override
@@ -21,6 +26,15 @@ class ExpenseCard extends StatefulWidget {
 }
 
 class _ExpenseCardState extends State<ExpenseCard> {
+  IconData? getCatIcon(String category) {
+    for (CategoryModel c in Categories.expenseCategories) {
+      if (c.name == category) {
+        return c.icon;
+      }
+    }
+    return FontAwesomeIcons.question;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,6 +53,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
               shape: BoxShape.circle,
               color: CustomColours.darkPrimary,
             ),
+            child: Icon(getCatIcon(widget.category), color: CustomColours.darkSurface),
           ),
 
           SizedBox(width: 16),
