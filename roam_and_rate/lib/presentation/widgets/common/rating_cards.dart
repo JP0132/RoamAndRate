@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
+import 'package:roam_and_rate/data/local/tables/ratings_made.dart';
+import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/star_ratings.dart';
 
 class RatingCards extends StatefulWidget {
   final String name;
-  final int rating;
+  //final int rating;
   final DateTime dateRated;
+  final List<RatingsMadeModel> ratingsMade;
 
   const RatingCards({
     super.key,
     required this.name,
-    required this.rating,
-    required this.dateRated,
+    //required this.rating,
+    required this.dateRated, required this.ratingsMade,
   });
 
   @override
@@ -58,7 +61,20 @@ class _RatingCardsState extends State<RatingCards> {
                   ),
                 ),
                 SizedBox(height: 4),
-                StarRating(rating: widget.rating),
+                widget.ratingsMade.isEmpty
+                    ? Text(
+                        'No rating available',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: CustomColours.darkSecondaryText,
+                        ),
+                      )
+
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: widget.ratingsMade.map( (rm) => StarRating(rating: (rm.rating * 2).toInt()),).toList()),
+                //StarRating(rating: widget.rating),
               ],
             ),
           ),
@@ -76,14 +92,41 @@ class _RatingCardsState extends State<RatingCards> {
                 ),
               ),
               SizedBox(height: 20),
-              Text(
-                Helperfunctions.getRatingDescription(widget.rating),
-                style: TextStyle(
-                  color: CustomColours.darkPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
+              widget.ratingsMade.isEmpty
+                  ? Text(
+                      'No rating available',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: CustomColours.darkSecondaryText,
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: widget.ratingsMade
+                          .map(
+                            (rm) => Text(
+                              Helperfunctions.getRatingDescription(
+                                (rm.rating * 2).toInt(),
+                              ),
+                              style: TextStyle(
+                                color: CustomColours.darkPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                        
+              // Text(
+              //   Helperfunctions.getRatingDescription(widget.rating),
+              //   style: TextStyle(
+              //     color: CustomColours.darkPrimary,
+              //     fontWeight: FontWeight.bold,
+              //     fontSize: 14,
+              //   ),
+              // ),
             ],
           ),
         ],

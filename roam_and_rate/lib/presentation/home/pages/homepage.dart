@@ -212,13 +212,19 @@ class _HomePageState extends State<HomePage> {
                       final visibleRating = _expandedRatings
                           ? state.ratingDetails
                           : state.ratingDetails.take(3);
+
                       return Column(
                         children: [
                           ...visibleRating.map(
                             (rating) => RatingCards(
                               name: rating.placeName,
-                              rating: 0,
-                              dateRated: DateTime.now(),
+                              ratingsMade: state.ratingsMade
+                                  .where(
+                                    (rm) => rm.ratingDetailsId == rating.id,
+                                  )
+                                  .map((e) => e)
+                                  .toList(),
+                              dateRated: rating.dateVisited!,
                             ),
                           ),
                         ],
