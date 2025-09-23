@@ -225,6 +225,7 @@ class _HomePageState extends State<HomePage> {
                                   .map((e) => e)
                                   .toList(),
                               dateRated: rating.dateVisited!,
+                              category: rating.category,
                             ),
                           ),
                         ],
