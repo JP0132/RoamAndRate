@@ -206,24 +206,25 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
-                      LayoutBuilder(
+                        SizedBox(height: 20),
+                        LayoutBuilder(
                         builder: (context, constraints) {
                           final visibleExpenses = _expandedExpenses
-                              ? state.expenses
-                              : state.expenses.take(3);
+                            ? state.expenses
+                            : state.expenses.take(3);
                           return Column(
-                            children: [
-                              ...visibleExpenses.map(
-                                (expense) => ExpenseCard(
-                                  transactionName: expense.name,
-                                  type: expense.type,
-                                  datePaid: expense.datePaid,
-                                  paid: expense.paid,
-                                  category: expense.category,
-                                ),
-                              ),
+                          children: [
+                            for (var expense in visibleExpenses) ...[
+                            ExpenseCard(
+                              transactionName: expense.name,
+                              type: expense.type,
+                              datePaid: expense.datePaid,
+                              paid: expense.paid,
+                              category: expense.category,
+                            ),
+                            SizedBox(height: 12),
                             ],
+                          ],
                           );
                         },
                       ),
