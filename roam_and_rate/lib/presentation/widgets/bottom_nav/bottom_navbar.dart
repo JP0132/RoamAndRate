@@ -8,6 +8,7 @@ import 'package:roam_and_rate/application/navigation/navigation_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/presentation/home/pages/homepage.dart';
 import 'package:roam_and_rate/presentation/settings/settings_page.dart';
+import 'package:roam_and_rate/presentation/stats/pages/stats_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/trips_page.dart';
 
 class CustomBottomNavbar extends StatelessWidget {
@@ -98,7 +99,7 @@ class CustomBottomNavbar extends StatelessWidget {
             } else if (state is TripsState) {
               return const TripsPage();
             } else if (state is AnalyticsState) {
-              return Container(color: Colors.orange);
+              return const StatsPage();
             } else if (state is SettingsState) {
               return const SettingsPage();
             } else {
