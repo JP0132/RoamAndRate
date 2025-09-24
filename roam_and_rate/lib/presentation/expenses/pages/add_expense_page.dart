@@ -49,7 +49,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final List<String> categories = [
     "Food & Drink",
     "Tourist Attraction",
-    "Accomadation",
+    "Accommodation",
     "Shopping",
     "Nature & Outdoors",
     "Transport",
