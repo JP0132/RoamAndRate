@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
@@ -8,6 +10,7 @@ import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/stats/widgets/expense_pie_chart.dart';
+import 'package:roam_and_rate/presentation/stats/widgets/stats_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 
 class StatsPage extends StatefulWidget {
@@ -24,8 +27,9 @@ class _StatsPageState extends State<StatsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Stats')),
+      appBar: AppBar(title: const Text('Stats'), centerTitle: true),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             BlocBuilder<TripBloc, TripState>(
@@ -90,12 +94,70 @@ class _StatsPageState extends State<StatsPage> {
                         .where((expense) => expense.tripId == selectedTrip)
                         .toList();
                   }
+
+                  double totalExpenses = _expenses.fold(
+                    0.0,
+                    (double sum, item) => sum + item.paid,
+                  );
+                  Map<String, double> categoryExpensesMap = {};
+
+                  for (var expense in _expenses) {
+                    if (categoryExpensesMap.containsKey(expense.category)) {
+                      categoryExpensesMap[expense.category] =
+                          categoryExpensesMap[expense.category]! + expense.paid;
+                    } else {
+                      categoryExpensesMap[expense.category] = expense.paid;
+                    }
+                  }
+
+                  var maxEntry = categoryExpensesMap.entries.reduce(
+                    (a, b) => a.value > b.value ? a : b,
+                  );
+
+                  var leastEntry = categoryExpensesMap.entries.reduce(
+                    (a, b) => a.value < b.value ? a : b,
+                  );
+                 
                   return Column(
                     children: [
-                      Text(
-                        "Total Expenses: \$${_expenses.fold(0.0, (double sum, item) => sum + item.paid)}",
+                      SizedBox(height: 20),
+                      SizedBox(
+                        height: 150, // Set a fixed height for the cards
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            StatsCard(
+                              valueToDisplay:
+                                  "\$${totalExpenses.toStringAsFixed(2)}",
+                              icon: Icons.wallet,
+                              label: "Total Expenses",
+                            ),
+                            SizedBox(width: 10),
+                            StatsCard(
+                              valueToDisplay: maxEntry.key,
+                              icon: Icons.category,
+                              label: "Highest Category",
+                            ),
+                            SizedBox(width: 10),
+                            StatsCard(
+                              valueToDisplay: leastEntry.key,
+                              icon: Icons.category,
+                              label: "Lowest Category",
+                            ),
+                          ],
+                        ),
                       ),
-                      ExpensePieChart(expenses: _expenses),
+                      Center(
+                        child: Text(
+                          "Expenses",
+                          style: TextStyle(
+                            color: CustomColours.darkPrimary,
+                            fontSize: 30,
+                          ),
+                        ),
+                      ),
+
+                      ExpensePieChart(categoryExpensesMap: categoryExpensesMap),
                     ],
                   );
                 } else if (state is ExpenseError) {
@@ -111,3 +173,5 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 }
+
+

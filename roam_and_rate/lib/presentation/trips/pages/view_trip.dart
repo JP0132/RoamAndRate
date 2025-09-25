@@ -242,255 +242,265 @@ class _ViewTripState extends State<ViewTrip> {
       },
       child: Scaffold(
         appBar: AppBar(centerTitle: true, title: Text("Trip Details")),
-        body: Column(
-          children: [
-            TripCards(tripModel: widget.tripDetails),
-            SizedBox(height: 20),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              TripCards(tripModel: widget.tripDetails),
+              SizedBox(height: 20),
 
-            Text("Total spent: $_totalSpent", style: TextStyle(color: CustomColours.darkPrimary, fontWeight: FontWeight.bold, fontSize: 16)),
-
-            Container(
-              height: 40.0,
-              decoration: BoxDecoration(
-                color: CustomColours.darkSurface,
-                borderRadius: BorderRadius.circular(20.0),
+              Text(
+                "Total spent: $_totalSpent",
+                style: TextStyle(
+                  color: CustomColours.darkPrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+
+              Container(
+                height: 40.0,
+                decoration: BoxDecoration(
+                  color: CustomColours.darkSurface,
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search, color: Colors.white),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: const InputDecoration(
+                              hintText: 'Search',
+                              border: InputBorder.none,
+                              hintStyle: TextStyle(fontSize: 14),
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      GestureDetector(
+                        onTap: () async {
+                          await _controller.showTooltip();
+                        },
+                        child: SuperTooltip(
+                          showBarrier: true,
+                          popupDirection: TooltipDirection.left,
+                          controller: _controller,
+                          content: SizedBox(
+                            width: 250,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "The search bar can be used to filter by names and tags.",
+                                ),
+                                SizedBox(height: 12),
+                                Text("Types of searches:"),
+                                SizedBox(height: 4),
+                                Text("• Used commas to multi-search."),
+                                Text(
+                                  "• Use the keyword 'tags:' to search tags only.",
+                                ),
+                                Text(
+                                  "• Use the keyword 'category:' to search categories only.",
+                                ),
+                              ],
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.info_outline,
+                            color: CustomColours.darkPrimary,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+
+              // Toggle buttons (Ratings / Expenses)
+              SizedBox(
+                height: 40,
+
                 child: Row(
                   children: [
-                    const Icon(Icons.search, color: Colors.white),
-                    const SizedBox(width: 8.0),
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: const InputDecoration(
-                            hintText: 'Search',
-                            border: InputBorder.none,
-                            hintStyle: TextStyle(fontSize: 14),
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedIndex = 0),
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: _selectedIndex == 0
+                                ? CustomColours.darkPrimary
+                                : CustomColours.darkSurface,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          style: const TextStyle(fontSize: 14),
+                          child: Text(
+                            "Ratings",
+                            style: TextStyle(
+                              color: _selectedIndex == 0
+                                  ? CustomColours.darkSurface
+                                  : CustomColours.darkPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    Spacer(),
-                    GestureDetector(
-                      onTap: () async {
-                        await _controller.showTooltip();
-                      },
-                      child: SuperTooltip(
-                        showBarrier: true,
-                        popupDirection: TooltipDirection.left,
-                        controller: _controller,
-                        content: SizedBox(
-                          width: 250,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "The search bar can be used to filter by names and tags.",
-                              ),
-                              SizedBox(height: 12),
-                              Text("Types of searches:"),
-                              SizedBox(height: 4),
-                              Text("• Used commas to multi-search."),
-                              Text(
-                                "• Use the keyword 'tags:' to search tags only.",
-                              ),
-                              Text(
-                                "• Use the keyword 'category:' to search categories only.",
-                              ),
-                            ],
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedIndex = 1),
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: _selectedIndex == 1
+                                ? CustomColours.darkPrimary
+                                : CustomColours.darkSurface,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ),
-                        child: Icon(
-                          Icons.info_outline,
-                          color: CustomColours.darkPrimary,
-                          size: 24,
+                          child: Text(
+                            "Expenses",
+                            style: TextStyle(
+                              color: _selectedIndex == 1
+                                  ? CustomColours.darkSurface
+                                  : CustomColours.darkPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            SizedBox(height: 20),
+              const SizedBox(height: 12),
+              Expanded(
+                child: BlocBuilder<TripDataBloc, TripDataState>(
+                  builder: (context, state) {
+                    _ratings = state.ratings.map((e) => e.toModel()).toList();
+                    _expenses = state.expenses.map((e) => e.toModel()).toList();
+                    _filterTripData();
+                    if (_selectedIndex == 0) {
+                      if (_filteredRatings.isEmpty) {
+                        return const Center(child: Text("No ratings yet"));
+                      }
 
-            // Toggle buttons (Ratings / Expenses)
-            SizedBox(
-              height: 40,
+                      return ListView.separated(
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 12),
+                        itemCount: _filteredRatings.length,
+                        itemBuilder: (context, index) {
+                          final rating = _filteredRatings[index];
+                          //print("😭😭😭 ${state.ratingsMade.first.rating}");
+                          final ratingsMade = state.ratingsMade
+                              .where((rm) => rm.ratingDetailsId == rating.id)
+                              .map((e) => e)
+                              .toList();
 
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedIndex = 0),
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 0
-                              ? CustomColours.darkPrimary
-                              : CustomColours.darkSurface,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          "Ratings",
-                          style: TextStyle(
-                            color: _selectedIndex == 0
-                                ? CustomColours.darkSurface
-                                : CustomColours.darkPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedIndex = 1),
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 1
-                              ? CustomColours.darkPrimary
-                              : CustomColours.darkSurface,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          "Expenses",
-                          style: TextStyle(
-                            color: _selectedIndex == 1
-                                ? CustomColours.darkSurface
-                                : CustomColours.darkPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: BlocBuilder<TripDataBloc, TripDataState>(
-                builder: (context, state) {
-                  _ratings = state.ratings.map((e) => e.toModel()).toList();
-                  _expenses = state.expenses.map((e) => e.toModel()).toList();
-                  _filterTripData();
-                  if (_selectedIndex == 0) {
-                    if (_filteredRatings.isEmpty) {
-                      return const Center(child: Text("No ratings yet"));
+                          // return RatingCards(
+                          //   name: rating.placeName,
+                          //   rating: int.parse((0.0 * 2).truncate().toString()),
+                          //   dateRated: rating.dateVisited ?? DateTime.now(),
+                          // );
+                          return FullRatingCard(
+                            ratingDetails: rating,
+                            participantRatings: ratingsMade,
+                          );
+                        },
+                      );
+                    } else {
+                      if (_filteredExpenses.isEmpty) {
+                        return const Center(child: Text("No expenses found"));
+                      }
                     }
+                    // Set<DateTime> dates = {};
+                    // dates.addAll(state.expenses.map((e) => e.datePaid).toList());
 
-                    return ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 12),
-                      itemCount: _filteredRatings.length,
-                      itemBuilder: (context, index) {
-                        final rating = _filteredRatings[index];
-                        //print("😭😭😭 ${state.ratingsMade.first.rating}");
-                        final ratingsMade = state.ratingsMade
-                            .where((rm) => rm.ratingDetailsId == rating.id)
-                            .map((e) => e)
-                            .toList();
+                    // List<DateTime> sortedDates = dates.toList();
+                    // sortedDates.sort((a, b) => a.compareTo(b));
 
-                        // return RatingCards(
-                        //   name: rating.placeName,
-                        //   rating: int.parse((0.0 * 2).truncate().toString()),
-                        //   dateRated: rating.dateVisited ?? DateTime.now(),
-                        // );
-                        return FullRatingCard(
-                          ratingDetails: rating,
-                          participantRatings: ratingsMade,
+                    // List<Expense> sortedExpenses = state.expenses;
+                    // sortedExpenses.sort(
+                    //   (a, b) => a.datePaid.compareTo(b.datePaid),
+                    // );
+
+                    // First get the unique sorted dates
+                    final dates =
+                        _filteredExpenses
+                            .map(
+                              (e) => DateTime(
+                                e.datePaid.year,
+                                e.datePaid.month,
+                                e.datePaid.day,
+                              ),
+                            )
+                            .toSet()
+                            .toList()
+                          ..sort((a, b) => a.compareTo(b));
+
+                    // Sort all expenses by date
+                    final sortedExpenses = [..._filteredExpenses]
+                      ..sort((a, b) => a.datePaid.compareTo(b.datePaid));
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: dates.length,
+                      itemBuilder: (context, dateIndex) {
+                        final date = dates[dateIndex];
+
+                        // All expenses for this date
+                        final expensesForDate = sortedExpenses.where(
+                          (e) =>
+                              e.datePaid.year == date.year &&
+                              e.datePaid.month == date.month &&
+                              e.datePaid.day == date.day,
+                        );
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // --- Date Header (shown ONCE) ---
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 12,
+                              ),
+                              child: Text(
+                                DateFormat('EEEE, dd MMM yyyy').format(date),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+
+                            // --- All expenses under that date ---
+                            ...expensesForDate.map(
+                              (expense) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: FullExpenseCard(expenseDetails: expense),
+                              ),
+                            ),
+                          ],
                         );
                       },
                     );
-                  } else {
-                    if (_filteredExpenses.isEmpty) {
-                      return const Center(child: Text("No expenses found"));
-                    }
-                  }
-                  // Set<DateTime> dates = {};
-                  // dates.addAll(state.expenses.map((e) => e.datePaid).toList());
-
-                  // List<DateTime> sortedDates = dates.toList();
-                  // sortedDates.sort((a, b) => a.compareTo(b));
-
-                  // List<Expense> sortedExpenses = state.expenses;
-                  // sortedExpenses.sort(
-                  //   (a, b) => a.datePaid.compareTo(b.datePaid),
-                  // );
-
-                  // First get the unique sorted dates
-                  final dates =
-                      _filteredExpenses
-                          .map(
-                            (e) => DateTime(
-                              e.datePaid.year,
-                              e.datePaid.month,
-                              e.datePaid.day,
-                            ),
-                          )
-                          .toSet()
-                          .toList()
-                        ..sort((a, b) => a.compareTo(b));
-
-                  // Sort all expenses by date
-                  final sortedExpenses = [..._filteredExpenses]
-                    ..sort((a, b) => a.datePaid.compareTo(b.datePaid));
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: dates.length,
-                    itemBuilder: (context, dateIndex) {
-                      final date = dates[dateIndex];
-
-                      // All expenses for this date
-                      final expensesForDate = sortedExpenses.where(
-                        (e) =>
-                            e.datePaid.year == date.year &&
-                            e.datePaid.month == date.month &&
-                            e.datePaid.day == date.day,
-                      );
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // --- Date Header (shown ONCE) ---
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 12,
-                            ),
-                            child: Text(
-                              DateFormat('EEEE, dd MMM yyyy').format(date),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-
-                          // --- All expenses under that date ---
-                          ...expensesForDate.map(
-                            (expense) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: FullExpenseCard(expenseDetails: expense),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
