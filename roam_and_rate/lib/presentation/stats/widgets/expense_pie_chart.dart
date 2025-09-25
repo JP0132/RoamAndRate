@@ -4,8 +4,8 @@ import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 
 class ExpensePieChart extends StatefulWidget {
-  final List<ExpenseModel> expenses;
-  const ExpensePieChart({super.key, required this.expenses});
+  final Map<String, double> categoryExpensesMap;
+  const ExpensePieChart({super.key, required this.categoryExpensesMap});
 
   @override
   State<ExpensePieChart> createState() => _ExpensePieChartState();
@@ -31,78 +31,108 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
     'Other': Colors.grey,
     'Transport': Colors.yellow,
   };
-  
+
   int touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
-    Map<String, double> dataMap = {};
+    // Map<String, double> dataMap = {};
 
-    for (var expense in widget.expenses) {
-      if (dataMap.containsKey(expense.category)) {
-        dataMap[expense.category] = dataMap[expense.category]! + expense.paid;
-      } else {
-        dataMap[expense.category] = expense.paid;
-      }
-    }
+    // for (var expense in widget.expenses) {
+    //   if (dataMap.containsKey(expense.category)) {
+    //     dataMap[expense.category] = dataMap[expense.category]! + expense.paid;
+    //   } else {
+    //     dataMap[expense.category] = expense.paid;
+    //   }
+    // }
 
-    return AspectRatio(
-      aspectRatio: 1.3,
-      child: Row(
-        children: <Widget>[
-          const SizedBox(height: 18),
-          Expanded(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex = pieTouchResponse
-                            .touchedSection!
-                            .touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  borderData: FlBorderData(show: false),
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 40,
-                  sections: showingSections(dataMap, categoryColors),
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: CustomColours.darkSurface,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: 16),
+            Text(
+              'Expense Distribution',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: CustomColours.darkPrimary,
               ),
             ),
-          ),
-          // Legend
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: dataMap.keys.toList().asMap().entries.map((entry) {
-              final index = entry.key;
-              final label = entry.value;
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Indicator(
-                  color: categoryColors[label] ?? Colors.grey,
-                  text: label,
-                  isSquare: true,
-                ),
-              );
-            }).toList(),
-          ),
-          const SizedBox(width: 28),
-        ],
+            SizedBox(height: 30),
+            AspectRatio(
+              aspectRatio: 1.3,
+              child: Column(
+                children: <Widget>[
+                  
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: PieChart(
+                        PieChartData(
+                          pieTouchData: PieTouchData(
+                            touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                              setState(() {
+                                if (!event.isInterestedForInteractions ||
+                                    pieTouchResponse == null ||
+                                    pieTouchResponse.touchedSection == null) {
+                                  touchedIndex = -1;
+                                  return;
+                                }
+                                touchedIndex = pieTouchResponse
+                                    .touchedSection!
+                                    .touchedSectionIndex;
+                              });
+                            },
+                          ),
+                          borderData: FlBorderData(show: false),
+                          sectionsSpace: 0,
+                          centerSpaceRadius: 40,
+                          sections: showingSections(widget.categoryExpensesMap, categoryColors),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Legend
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: widget.categoryExpensesMap.keys.toList().asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final label = entry.value;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Indicator(
+                            color: categoryColors[label] ?? Colors.grey,
+                            text: label,
+                            isSquare: true,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  List<PieChartSectionData> showingSections(Map<String, double> dataMap, Map<String, Color> colorList) {
+  List<PieChartSectionData> showingSections(
+    Map<String, double> dataMap,
+    Map<String, Color> colorList,
+  ) {
     final total = dataMap.values.fold(0.0, (a, b) => a + b);
 
     return dataMap.entries.toList().asMap().entries.map((entry) {
