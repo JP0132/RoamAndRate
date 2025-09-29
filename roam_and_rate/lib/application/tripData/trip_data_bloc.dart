@@ -6,7 +6,6 @@ import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
 import 'package:roam_and_rate/data/local/daos/rating_details_dao.dart';
 import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
-import 'package:roam_and_rate/data/local/database.dart';
 
 class TripDataBloc extends Bloc<TripDataEvent, TripDataState> {
   final ExpenseDao expenseDao;
