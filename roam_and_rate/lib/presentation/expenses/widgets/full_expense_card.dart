@@ -5,6 +5,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/currency/currency_bloc.dart';
+import 'package:roam_and_rate/application/currency/currency_event.dart';
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_event.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
@@ -12,14 +14,21 @@ import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
+import 'package:roam_and_rate/core/utils/helper/currency_rate.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/tag_widget.dart';
 
 class FullExpenseCard extends StatefulWidget {
   final ExpenseModel expenseDetails;
-  const FullExpenseCard({super.key, required this.expenseDetails});
+  final TripModel tripDetails;
+  const FullExpenseCard({
+    super.key,
+    required this.expenseDetails,
+    required this.tripDetails,
+  });
 
   @override
   State<FullExpenseCard> createState() => _FullExpenseCardState();
@@ -36,6 +45,30 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
     }
     return FontAwesomeIcons.question;
   }
+
+  // Future<String?> fetchRate(String base, String target, double value) async {
+  //   final rate = await getExchangeRate(
+  //     base.toUpperCase(),
+  //     target.toUpperCase(),
+  //   );
+
+  //   if (rate != null) {
+  //     final converted = convertAmount(value, rate);
+  //     return "${converted.toStringAsFixed(2)}";
+  //   }
+  //   return null;
+  // }
+
+  // double convertAmount(double amount, CurrencyRate rate) {
+  //   return amount * rate.mid;
+  // }
+
+  // @override
+  // void initState() {
+  //   if (widget.tripDetails.currency != widget.expenseDetails.currency) {
+  //   }
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -232,15 +265,57 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "${CurrencyData.currencySymbol(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toString()}",
+                        "Paid: ${CurrencyData.currencySymbol(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toString()}",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 69, 219, 156),
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
+                      widget.tripDetails.currency ==
+                              widget.expenseDetails.currency
+                          ? SizedBox() // no need to convert
+                          : FutureBuilder<String?>(
+                              future: fetchRate(
+                                widget.expenseDetails.currency
+                                    .toUpperCase(), // base (original currency)
+                                widget.tripDetails.currency
+                                    .toUpperCase(), // target (trip display currency)
+                                widget.expenseDetails.paid, // value to convert
+                              ),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Text(
+                                    "Converting...",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError ||
+                                    snapshot.data == null) {
+                                  return Text(
+                                    "Conversion failed",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 16,
+                                    ),
+                                  );
+                                } else {
+                                  return Text(
+                                    "Paid: ${CurrencyData.currencySymbol(widget.tripDetails.currency)}${snapshot.data}",
+                                    style: TextStyle(
+                                      color: Color.fromARGB(255, 69, 219, 156),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                       Text(
-                        "${CurrencyData.currencySymbol(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toString()}",
+                        "Cost: ${CurrencyData.currencySymbol(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toString()}",
                         style: TextStyle(
                           color: CustomColours.darkPrimary,
                           fontWeight: FontWeight.bold,

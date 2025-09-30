@@ -489,7 +489,10 @@ class _ViewTripState extends State<ViewTrip> {
                             ...expensesForDate.map(
                               (expense) => Padding(
                                 padding: const EdgeInsets.only(bottom: 12.0),
-                                child: FullExpenseCard(expenseDetails: expense),
+                                child: FullExpenseCard(
+                                  expenseDetails: expense,
+                                  tripDetails: widget.tripDetails,
+                                ),
                               ),
                             ),
                           ],

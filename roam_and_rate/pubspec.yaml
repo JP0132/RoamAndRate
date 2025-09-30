@@ -28,6 +28,7 @@ dependencies:
   super_tooltip: ^2.1.0
   image_picker: ^1.1.2
   fl_chart: ^1.1.0
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
