@@ -85,7 +85,10 @@ class _AddTripPageState extends State<AddTripPage> {
             children: [
               Text(
                 "Trip Name *",
-                style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
               ),
               CustomInputField(
                 inputText: "A memorable trip name",
@@ -97,12 +100,15 @@ class _AddTripPageState extends State<AddTripPage> {
                   "Trip Name cannot be blank or be less than 2 characters!",
                   style: TextStyle(color: Colors.red),
                 ),
-        
+
               SizedBox(height: 20),
               // Location Input field
               Text(
                 "Location *",
-                style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
               ),
               CustomInputField(
                 inputText: "Where you went",
@@ -124,7 +130,10 @@ class _AddTripPageState extends State<AddTripPage> {
               // Currency Dropdown
               Text(
                 "Currency *",
-                style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
               ),
               CustomisableDropdown<String>(
                 items: CurrencyData.fiatCurrenciesNames,
@@ -137,20 +146,26 @@ class _AddTripPageState extends State<AddTripPage> {
                 menuMaxHeight: 200,
                 onChanged: (value) {
                   setState(() {
-                    selectedCurrency = value;
+                    final code = CurrencyData.getCodeFromName(value!);
+                    selectedCurrency = code;
                   });
                 },
                 itemBuilder: (currency) => Text(currency),
               ),
               Text(
-                formValid["currency"] == true ? "" : "Currency cannot be blank!",
+                formValid["currency"] == true
+                    ? ""
+                    : "Currency cannot be blank!",
                 style: TextStyle(color: CustomColours.darkError),
               ),
               SizedBox(height: 20),
               // Budget Input Field
               Text(
                 "Budget",
-                style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
               ),
               ValueListenableBuilder<TextEditingValue>(
                 valueListenable: _budgetController,
@@ -171,10 +186,13 @@ class _AddTripPageState extends State<AddTripPage> {
                 regFilter: Values.decimalOnlyRegExp,
               ),
               SizedBox(height: 20),
-        
+
               Text(
                 "Select trip dates *",
-                style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
               ),
               InkWell(
                 onTap: () => _showEnhancedRangeDatePicker(),
@@ -216,16 +234,23 @@ class _AddTripPageState extends State<AddTripPage> {
                 ),
               ),
               Text(
-                formValid["selectedRange"] == true ? "" : "Date cannot be blank!",
+                formValid["selectedRange"] == true
+                    ? ""
+                    : "Date cannot be blank!",
                 style: TextStyle(color: CustomColours.darkError),
               ),
               SizedBox(height: 20),
               Text(
                 "Category *",
-                style: TextStyle(fontSize: 14, color: CustomColours.darkPrimary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: CustomColours.darkPrimary,
+                ),
               ),
               CustomisableDropdown<String>(
-                items: Categories.tripCategories.map((cat) => cat.name).toList(),
+                items: Categories.tripCategories
+                    .map((cat) => cat.name)
+                    .toList(),
                 hint: "Type of trip",
                 value: selectedCategory,
                 backgroundColour: CustomColours.darkSurface,
@@ -241,7 +266,9 @@ class _AddTripPageState extends State<AddTripPage> {
                 itemBuilder: (category) => Text(category),
               ),
               Text(
-                formValid["category"] == true ? "" : "Category cannot be blank!",
+                formValid["category"] == true
+                    ? ""
+                    : "Category cannot be blank!",
                 style: TextStyle(color: CustomColours.darkError),
               ),
               SizedBox(height: 50),
@@ -259,7 +286,9 @@ class _AddTripPageState extends State<AddTripPage> {
                   } else if (state is TripError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text("Failed to create trip: ${state.message}"),
+                        content: Text(
+                          "Failed to create trip: ${state.message}",
+                        ),
                         backgroundColor: CustomColours.darkError,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -297,7 +326,10 @@ class _AddTripPageState extends State<AddTripPage> {
                     ),
                     child: Text(
                       "Submit",
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
                     ),
                   );
                 },

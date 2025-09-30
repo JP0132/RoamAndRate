@@ -292,12 +292,20 @@ class CurrencyData {
     return currencies.where((c) => !c.isCrypto).map((c) => c.code).toList();
   }
 
+  static String getCodeFromName(String name) {
+    return currencies.firstWhere((c) => c.name == name).code;
+  }
+
   // static List<String> get currenciesSymbols {
   //   return currencies.where((c) => !c.).map((c) => c.).toList();
   // }
 
-  static String currencySymbol(String name) {
+  static String currencySymbolFromName(String name) {
     return currencies.firstWhere((c) => c.name == name).symbol;
+  }
+
+  static String currencySymbolFromCode(String code) {
+    return currencies.firstWhere((c) => c.code == code).symbol;
   }
 
   static List<String> get fiatCurrenciesNames {

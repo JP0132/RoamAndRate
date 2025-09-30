@@ -28,6 +28,7 @@ Future<CurrencyRate?> getExchangeRate(String base, String target) async {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
+      //final mid = jsonData["data"]["mid"];
       return CurrencyRate.fromJson(jsonData);
     } else {
       print('Error: ${response.statusCode}');
@@ -39,8 +40,8 @@ Future<CurrencyRate?> getExchangeRate(String base, String target) async {
   return null;
 }
 
-double convertAmount(double amount, CurrencyRate rate) {
-  return amount * rate.mid;
+double convertAmount(double amount, double rate) {
+  return amount * rate;
 }
 
 // Global cache to track failures per currency pair
@@ -62,7 +63,7 @@ Future<String?> fetchRate(String base, String target, double value) async {
     );
 
     if (rate != null) {
-      final converted = convertAmount(value, rate);
+      final converted = convertAmount(value, rate.mid);
       return converted.toStringAsFixed(2);
     } else {
       throw Exception("Failed to fetch rate");

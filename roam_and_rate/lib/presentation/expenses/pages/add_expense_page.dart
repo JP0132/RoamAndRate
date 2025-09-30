@@ -275,7 +275,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   menuMaxHeight: 200,
                   onChanged: (value) {
                     setState(() {
-                      selectedCurrency = value;
+                      final code = CurrencyData.getCodeFromName(value!);
+                      selectedCurrency = code;
                     });
                   },
                   itemBuilder: (currency) => Text(currency),

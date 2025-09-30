@@ -265,7 +265,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Paid: ${CurrencyData.currencySymbol(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toString()}",
+                        "Paid: ${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toString()}",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 69, 219, 156),
                           fontWeight: FontWeight.bold,
@@ -304,7 +304,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                   );
                                 } else {
                                   return Text(
-                                    "Paid: ${CurrencyData.currencySymbol(widget.tripDetails.currency)}${snapshot.data}",
+                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${snapshot.data}",
                                     style: TextStyle(
                                       color: Color.fromARGB(255, 69, 219, 156),
                                       fontWeight: FontWeight.bold,
@@ -315,7 +315,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                               },
                             ),
                       Text(
-                        "Cost: ${CurrencyData.currencySymbol(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toString()}",
+                        "Cost: ${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toString()}",
                         style: TextStyle(
                           color: CustomColours.darkPrimary,
                           fontWeight: FontWeight.bold,
