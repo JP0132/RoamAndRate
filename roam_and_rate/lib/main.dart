@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/currency/currency_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
@@ -42,6 +43,7 @@ Future<void> main() async {
         BlocProvider(create: (_) => ParticipantBloc(participantRepository)),
         BlocProvider(create: (_) => ExpenseBloc(expenseRepository)),
         BlocProvider(create: (_) => RatingsBloc(ratingsRepository)),
+        BlocProvider(create: (_) => CurrencyBloc()),
       ],
       child: const MainApp(),
     ),

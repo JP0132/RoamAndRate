@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/currency/currency_bloc.dart';
 import 'package:roam_and_rate/application/currency/currency_event.dart';
+import 'package:roam_and_rate/application/currency/currency_state.dart';
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_event.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
@@ -275,17 +276,9 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       widget.tripDetails.currency ==
                               widget.expenseDetails.currency
                           ? SizedBox() // no need to convert
-                          : FutureBuilder<String?>(
-                              future: fetchRate(
-                                widget.expenseDetails.currency
-                                    .toUpperCase(), // base (original currency)
-                                widget.tripDetails.currency
-                                    .toUpperCase(), // target (trip display currency)
-                                widget.expenseDetails.paid, // value to convert
-                              ),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
+                          : BlocBuilder<CurrencyBloc, CurrencyState>(
+                              builder: (context, state) {
+                                if (state is CurrencyLoading) {
                                   return Text(
                                     "Converting...",
                                     style: TextStyle(
@@ -293,8 +286,16 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                       fontSize: 16,
                                     ),
                                   );
-                                } else if (snapshot.hasError ||
-                                    snapshot.data == null) {
+                                } else if (state is CurrencyLoaded) {
+                                  return Text(
+                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${state.convertedValue}",
+                                    style: TextStyle(
+                                      color: Color.fromARGB(255, 69, 219, 156),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  );
+                                } else if (state is CurrencyError) {
                                   return Text(
                                     "Conversion failed",
                                     style: TextStyle(
@@ -303,12 +304,25 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                     ),
                                   );
                                 } else {
+                                  // Trigger the conversion when widget is built
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    context.read<CurrencyBloc>().add(
+                                      FetchConversionRate(
+                                        widget.expenseDetails.currency
+                                            .toUpperCase(),
+                                        widget.tripDetails.currency
+                                            .toUpperCase(),
+                                        widget.expenseDetails.paid,
+                                      ),
+                                    );
+                                  });
                                   return Text(
-                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${snapshot.data}",
+                                    "Converting...",
                                     style: TextStyle(
-                                      color: Color.fromARGB(255, 69, 219, 156),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                                      color: Colors.grey,
+                                      fontSize: 16,
                                     ),
                                   );
                                 }
