@@ -15,6 +15,7 @@ import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
+import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
 import 'package:roam_and_rate/core/utils/helper/currency_rate.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
@@ -37,6 +38,35 @@ class FullExpenseCard extends StatefulWidget {
 
 class _FullExpenseCardState extends State<FullExpenseCard> {
   bool _expanded = false;
+  late Future<String?> _conversionFuture; // Store the future
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeConversionFuture();
+  }
+
+  @override
+  void didUpdateWidget(FullExpenseCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Re-initialize if expense details changed
+    if (oldWidget.expenseDetails.paid != widget.expenseDetails.paid ||
+        oldWidget.expenseDetails.currency != widget.expenseDetails.currency ||
+        oldWidget.tripDetails.currency != widget.tripDetails.currency) {
+      _initializeConversionFuture();
+    }
+  }
+
+  void _initializeConversionFuture() {
+    if (widget.tripDetails.currency != widget.expenseDetails.currency) {
+      _conversionFuture = CurrencyHelper().getConvertedAmount(
+        base: widget.expenseDetails.currency.toUpperCase(),
+        target: widget.tripDetails.currency.toUpperCase(),
+        value: widget.expenseDetails.paid,
+      );
+    }
+  }
 
   IconData? getCatIcon(String category) {
     for (CategoryModel c in Categories.expenseCategories) {
@@ -276,9 +306,11 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       widget.tripDetails.currency ==
                               widget.expenseDetails.currency
                           ? SizedBox() // no need to convert
-                          : BlocBuilder<CurrencyBloc, CurrencyState>(
-                              builder: (context, state) {
-                                if (state is CurrencyLoading) {
+                          : FutureBuilder<String?>(
+                              future: _conversionFuture,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
                                   return Text(
                                     "Converting...",
                                     style: TextStyle(
@@ -286,16 +318,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                       fontSize: 16,
                                     ),
                                   );
-                                } else if (state is CurrencyLoaded) {
-                                  return Text(
-                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${state.convertedValue}",
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 69, 219, 156),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  );
-                                } else if (state is CurrencyError) {
+                                } else if (snapshot.hasError) {
                                   return Text(
                                     "Conversion failed",
                                     style: TextStyle(
@@ -303,25 +326,23 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                       fontSize: 16,
                                     ),
                                   );
-                                } else {
-                                  // Trigger the conversion when widget is built
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    context.read<CurrencyBloc>().add(
-                                      FetchConversionRate(
-                                        widget.expenseDetails.currency
-                                            .toUpperCase(),
-                                        widget.tripDetails.currency
-                                            .toUpperCase(),
-                                        widget.expenseDetails.paid,
-                                      ),
-                                    );
-                                  });
+                                } else if (snapshot.hasData &&
+                                    snapshot.data != null) {
+                                  // ✅ snapshot.data contains your converted value as String
                                   return Text(
-                                    "Converting...",
+                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${snapshot.data!}",
                                     style: TextStyle(
-                                      color: Colors.grey,
+                                      color: Color.fromARGB(255, 69, 219, 156),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  );
+                                } else {
+                                  // No data and no error (might happen if API returns null)
+                                  return Text(
+                                    "Conversion unavailable",
+                                    style: TextStyle(
+                                      color: Colors.orange,
                                       fontSize: 16,
                                     ),
                                   );
