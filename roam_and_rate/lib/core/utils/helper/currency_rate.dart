@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:roam_and_rate/data/local/session_manager.dart';
 
 class CurrencyRate {
   final double mid;
@@ -28,6 +29,7 @@ Future<CurrencyRate?> getExchangeRate(String base, String target) async {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
+      print('📢📢📢: $jsonData');
       //final mid = jsonData["data"]["mid"];
       return CurrencyRate.fromJson(jsonData);
     } else {
@@ -47,30 +49,63 @@ double convertAmount(double amount, double rate) {
 // Global cache to track failures per currency pair
 final Map<String, int> _failureCount = {};
 
-Future<String?> fetchRate(String base, String target, double value) async {
-  final key = "$base-$target";
+// Future<String?> fetchRate(String base, String target, double value) async {
+//   final key = "$base-$target";
 
-  // Stop retrying after 2 failures
-  if (_failureCount[key] != null && _failureCount[key]! >= 2) {
-    print("Stopped retrying $key after 2 failures.");
-    return null;
-  }
+//   // Stop retrying after 2 failures
+//   if (_failureCount[key] != null && _failureCount[key]! >= 2) {
+//     print("Stopped retrying $key after 2 failures.");
+//     return null;
+//   }
+
+//   try {
+//     final rate = await getExchangeRate(
+//       base.toUpperCase(),
+//       target.toUpperCase(),
+//     );
+
+//     if (rate != null) {
+//       final converted = convertAmount(value, rate.mid);
+//       return converted.toStringAsFixed(2);
+//     } else {
+//       throw Exception("Failed to fetch rate");
+//     }
+//   } catch (e) {
+//     _failureCount[key] = (_failureCount[key] ?? 0) + 1; // Track failures
+//     print("Error fetching $key (Attempt ${_failureCount[key]})");
+//     return null;
+//   }
+// }
+
+Future<String?> fetchRate(String base, String target, double value) async {
+  print("🔄 fetchRate called: $base -> $target, value: $value");
+  final session = SessionManager();
 
   try {
-    final rate = await getExchangeRate(
-      base.toUpperCase(),
-      target.toUpperCase(),
-    );
+    double? cachedRate = await session.getRate(base, target);
+    print("📋 Cached rate: $cachedRate");
+
+    if (cachedRate != null) {
+      final converted = convertAmount(value, cachedRate);
+      print("✅ Using cached rate: $converted");
+      return converted.toStringAsFixed(2);
+    }
+
+    print("🌐 Fetching fresh rate from API...");
+    final rate = await getExchangeRate(base, target);
 
     if (rate != null) {
+      print("📥 API response: ${rate.mid}");
+      await session.saveRate(rate.base, rate.target, rate.mid);
       final converted = convertAmount(value, rate.mid);
+      print("✅ Converted amount: $converted");
       return converted.toStringAsFixed(2);
     } else {
-      throw Exception("Failed to fetch rate");
+      print("❌ API returned null");
+      return null;
     }
   } catch (e) {
-    _failureCount[key] = (_failureCount[key] ?? 0) + 1; // Track failures
-    print("Error fetching $key (Attempt ${_failureCount[key]})");
+    print("❌ Error in fetchRate: $e");
     return null;
   }
 }

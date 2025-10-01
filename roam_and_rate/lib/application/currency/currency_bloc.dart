@@ -9,38 +9,41 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     on<FetchConversionRate>((event, emit) async {
       emit(CurrencyLoading());
       try {
-        final session = SessionManager();
+        final amount = await fetchRate(event.base, event.target, event.value);
+        emit(CurrencyLoaded(amount!));
 
-        double? cachedRate = await session.getRate(
-          event.base.toUpperCase(),
-          event.target.toUpperCase(),
-        );
+        // final session = SessionManager();
 
-        if (cachedRate == null) {
-          final rate = await getExchangeRate(
-            event.base.toUpperCase(),
-            event.target.toUpperCase(),
-          );
+        // double? cachedRate = await session.getRate(
+        //   event.base.toUpperCase(),
+        //   event.target.toUpperCase(),
+        // );
 
-          if (rate != null) {
-            await session.saveRate(rate.base, rate.target, rate.mid);
+        // if (cachedRate == null) {
+        //   final rate = await getExchangeRate(
+        //     event.base.toUpperCase(),
+        //     event.target.toUpperCase(),
+        //   );
 
-            final converted = convertAmount(
-              event.value,
-              rate.mid,
-            ).toStringAsFixed(2);
+        //   if (rate != null) {
+        //     await session.saveRate(rate.base, rate.target, rate.mid);
 
-            emit(CurrencyLoaded(converted));
-          } else {
-            emit(CurrencyError("Failed to fetch rate"));
-          }
-        } else {
-          final converted = convertAmount(
-            event.value,
-            cachedRate,
-          ).toStringAsFixed(2);
-          emit(CurrencyLoaded(converted));
-        }
+        //     final converted = convertAmount(
+        //       event.value,
+        //       rate.mid,
+        //     ).toStringAsFixed(2);
+
+        //     emit(CurrencyLoaded(converted));
+        //   } else {
+        //     emit(CurrencyError("Failed to fetch rate"));
+        //   }
+        // } else {
+        //   final converted = convertAmount(
+        //     event.value,
+        //     cachedRate,
+        //   ).toStringAsFixed(2);
+        //   emit(CurrencyLoaded(converted));
+        // }
       } catch (e) {
         emit(CurrencyError(e.toString()));
       }
