@@ -197,8 +197,20 @@ class _ViewTripState extends State<ViewTrip> {
     }).toList();
   }
 
+  Map<String, double> convertedCosts = {};
+
+  void _updateConvertedCost(String id, double value) {
+    if (convertedCosts[id] == value) return; // ✅ Do nothing if unchanged
+
+    print("✅ New cost added for $id = $value");
+    setState(() {
+      convertedCosts[id] = value;
+    });
+
+    _calculateTotalSpent();
+  }
+
   void _updateTotalSpent(double newTotal) {
-    // Schedule the setState to happen after the build is complete
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
@@ -209,11 +221,17 @@ class _ViewTripState extends State<ViewTrip> {
   }
 
   void _calculateTotalSpent() {
-    _totalSpent = _filteredExpenses.fold(
-      0.0,
-      (sum, expense) => sum + expense.paid,
-    );
-    _updateTotalSpent(_totalSpent);
+    double total = 0.0;
+
+    for (ExpenseModel e in _filteredExpenses) {
+      print('📢📢📢: ${convertedCosts.length}');
+      double? currentAmount = convertedCosts[e.expenseId];
+      if (currentAmount != null) {
+        total += currentAmount;
+      }
+    }
+
+    _updateTotalSpent(total);
   }
 
   @override
@@ -492,6 +510,8 @@ class _ViewTripState extends State<ViewTrip> {
                                 child: FullExpenseCard(
                                   expenseDetails: expense,
                                   tripDetails: widget.tripDetails,
+                                  onCostConverted: _updateConvertedCost,
+                                  convertedCosts: convertedCosts,
                                 ),
                               ),
                             ),

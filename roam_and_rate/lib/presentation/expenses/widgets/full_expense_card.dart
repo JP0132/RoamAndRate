@@ -26,10 +26,14 @@ import 'package:roam_and_rate/presentation/expenses/widgets/tag_widget.dart';
 class FullExpenseCard extends StatefulWidget {
   final ExpenseModel expenseDetails;
   final TripModel tripDetails;
+  final Function(String, double) onCostConverted;
+  final Map<String, double> convertedCosts;
   const FullExpenseCard({
     super.key,
     required this.expenseDetails,
     required this.tripDetails,
+    required this.onCostConverted,
+    required this.convertedCosts,
   });
 
   @override
@@ -328,7 +332,24 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                   );
                                 } else if (snapshot.hasData &&
                                     snapshot.data != null) {
-                                  // ✅ snapshot.data contains your converted value as String
+                                  // snapshot.data contains the converted value as String
+
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    final id = widget.expenseDetails.expenseId!;
+                                    final newValue = double.parse(
+                                      snapshot.data!,
+                                    );
+                                    // Only call if not set or value changed
+                                    if (!widget.convertedCosts.containsKey(
+                                          id,
+                                        ) ||
+                                        widget.convertedCosts[id] != newValue) {
+                                      widget.onCostConverted(id, newValue);
+                                    }
+                                  });
+
                                   return Text(
                                     "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${snapshot.data!}",
                                     style: TextStyle(
