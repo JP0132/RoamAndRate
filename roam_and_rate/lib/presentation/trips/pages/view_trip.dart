@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -104,7 +105,7 @@ class _ViewTripState extends State<ViewTrip> {
     if (_searchQuery.isEmpty) {
       _filteredExpenses = _expenses;
       _filteredRatings = _ratings;
-      _calculateTotalSpent();
+      //_calculateTotalSpent();
       return;
     }
 
@@ -207,7 +208,37 @@ class _ViewTripState extends State<ViewTrip> {
       convertedCosts[id] = value;
     });
 
-    _calculateTotalSpent();
+    // Debounce the total calculation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _calculateTotalSpent();
+        _calculateTotalSpentImmediate();
+      }
+    });
+  }
+
+  void _calculateTotalSpentImmediate() {
+    double total = 0.0;
+
+    for (ExpenseModel e in _filteredExpenses) {
+      double? currentAmount = convertedCosts[e.expenseId];
+      if (currentAmount != null) {
+        total += currentAmount;
+      } else {
+        total += e.paid;
+      }
+    }
+
+    print(
+      '📊 Immediate total calculation: $total for ${_filteredExpenses.length} expenses',
+    );
+
+    // Update synchronously without postFrameCallback
+    if (mounted) {
+      setState(() {
+        _totalSpent = total;
+      });
+    }
   }
 
   void _updateTotalSpent(double newTotal) {
@@ -220,16 +251,36 @@ class _ViewTripState extends State<ViewTrip> {
     });
   }
 
+  String _previousExpenseIds = '';
+
   void _calculateTotalSpent() {
+    _calculateTotalSpentImmediate();
+    final currentSignature = _filteredExpenses
+        .map((e) => e.expenseId)
+        .toList()
+        .join(',');
+
+    if (currentSignature == _previousExpenseIds) {
+      return;
+    }
+
+    _previousExpenseIds = currentSignature;
+
     double total = 0.0;
+    int calculatedCount = 0;
 
     for (ExpenseModel e in _filteredExpenses) {
       print('📢📢📢: ${convertedCosts.length}');
       double? currentAmount = convertedCosts[e.expenseId];
       if (currentAmount != null) {
         total += currentAmount;
+        calculatedCount++;
       }
     }
+
+    print(
+      '✅ Calculated total for $calculatedCount/${_filteredExpenses.length} expenses: $total',
+    );
 
     _updateTotalSpent(total);
   }
@@ -405,9 +456,27 @@ class _ViewTripState extends State<ViewTrip> {
               Expanded(
                 child: BlocBuilder<TripDataBloc, TripDataState>(
                   builder: (context, state) {
-                    _ratings = state.ratings.map((e) => e.toModel()).toList();
-                    _expenses = state.expenses.map((e) => e.toModel()).toList();
-                    _filterTripData();
+                    final newRatings = state.ratings
+                        .map((e) => e.toModel())
+                        .toList();
+                    final newExpenses = state.expenses
+                        .map((e) => e.toModel())
+                        .toList();
+                    if (!listEquals(newExpenses, _expenses) ||
+                        !listEquals(newRatings, _ratings)) {
+                      _ratings = newRatings;
+                      _expenses = newExpenses;
+                      _filterTripData();
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          _calculateTotalSpent();
+                          _calculateTotalSpentImmediate();
+                        }
+                      });
+                    }
+                    // _ratings = state.ratings.map((e) => e.toModel()).toList();
+                    // _expenses = state.expenses.map((e) => e.toModel()).toList();
+
                     if (_selectedIndex == 0) {
                       if (_filteredRatings.isEmpty) {
                         return const Center(child: Text("No ratings yet"));
