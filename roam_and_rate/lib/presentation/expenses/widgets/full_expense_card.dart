@@ -333,19 +333,13 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                 } else if (snapshot.hasData &&
                                     snapshot.data != null) {
                                   // snapshot.data contains the converted value as String
+                                  final id = widget.expenseDetails.expenseId!;
+                                  final newValue = double.parse(snapshot.data!);
 
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    final id = widget.expenseDetails.expenseId!;
-                                    final newValue = double.parse(
-                                      snapshot.data!,
-                                    );
-                                    // Only call if not set or value changed
-                                    if (!widget.convertedCosts.containsKey(
-                                          id,
-                                        ) ||
-                                        widget.convertedCosts[id] != newValue) {
+                                  // Call the callback to update the converted cost
+                                  // Use a small delay to ensure we're not in build phase
+                                  Future.microtask(() {
+                                    if (mounted) {
                                       widget.onCostConverted(id, newValue);
                                     }
                                   });

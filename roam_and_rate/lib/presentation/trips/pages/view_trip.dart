@@ -4,8 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
-import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
-import 'package:roam_and_rate/application/rating/ratings_state.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_event.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
@@ -16,15 +14,11 @@ import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/mappers/expense_mappers.dart';
 import 'package:roam_and_rate/data/local/mappers/rating_details_mappers.dart';
-import 'package:roam_and_rate/data/local/tables/rating_details.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/full_rating_card.dart';
-import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
-import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
-import 'package:roam_and_rate/presentation/widgets/common/rating_cards.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
@@ -41,14 +35,15 @@ class _ViewTripState extends State<ViewTrip> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  double _totalSpent = 0;
-
   List<RatingDetailsModel> _ratings = [];
   List<ExpenseModel> _expenses = [];
-
   List<RatingDetailsModel> _filteredRatings = [];
   List<ExpenseModel> _filteredExpenses = [];
   final _controller = SuperTooltipController();
+
+  // Track converted costs
+  final Map<String, double> _convertedCosts = {};
+
   void _onSearchChanged() {
     setState(() {
       _searchQuery = _searchController.text;
@@ -56,75 +51,20 @@ class _ViewTripState extends State<ViewTrip> {
     });
   }
 
-  void makeTooltip() {
-    _controller.showTooltip();
-  }
-
-  // void _filterTripData() {
-  //   List<String> searchTerms = _searchQuery
-  //       .split(',')
-  //       .map((term) => term.trim().toLowerCase())
-  //       .toList();
-
-  //   if (_searchQuery.isEmpty) {
-  //     _filteredExpenses = _expenses;
-  //     _filteredRatings = _ratings;
-  //   } else {
-  //     _filteredExpenses = _expenses.where((expense) {
-  //       final expenseNameLower = expense.name.toLowerCase();
-  //       // final searchQueryLower = _searchQuery.toLowerCase();
-
-  //       final tagsLower = expense.tags.map((tag) => tag.toLowerCase()).toList();
-  //       return searchTerms.any(
-  //         (term) =>
-  //             expenseNameLower.contains(term) ||
-  //             tagsLower.any((tag) => tag.contains(term)),
-  //       );
-  //     }).toList();
-  //     _filteredRatings = _ratings.where((rating) {
-  //       final ratingsNameLower = rating.placeName.toLowerCase();
-  //       // final searchQueryLower = _searchQuery.toLowerCase();
-
-  //       final tagsLower = rating.tags.map((tag) => tag.toLowerCase()).toList();
-  //       return searchTerms.any(
-  //         (term) =>
-  //             ratingsNameLower.contains(term) ||
-  //             tagsLower.any((tag) => tag.contains(term)),
-  //       );
-  //     }).toList();
-  //   }
-  //   if (_filteredExpenses.isNotEmpty) {
-  //     _calculateTotalSpent();
-  //   } else {
-  //     // Keep the initial total amount if the filter yields no results
-  //     _totalSpent = widget.tripDetails.budget;
-  //   }
-  // }
-
   void _filterTripData() {
     if (_searchQuery.isEmpty) {
       _filteredExpenses = _expenses;
       _filteredRatings = _ratings;
-      //_calculateTotalSpent();
-      return;
-    }
-
-    // Check for specific search patterns
-    if (_searchQuery.toLowerCase().startsWith('tags:')) {
+    } else if (_searchQuery.toLowerCase().startsWith('tags:')) {
       _filterByTags();
     } else if (_searchQuery.toLowerCase().startsWith('category:')) {
       _filterByCategory();
     } else {
       _generalSearch();
     }
-
-    if (_filteredExpenses.isNotEmpty) {
-      _calculateTotalSpent();
-    }
   }
 
   void _filterByTags() {
-    // Extract tags from search query (remove "tags:" prefix and trim)
     final tags = _searchQuery
         .substring(5)
         .split(',')
@@ -147,16 +87,13 @@ class _ViewTripState extends State<ViewTrip> {
   }
 
   void _filterByCategory() {
-    // Extract categories from search query (remove "category:" prefix and trim)
     final categories = _searchQuery
         .substring(9)
         .split(',')
         .map((category) => category.trim().toLowerCase())
         .toList();
 
-    // For expenses, you might not have a category field. Adjust based on your data model
     _filteredExpenses = _expenses.where((expense) {
-      // If expenses have categories, use this:
       return categories.any(
         (category) => expense.category.toLowerCase().contains(category),
       );
@@ -198,91 +135,55 @@ class _ViewTripState extends State<ViewTrip> {
     }).toList();
   }
 
-  Map<String, double> convertedCosts = {};
+  // This gets called when conversion completes in FullExpenseCard
+  void _onCostConverted(String expenseId, double convertedValue) {
+    print("🔄 Conversion callback: $expenseId = $convertedValue");
 
-  void _updateConvertedCost(String id, double value) {
-    if (convertedCosts[id] == value) return; // ✅ Do nothing if unchanged
-
-    print("✅ New cost added for $id = $value");
-    setState(() {
-      convertedCosts[id] = value;
-    });
-
-    // Debounce the total calculation
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _calculateTotalSpent();
-        _calculateTotalSpentImmediate();
-      }
-    });
-  }
-
-  void _calculateTotalSpentImmediate() {
-    double total = 0.0;
-
-    for (ExpenseModel e in _filteredExpenses) {
-      double? currentAmount = convertedCosts[e.expenseId];
-      if (currentAmount != null) {
-        total += currentAmount;
-      } else {
-        total += e.paid;
-      }
-    }
-
-    print(
-      '📊 Immediate total calculation: $total for ${_filteredExpenses.length} expenses',
-    );
-
-    // Update synchronously without postFrameCallback
-    if (mounted) {
+    // Only update if the value changed
+    if (_convertedCosts[expenseId] != convertedValue) {
       setState(() {
-        _totalSpent = total;
+        _convertedCosts[expenseId] = convertedValue;
+        print("✅ Updated _convertedCosts: $_convertedCosts");
       });
     }
   }
 
-  void _updateTotalSpent(double newTotal) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          _totalSpent = newTotal;
-        });
+  // Calculate total spent including conversions
+  double get _totalSpent {
+    double total = 0.0;
+
+    for (final expense in _filteredExpenses) {
+      // If currencies match, use original paid amount
+      if (widget.tripDetails.currency == expense.currency) {
+        total += expense.paid;
+        print("💰 Same currency: ${expense.name} = ${expense.paid}");
       }
-    });
+      // If we have a converted value, use it
+      else if (_convertedCosts.containsKey(expense.expenseId)) {
+        total += _convertedCosts[expense.expenseId]!;
+        print(
+          "🔄 Converted: ${expense.name} = ${_convertedCosts[expense.expenseId]}",
+        );
+      }
+      // Fallback: use original amount (conversion might be in progress)
+      else {
+        total += expense.paid;
+        print("⏳ Waiting conversion: ${expense.name} = ${expense.paid}");
+      }
+    }
+
+    print("🎯 FINAL TOTAL: $total");
+    return total;
   }
 
-  String _previousExpenseIds = '';
-
-  void _calculateTotalSpent() {
-    _calculateTotalSpentImmediate();
-    final currentSignature = _filteredExpenses
-        .map((e) => e.expenseId)
-        .toList()
-        .join(',');
-
-    if (currentSignature == _previousExpenseIds) {
-      return;
-    }
-
-    _previousExpenseIds = currentSignature;
-
-    double total = 0.0;
-    int calculatedCount = 0;
-
-    for (ExpenseModel e in _filteredExpenses) {
-      print('📢📢📢: ${convertedCosts.length}');
-      double? currentAmount = convertedCosts[e.expenseId];
-      if (currentAmount != null) {
-        total += currentAmount;
-        calculatedCount++;
+  // Initialize converted costs for expenses with matching currencies
+  void _initializeConvertedCosts() {
+    for (final expense in _expenses) {
+      if (widget.tripDetails.currency == expense.currency) {
+        _convertedCosts[expense.expenseId!] = expense.paid;
       }
     }
-
-    print(
-      '✅ Calculated total for $calculatedCount/${_filteredExpenses.length} expenses: $total',
-    );
-
-    _updateTotalSpent(total);
+    print("🏁 Initialized _convertedCosts: $_convertedCosts");
   }
 
   @override
@@ -310,16 +211,17 @@ class _ViewTripState extends State<ViewTrip> {
         )..add(StartWatchingTrip(widget.tripDetails.tripId!));
       },
       child: Scaffold(
-        appBar: AppBar(centerTitle: true, title: Text("Trip Details")),
+        appBar: AppBar(centerTitle: true, title: const Text("Trip Details")),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               TripCards(tripModel: widget.tripDetails),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
+              // Total spent - uses the getter that calculates on-the-fly
               Text(
-                "Total spent: $_totalSpent",
+                "Total spent: ${_totalSpent.toStringAsFixed(2)} ${widget.tripDetails.currency}",
                 style: TextStyle(
                   color: CustomColours.darkPrimary,
                   fontWeight: FontWeight.bold,
@@ -327,6 +229,9 @@ class _ViewTripState extends State<ViewTrip> {
                 ),
               ),
 
+              const SizedBox(height: 20),
+
+              // Search bar
               Container(
                 height: 40.0,
                 decoration: BoxDecoration(
@@ -353,7 +258,6 @@ class _ViewTripState extends State<ViewTrip> {
                           ),
                         ),
                       ),
-                      Spacer(),
                       GestureDetector(
                         onTap: () async {
                           await _controller.showTooltip();
@@ -362,7 +266,7 @@ class _ViewTripState extends State<ViewTrip> {
                           showBarrier: true,
                           popupDirection: TooltipDirection.left,
                           controller: _controller,
-                          content: SizedBox(
+                          content: const SizedBox(
                             width: 250,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -395,12 +299,11 @@ class _ViewTripState extends State<ViewTrip> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-              // Toggle buttons (Ratings / Expenses)
+              // Toggle buttons
               SizedBox(
                 height: 40,
-
                 child: Row(
                   children: [
                     Expanded(
@@ -453,184 +356,164 @@ class _ViewTripState extends State<ViewTrip> {
                 ),
               ),
               const SizedBox(height: 12),
+
+              // Content
               Expanded(
                 child: BlocBuilder<TripDataBloc, TripDataState>(
                   builder: (context, state) {
+                    // Update data
                     final newRatings = state.ratings
                         .map((e) => e.toModel())
                         .toList();
                     final newExpenses = state.expenses
                         .map((e) => e.toModel())
                         .toList();
+
+                    // Only update if data actually changed
                     if (!listEquals(newExpenses, _expenses) ||
                         !listEquals(newRatings, _ratings)) {
                       _ratings = newRatings;
                       _expenses = newExpenses;
                       _filterTripData();
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                          _calculateTotalSpent();
-                          _calculateTotalSpentImmediate();
-                        }
-                      });
+
+                      // Initialize converted costs for matching currencies
+                      _initializeConvertedCosts();
                     }
-                    // _ratings = state.ratings.map((e) => e.toModel()).toList();
-                    // _expenses = state.expenses.map((e) => e.toModel()).toList();
 
                     if (_selectedIndex == 0) {
-                      if (_filteredRatings.isEmpty) {
-                        return const Center(child: Text("No ratings yet"));
-                      }
-
-                      return ListView.separated(
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 12),
-                        itemCount: _filteredRatings.length,
-                        itemBuilder: (context, index) {
-                          final rating = _filteredRatings[index];
-                          //print("😭😭😭 ${state.ratingsMade.first.rating}");
-                          final ratingsMade = state.ratingsMade
-                              .where((rm) => rm.ratingDetailsId == rating.id)
-                              .map((e) => e)
-                              .toList();
-
-                          // return RatingCards(
-                          //   name: rating.placeName,
-                          //   rating: int.parse((0.0 * 2).truncate().toString()),
-                          //   dateRated: rating.dateVisited ?? DateTime.now(),
-                          // );
-                          return FullRatingCard(
-                            ratingDetails: rating,
-                            participantRatings: ratingsMade,
-                          );
-                        },
-                      );
+                      return _buildRatingsList(state);
                     } else {
-                      if (_filteredExpenses.isEmpty) {
-                        return const Center(child: Text("No expenses found"));
-                      }
+                      return _buildExpensesList();
                     }
-                    // Set<DateTime> dates = {};
-                    // dates.addAll(state.expenses.map((e) => e.datePaid).toList());
-
-                    // List<DateTime> sortedDates = dates.toList();
-                    // sortedDates.sort((a, b) => a.compareTo(b));
-
-                    // List<Expense> sortedExpenses = state.expenses;
-                    // sortedExpenses.sort(
-                    //   (a, b) => a.datePaid.compareTo(b.datePaid),
-                    // );
-
-                    // First get the unique sorted dates
-                    final dates =
-                        _filteredExpenses
-                            .map(
-                              (e) => DateTime(
-                                e.datePaid.year,
-                                e.datePaid.month,
-                                e.datePaid.day,
-                              ),
-                            )
-                            .toSet()
-                            .toList()
-                          ..sort((a, b) => a.compareTo(b));
-
-                    // Sort all expenses by date
-                    final sortedExpenses = [..._filteredExpenses]
-                      ..sort((a, b) => a.datePaid.compareTo(b.datePaid));
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: dates.length,
-                      itemBuilder: (context, dateIndex) {
-                        final date = dates[dateIndex];
-
-                        // All expenses for this date
-                        final expensesForDate = sortedExpenses.where(
-                          (e) =>
-                              e.datePaid.year == date.year &&
-                              e.datePaid.month == date.month &&
-                              e.datePaid.day == date.day,
-                        );
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // --- Date Header (shown ONCE) ---
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 12,
-                              ),
-                              child: Text(
-                                DateFormat('EEEE, dd MMM yyyy').format(date),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-
-                            // --- All expenses under that date ---
-                            ...expensesForDate.map(
-                              (expense) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: FullExpenseCard(
-                                  expenseDetails: expense,
-                                  tripDetails: widget.tripDetails,
-                                  onCostConverted: _updateConvertedCost,
-                                  convertedCosts: convertedCosts,
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
                   },
                 ),
               ),
             ],
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Tab to view the expenses and ratings
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(
-                    context,
-                    AppRouter.addRating,
-                    arguments: AddRatingArguments(
-                      tripId: widget.tripDetails.tripId!,
-                    ),
-                  ),
-                  child: Text("Add Rating"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColours.darkSurface,
-                  ),
+        bottomNavigationBar: _buildBottomButtons(),
+      ),
+    );
+  }
+
+  Widget _buildRatingsList(TripDataState state) {
+    if (_filteredRatings.isEmpty) {
+      return const Center(child: Text("No ratings yet"));
+    }
+
+    return ListView.separated(
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemCount: _filteredRatings.length,
+      itemBuilder: (context, index) {
+        final rating = _filteredRatings[index];
+        final ratingsMade = state.ratingsMade
+            .where((rm) => rm.ratingDetailsId == rating.id)
+            .toList();
+
+        return FullRatingCard(
+          ratingDetails: rating,
+          participantRatings: ratingsMade,
+        );
+      },
+    );
+  }
+
+  Widget _buildExpensesList() {
+    if (_filteredExpenses.isEmpty) {
+      return const Center(child: Text("No expenses found"));
+    }
+
+    final dates =
+        _filteredExpenses
+            .map(
+              (e) =>
+                  DateTime(e.datePaid.year, e.datePaid.month, e.datePaid.day),
+            )
+            .toSet()
+            .toList()
+          ..sort((a, b) => a.compareTo(b));
+
+    final sortedExpenses = [..._filteredExpenses]
+      ..sort((a, b) => a.datePaid.compareTo(b.datePaid));
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: dates.length,
+      itemBuilder: (context, dateIndex) {
+        final date = dates[dateIndex];
+        final expensesForDate = sortedExpenses.where(
+          (e) =>
+              e.datePaid.year == date.year &&
+              e.datePaid.month == date.month &&
+              e.datePaid.day == date.day,
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              child: Text(
+                DateFormat('EEEE, dd MMM yyyy').format(date),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(
-                    context,
-                    AppRouter.addExpense,
-                    arguments: AddExpenseArguments(
-                      tripId: widget.tripDetails.tripId!,
-                    ),
-                  ),
-                  child: Text("Add Expense", style: TextStyle()),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColours.darkSurface,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            ...expensesForDate.map(
+              (expense) => Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: FullExpenseCard(
+                  expenseDetails: expense,
+                  tripDetails: widget.tripDetails,
+                  onCostConverted: _onCostConverted,
+                  convertedCosts: _convertedCosts,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomButtons() {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(
+                context,
+                AppRouter.addRating,
+                arguments: AddRatingArguments(
+                  tripId: widget.tripDetails.tripId!,
+                ),
+              ),
+              child: const Text("Add Rating"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CustomColours.darkSurface,
+              ),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(
+                context,
+                AppRouter.addExpense,
+                arguments: AddExpenseArguments(
+                  tripId: widget.tripDetails.tripId!,
+                ),
+              ),
+              child: const Text("Add Expense"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CustomColours.darkSurface,
+              ),
+            ),
+          ],
         ),
       ),
     );
