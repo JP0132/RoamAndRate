@@ -296,6 +296,10 @@ class CurrencyData {
     return currencies.firstWhere((c) => c.name == name).code;
   }
 
+  static String getNameFromCode(String code) {
+    return currencies.firstWhere((c) => c.code == code).name;
+  }
+
   // static List<String> get currenciesSymbols {
   //   return currencies.where((c) => !c.).map((c) => c.).toList();
   // }

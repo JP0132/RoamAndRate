@@ -138,8 +138,12 @@ class _AddTripPageState extends State<AddTripPage> {
               CustomisableDropdown<String>(
                 items: CurrencyData.fiatCurrenciesNames,
                 hint: "What currency did you use",
-                value: selectedCurrency,
+                value: selectedCurrency != null
+                    ? CurrencyData.getNameFromCode(selectedCurrency!)
+                    : null,
                 backgroundColour: CustomColours.darkSurface,
+                selectedItemTextColour: CustomColours.darkBackground,
+                selectedItemColour: CustomColours.darkPrimary,
                 borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
                 borderRadius: 20,
