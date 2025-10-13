@@ -12,6 +12,7 @@ class RatingDetailsModel {
   final List<String> tags;
   final String notes;
   final String image;
+  final DateTime? lastUpdated;
 
   const RatingDetailsModel({
     this.id,
@@ -27,6 +28,7 @@ class RatingDetailsModel {
     this.image = "",
     this.dateVisited,
     this.datePlanned,
+    this.lastUpdated
   });
 
   RatingDetailsModel copyWith({
@@ -43,6 +45,8 @@ class RatingDetailsModel {
     List<String>? tags,
     String? notes,
     String? image,
+    DateTime? lastUpdated,
+
   }) {
     return RatingDetailsModel(
       id: id ?? this.id,
@@ -58,6 +62,7 @@ class RatingDetailsModel {
       notes: notes ?? this.notes,
       image: image ?? this.image,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }

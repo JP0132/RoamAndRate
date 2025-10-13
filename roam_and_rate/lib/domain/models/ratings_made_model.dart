@@ -5,6 +5,7 @@ class RatingsMadeModel {
   final double rating;
   final double expectedRating;
   final DateTime createdAt;
+  final DateTime? lastUpdated;
 
   const RatingsMadeModel({
     this.id,
@@ -13,6 +14,7 @@ class RatingsMadeModel {
     required this.createdAt,
     this.rating = 0.0,
     this.expectedRating = 0.0,
+    this.lastUpdated
   });
 
   RatingsMadeModel copyWith({
@@ -22,6 +24,8 @@ class RatingsMadeModel {
     double? rating,
     double? expectedRating,
     DateTime? createdAt,
+    DateTime? lastUpdated,
+
   }) {
     return RatingsMadeModel(
       id: id ?? this.id,
@@ -30,6 +34,7 @@ class RatingsMadeModel {
       rating: rating ?? this.rating,
       expectedRating: expectedRating ?? this.expectedRating,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }

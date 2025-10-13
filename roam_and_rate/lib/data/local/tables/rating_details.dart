@@ -17,6 +17,8 @@ class RatingDetails extends Table {
   TextColumn get images => text().nullable()();
   TextColumn get tags => text().map(const StringListConverter())();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastUpdated => dateTime().withDefault(currentDateAndTime)();
+
   @override
   Set<Column> get primaryKey => {id};
 }

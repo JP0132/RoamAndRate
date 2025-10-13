@@ -6,6 +6,8 @@ class Participants extends Table {
   TextColumn get name => text()();
   BoolColumn get isMainUser => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastUpdated => dateTime().withDefault(currentDateAndTime)();
+
 
   @override
   Set<Column> get primaryKey => {id};

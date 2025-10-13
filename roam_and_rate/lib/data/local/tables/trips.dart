@@ -16,6 +16,8 @@ class Trips extends Table {
   DateTimeColumn get startDate => dateTime()();
   DateTimeColumn get endDate => dateTime()();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastUpdated => dateTime().withDefault(currentDateAndTime)();
+
   @override
   Set<Column> get primaryKey => {id};
 }

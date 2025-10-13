@@ -10,6 +10,8 @@ class RatingsMade extends Table {
   RealColumn get rating => real().nullable()();
   RealColumn get expectedRating => real().nullable()();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastUpdated => dateTime().withDefault(currentDateAndTime)();
+
   @override
   Set<Column> get primaryKey => {id};
 }
