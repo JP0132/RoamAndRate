@@ -12,6 +12,7 @@ import 'package:roam_and_rate/application/user/user_event.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
+import 'package:roam_and_rate/data/remote/sync_service.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
@@ -79,6 +80,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<RatingsBloc>().add(FetchRatingsAndDetails());
+    SyncService().startSyncTimer();
     //context.read<UserBloc>().add(FetchAdminUser());
   }
 
