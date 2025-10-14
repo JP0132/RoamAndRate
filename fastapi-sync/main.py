@@ -6,6 +6,12 @@ from sqlalchemy import Column, Integer, String, DateTime, func
 from dotenv import load_dotenv
 import os
 
+# Start python virtual enviroment with: 
+# source venv/bin/activate (linux) (git bash)
+# venv\Scripts\activate.bat (windows cmd) or use git bash
+
+# Stop python enviroment with: deactivate
+
 load_dotenv()
 
 DATABASE_URL = (
@@ -28,8 +34,8 @@ class UsersTable(Base):
     gender = Column(String, nullable=False)
     admin = Column(Boolean, nullable=False)
     createdAt = Column(DateTime(timezone=True), nullable=False)
-
     trips = relationship("TripsTable", back_populates="user")
+    lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
 class TripsTable(Base):
@@ -46,10 +52,11 @@ class TripsTable(Base):
     startDate = Column(DateTime(timezone=True), nullable=False)
     endDate = Column(DateTime(timezone=True), nullable=False)
     createdAt = Column(DateTime(timezone=True), nullable=False)
-
     user = relationship("UsersTable", back_populates="trips")
     expenses = relationship("ExpensesTable", back_populates="trip")
     ratingDetails = relationship("RatingDetailsTable", back_populates="trip")
+    lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
 
 
 class ParticipantsTable(Base):
@@ -58,9 +65,9 @@ class ParticipantsTable(Base):
     name = Column(String, nullable=False)
     isMainUser = Column(Boolean, nullable=False)
     createdAt = Column(DateTime(timezone=True), nullable=False)
-
     expenses = relationship("ExpensesTable", back_populates="participant")
     ratingsMade = relationship("RatingsMadeTable", back_populates="participant")
+    lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
 class ExpensesTable(Base):
@@ -80,9 +87,9 @@ class ExpensesTable(Base):
     paymentType = Column(String, nullable=False)
     tags = Column(JSON, nullable=True)
     createdAt = Column(DateTime(timezone=True), nullable=False)
-
     trip = relationship("TripsTable", back_populates="expenses")
     participant = relationship("ParticipantsTable", back_populates="expenses")
+    lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
 class RatingDetailsTable(Base):
@@ -100,9 +107,9 @@ class RatingDetailsTable(Base):
     images = Column(String, nullable=True)
     tags = Column(JSON, nullable=True)
     createdAt = Column(DateTime(timezone=True), nullable=False)
-
     trip = relationship("TripsTable", back_populates="ratingDetails")
     ratingsMade = relationship("RatingsMadeTable", back_populates="ratingDetail")
+    lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
 class RatingsMadeTable(Base):
@@ -113,13 +120,165 @@ class RatingsMadeTable(Base):
     rating = Column(String, nullable=True)
     expectedRating = Column(String, nullable=True)
     createdAt = Column(DateTime(timezone=True), nullable=False)
-
     ratingDetail = relationship("RatingDetailsTable", back_populates="ratingsMade")
     participant = relationship("ParticipantsTable", back_populates="ratingsMade")
+    lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
+
+from typing import List, Optional
+from datetime import datetime
+from pydantic import BaseModel
+
+# Users Pydantic models
+class UserBase(BaseModel):
+    username: str
+    fullName: str
+    dateOfBirth: datetime
+    gender: str
+    admin: bool
+
+class UserCreate(UserBase):
+    pass
+
+class UserRead(UserBase):
+    id: str
+    createdAt: datetime
+    trips: List["TripRead"] = []  # forward ref
+
+    class Config:
+        orm_mode = True
+
+
+# Trips Pydantic models
+class TripBase(BaseModel):
+    tripName: str
+    location: str
+    currency: str
+    budget: float
+    notes: Optional[str] = None
+    images: Optional[str] = None
+    bgColour: str
+    startDate: datetime
+    endDate: datetime
+    lastUpdated: datetime
+
+class TripCreate(TripBase):
+    userId: str
+
+class TripRead(TripBase):
+    id: str
+    createdAt: datetime
+    expenses: List["ExpenseRead"] = []
+    ratingDetails: List["RatingDetailRead"] = []
+
+    class Config:
+        orm_mode = True
+
+
+# Participants Pydantic models
+class ParticipantBase(BaseModel):
+    name: str
+    isMainUser: bool
+    lastUpdated: datetime
+
+class ParticipantCreate(ParticipantBase):
+    pass
+
+class ParticipantRead(ParticipantBase):
+    id: str
+    createdAt: datetime
+    expenses: List["ExpenseRead"] = []
+    ratingsMade: List["RatingMadeRead"] = []
+
+    class Config:
+        orm_mode = True
+
+
+# Expenses Pydantic models
+class ExpenseBase(BaseModel):
+    expenseName: str
+    category: str
+    paid: float
+    costs: float
+    currency: str
+    datePaid: datetime
+    dateAdded: datetime
+    notes: Optional[str] = None
+    images: Optional[str] = None
+    paymentType: str
+    tags: Optional[dict] = None
+    lastUpdated: datetime
+
+class ExpenseCreate(ExpenseBase):
+    tripId: str
+    participantId: str
+
+class ExpenseRead(ExpenseBase):
+    id: str
+    createdAt: datetime
+
+    class Config:
+        orm_mode = True
+
+
+# Rating Details Pydantic models
+class RatingDetailBase(BaseModel):
+    ratingName: str
+    location: str
+    category: str
+    status: str
+    dateVisited: Optional[datetime] = None
+    datePlanned: Optional[datetime] = None
+    value: Optional[str] = None
+    notes: Optional[str] = None
+    images: Optional[str] = None
+    tags: Optional[dict] = None
+    lastUpdated: datetime
+
+class RatingDetailCreate(RatingDetailBase):
+    tripId: str
+
+class RatingDetailRead(RatingDetailBase):
+    id: str
+    createdAt: datetime
+    ratingsMade: List["RatingMadeRead"] = []
+
+    class Config:
+        orm_mode = True
+
+
+# Ratings Made Pydantic models
+class RatingMadeBase(BaseModel):
+    rating: Optional[str] = None
+    expectedRating: Optional[str] = None
+    lastUpdated: datetime
+
+class RatingMadeCreate(RatingMadeBase):
+    ratingDetailId: str
+    participantId: str
+
+class RatingMadeRead(RatingMadeBase):
+    id: str
+    createdAt: datetime
+
+    class Config:
+        orm_mode = True
 
 app = FastAPI()
 
 @app.get("/")
 async def root():
     return {"message": "FastAPI is running on your server."}
+
+@app.post("/sync")
+async def syncData(data: dict, db: Session = Depends(get_db)):
+    trips = data.get("trips", [])
+    expenses = data.get("expenses", [])
+
+    for t in trips:
+        trip = TripsTable(**t)
+        db.merge(trip)
+    for e in expenses:
+        expense = ExpensesTable(**e)
+        db.merge(expenses)
+    
