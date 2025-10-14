@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy.orm import sessionmaker, declarative_base, Session, relationship
+from sqlalchemy import Column, Integer, String, DateTime, func, Boolean, ForeignKey, Float, JSON
 from dotenv import load_dotenv
 import os
 
@@ -11,6 +11,9 @@ import os
 # venv\Scripts\activate.bat (windows cmd) or use git bash
 
 # Stop python enviroment with: deactivate
+
+# To start the fast api server using uvicorn:
+# uvicorn main:app --reload --port 8003
 
 load_dotenv()
 
@@ -266,6 +269,15 @@ class RatingMadeRead(RatingMadeBase):
 
 app = FastAPI()
 
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 @app.get("/")
 async def root():
     return {"message": "FastAPI is running on your server."}
@@ -274,11 +286,26 @@ async def root():
 async def syncData(data: dict, db: Session = Depends(get_db)):
     trips = data.get("trips", [])
     expenses = data.get("expenses", [])
+    participants = data.get("participants", [])
+    users = data.get("users",[])
+    ratingDetails = data.get("ratingDetails", [])
+    ratingsMade = data.get('ratingsMade', [])
 
+    for u in users:
+        user = UsersTable(**u)
+        db.merge(user)
     for t in trips:
         trip = TripsTable(**t)
         db.merge(trip)
     for e in expenses:
         expense = ExpensesTable(**e)
-        db.merge(expenses)
-    
+        db.merge(expense)
+    for p in participants:
+        participant = ParticipantsTable(**p)
+        db.merge(participant)
+    for rd in ratingDetails:
+        ratingDetail = RatingDetailsTable(**rd)
+        db.merge(ratingDetail)
+    for rm in ratingsMade:
+        ratingMade = RatingsMadeTable(**rm)
+        db.merge(ratingsMade)
