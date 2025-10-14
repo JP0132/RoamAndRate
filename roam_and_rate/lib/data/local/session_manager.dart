@@ -7,15 +7,32 @@ class SessionManager {
 
   String? userId;
 
+  String? lastSyncTime;
+
+  bool? backupToDB;
+
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('userId');
+    lastSyncTime = prefs.getString('lastSyncTime');
+    backupToDB = prefs.getBool("backupToDB");
+  }
+
+  Future<void> setBackupToDB(bool backingUp) async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("backupToDB", backingUp);
   }
 
   Future<void> setUserId(String id) async {
     userId = id;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userId', id);
+  }
+
+  Future<void> setLastSyncTime(DateTime newSyncTime) async{
+    lastSyncTime = newSyncTime.toIso8601String();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("lastSyncTime", lastSyncTime!);
   }
 
   Future<void> saveRate(String base, String target, double rate) async {
