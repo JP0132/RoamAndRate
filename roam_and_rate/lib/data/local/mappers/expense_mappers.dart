@@ -21,6 +21,7 @@ extension ExpenseEntityMapper on Expense {
       toBeSplit: toBeSplit,
       image: images!,
       notes: notes!,
+      lastUpdated: lastUpdated
     );
   }
 }

@@ -81,6 +81,18 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
+    'lastUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+    'last_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -90,6 +102,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     gender,
     admin,
     createdAt,
+    lastUpdated,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -154,6 +167,15 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+        _lastUpdatedMeta,
+        lastUpdated.isAcceptableOrUnknown(
+          data['last_updated']!,
+          _lastUpdatedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -191,6 +213,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      lastUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated'],
+      )!,
     );
   }
 
@@ -208,6 +234,7 @@ class User extends DataClass implements Insertable<User> {
   final String gender;
   final bool admin;
   final DateTime createdAt;
+  final DateTime lastUpdated;
   const User({
     required this.id,
     required this.username,
@@ -216,6 +243,7 @@ class User extends DataClass implements Insertable<User> {
     required this.gender,
     required this.admin,
     required this.createdAt,
+    required this.lastUpdated,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -227,6 +255,7 @@ class User extends DataClass implements Insertable<User> {
     map['gender'] = Variable<String>(gender);
     map['admin'] = Variable<bool>(admin);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
     return map;
   }
 
@@ -239,6 +268,7 @@ class User extends DataClass implements Insertable<User> {
       gender: Value(gender),
       admin: Value(admin),
       createdAt: Value(createdAt),
+      lastUpdated: Value(lastUpdated),
     );
   }
 
@@ -255,6 +285,7 @@ class User extends DataClass implements Insertable<User> {
       gender: serializer.fromJson<String>(json['gender']),
       admin: serializer.fromJson<bool>(json['admin']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
     );
   }
   @override
@@ -268,6 +299,7 @@ class User extends DataClass implements Insertable<User> {
       'gender': serializer.toJson<String>(gender),
       'admin': serializer.toJson<bool>(admin),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
     };
   }
 
@@ -279,6 +311,7 @@ class User extends DataClass implements Insertable<User> {
     String? gender,
     bool? admin,
     DateTime? createdAt,
+    DateTime? lastUpdated,
   }) => User(
     id: id ?? this.id,
     username: username ?? this.username,
@@ -287,6 +320,7 @@ class User extends DataClass implements Insertable<User> {
     gender: gender ?? this.gender,
     admin: admin ?? this.admin,
     createdAt: createdAt ?? this.createdAt,
+    lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   User copyWithCompanion(UsersCompanion data) {
     return User(
@@ -297,6 +331,9 @@ class User extends DataClass implements Insertable<User> {
       gender: data.gender.present ? data.gender.value : this.gender,
       admin: data.admin.present ? data.admin.value : this.admin,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastUpdated: data.lastUpdated.present
+          ? data.lastUpdated.value
+          : this.lastUpdated,
     );
   }
 
@@ -309,14 +346,23 @@ class User extends DataClass implements Insertable<User> {
           ..write('dob: $dob, ')
           ..write('gender: $gender, ')
           ..write('admin: $admin, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, username, fullName, dob, gender, admin, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    username,
+    fullName,
+    dob,
+    gender,
+    admin,
+    createdAt,
+    lastUpdated,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -327,7 +373,8 @@ class User extends DataClass implements Insertable<User> {
           other.dob == this.dob &&
           other.gender == this.gender &&
           other.admin == this.admin &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.lastUpdated == this.lastUpdated);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -338,6 +385,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> gender;
   final Value<bool> admin;
   final Value<DateTime> createdAt;
+  final Value<DateTime> lastUpdated;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -347,6 +395,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.gender = const Value.absent(),
     this.admin = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -357,6 +406,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String gender,
     required bool admin,
     required DateTime createdAt,
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : username = Value(username),
        fullName = Value(fullName),
@@ -372,6 +422,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? gender,
     Expression<bool>? admin,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastUpdated,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -382,6 +433,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (gender != null) 'gender': gender,
       if (admin != null) 'admin': admin,
       if (createdAt != null) 'created_at': createdAt,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -394,6 +446,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String>? gender,
     Value<bool>? admin,
     Value<DateTime>? createdAt,
+    Value<DateTime>? lastUpdated,
     Value<int>? rowid,
   }) {
     return UsersCompanion(
@@ -404,6 +457,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       gender: gender ?? this.gender,
       admin: admin ?? this.admin,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -432,6 +486,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -448,6 +505,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('gender: $gender, ')
           ..write('admin: $admin, ')
           ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -596,6 +654,18 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
+    'lastUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+    'last_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -611,6 +681,7 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
     startDate,
     endDate,
     createdAt,
+    lastUpdated,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -719,6 +790,15 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+        _lastUpdatedMeta,
+        lastUpdated.isAcceptableOrUnknown(
+          data['last_updated']!,
+          _lastUpdatedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -780,6 +860,10 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      lastUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated'],
+      )!,
     );
   }
 
@@ -803,6 +887,7 @@ class Trip extends DataClass implements Insertable<Trip> {
   final DateTime startDate;
   final DateTime endDate;
   final DateTime createdAt;
+  final DateTime lastUpdated;
   const Trip({
     required this.id,
     required this.userId,
@@ -817,6 +902,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     required this.startDate,
     required this.endDate,
     required this.createdAt,
+    required this.lastUpdated,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -838,6 +924,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     map['start_date'] = Variable<DateTime>(startDate);
     map['end_date'] = Variable<DateTime>(endDate);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
     return map;
   }
 
@@ -860,6 +947,7 @@ class Trip extends DataClass implements Insertable<Trip> {
       startDate: Value(startDate),
       endDate: Value(endDate),
       createdAt: Value(createdAt),
+      lastUpdated: Value(lastUpdated),
     );
   }
 
@@ -882,6 +970,7 @@ class Trip extends DataClass implements Insertable<Trip> {
       startDate: serializer.fromJson<DateTime>(json['startDate']),
       endDate: serializer.fromJson<DateTime>(json['endDate']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
     );
   }
   @override
@@ -901,6 +990,7 @@ class Trip extends DataClass implements Insertable<Trip> {
       'startDate': serializer.toJson<DateTime>(startDate),
       'endDate': serializer.toJson<DateTime>(endDate),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
     };
   }
 
@@ -918,6 +1008,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     DateTime? startDate,
     DateTime? endDate,
     DateTime? createdAt,
+    DateTime? lastUpdated,
   }) => Trip(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -932,6 +1023,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     startDate: startDate ?? this.startDate,
     endDate: endDate ?? this.endDate,
     createdAt: createdAt ?? this.createdAt,
+    lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   Trip copyWithCompanion(TripsCompanion data) {
     return Trip(
@@ -948,6 +1040,9 @@ class Trip extends DataClass implements Insertable<Trip> {
       startDate: data.startDate.present ? data.startDate.value : this.startDate,
       endDate: data.endDate.present ? data.endDate.value : this.endDate,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastUpdated: data.lastUpdated.present
+          ? data.lastUpdated.value
+          : this.lastUpdated,
     );
   }
 
@@ -966,7 +1061,8 @@ class Trip extends DataClass implements Insertable<Trip> {
           ..write('bgColour: $bgColour, ')
           ..write('startDate: $startDate, ')
           ..write('endDate: $endDate, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
   }
@@ -986,6 +1082,7 @@ class Trip extends DataClass implements Insertable<Trip> {
     startDate,
     endDate,
     createdAt,
+    lastUpdated,
   );
   @override
   bool operator ==(Object other) =>
@@ -1003,7 +1100,8 @@ class Trip extends DataClass implements Insertable<Trip> {
           other.bgColour == this.bgColour &&
           other.startDate == this.startDate &&
           other.endDate == this.endDate &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.lastUpdated == this.lastUpdated);
 }
 
 class TripsCompanion extends UpdateCompanion<Trip> {
@@ -1020,6 +1118,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
   final Value<DateTime> startDate;
   final Value<DateTime> endDate;
   final Value<DateTime> createdAt;
+  final Value<DateTime> lastUpdated;
   final Value<int> rowid;
   const TripsCompanion({
     this.id = const Value.absent(),
@@ -1035,6 +1134,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     this.startDate = const Value.absent(),
     this.endDate = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TripsCompanion.insert({
@@ -1051,6 +1151,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     required DateTime startDate,
     required DateTime endDate,
     required DateTime createdAt,
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : userId = Value(userId),
        tripName = Value(tripName),
@@ -1076,6 +1177,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     Expression<DateTime>? startDate,
     Expression<DateTime>? endDate,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastUpdated,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1092,6 +1194,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
       if (startDate != null) 'start_date': startDate,
       if (endDate != null) 'end_date': endDate,
       if (createdAt != null) 'created_at': createdAt,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1110,6 +1213,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     Value<DateTime>? startDate,
     Value<DateTime>? endDate,
     Value<DateTime>? createdAt,
+    Value<DateTime>? lastUpdated,
     Value<int>? rowid,
   }) {
     return TripsCompanion(
@@ -1126,6 +1230,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1172,6 +1277,9 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1194,6 +1302,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
           ..write('startDate: $startDate, ')
           ..write('endDate: $endDate, ')
           ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1251,8 +1360,26 @@ class $ParticipantsTable extends Participants
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
+    'lastUpdated',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, name, isMainUser, createdAt];
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+    'last_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    isMainUser,
+    createdAt,
+    lastUpdated,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1293,6 +1420,15 @@ class $ParticipantsTable extends Participants
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+        _lastUpdatedMeta,
+        lastUpdated.isAcceptableOrUnknown(
+          data['last_updated']!,
+          _lastUpdatedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1318,6 +1454,10 @@ class $ParticipantsTable extends Participants
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      lastUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated'],
+      )!,
     );
   }
 
@@ -1332,11 +1472,13 @@ class Participant extends DataClass implements Insertable<Participant> {
   final String name;
   final bool isMainUser;
   final DateTime createdAt;
+  final DateTime lastUpdated;
   const Participant({
     required this.id,
     required this.name,
     required this.isMainUser,
     required this.createdAt,
+    required this.lastUpdated,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1345,6 +1487,7 @@ class Participant extends DataClass implements Insertable<Participant> {
     map['name'] = Variable<String>(name);
     map['is_main_user'] = Variable<bool>(isMainUser);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
     return map;
   }
 
@@ -1354,6 +1497,7 @@ class Participant extends DataClass implements Insertable<Participant> {
       name: Value(name),
       isMainUser: Value(isMainUser),
       createdAt: Value(createdAt),
+      lastUpdated: Value(lastUpdated),
     );
   }
 
@@ -1367,6 +1511,7 @@ class Participant extends DataClass implements Insertable<Participant> {
       name: serializer.fromJson<String>(json['name']),
       isMainUser: serializer.fromJson<bool>(json['isMainUser']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
     );
   }
   @override
@@ -1377,6 +1522,7 @@ class Participant extends DataClass implements Insertable<Participant> {
       'name': serializer.toJson<String>(name),
       'isMainUser': serializer.toJson<bool>(isMainUser),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
     };
   }
 
@@ -1385,11 +1531,13 @@ class Participant extends DataClass implements Insertable<Participant> {
     String? name,
     bool? isMainUser,
     DateTime? createdAt,
+    DateTime? lastUpdated,
   }) => Participant(
     id: id ?? this.id,
     name: name ?? this.name,
     isMainUser: isMainUser ?? this.isMainUser,
     createdAt: createdAt ?? this.createdAt,
+    lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   Participant copyWithCompanion(ParticipantsCompanion data) {
     return Participant(
@@ -1399,6 +1547,9 @@ class Participant extends DataClass implements Insertable<Participant> {
           ? data.isMainUser.value
           : this.isMainUser,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastUpdated: data.lastUpdated.present
+          ? data.lastUpdated.value
+          : this.lastUpdated,
     );
   }
 
@@ -1408,13 +1559,14 @@ class Participant extends DataClass implements Insertable<Participant> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('isMainUser: $isMainUser, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, isMainUser, createdAt);
+  int get hashCode => Object.hash(id, name, isMainUser, createdAt, lastUpdated);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1422,7 +1574,8 @@ class Participant extends DataClass implements Insertable<Participant> {
           other.id == this.id &&
           other.name == this.name &&
           other.isMainUser == this.isMainUser &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.lastUpdated == this.lastUpdated);
 }
 
 class ParticipantsCompanion extends UpdateCompanion<Participant> {
@@ -1430,12 +1583,14 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
   final Value<String> name;
   final Value<bool> isMainUser;
   final Value<DateTime> createdAt;
+  final Value<DateTime> lastUpdated;
   final Value<int> rowid;
   const ParticipantsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.isMainUser = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ParticipantsCompanion.insert({
@@ -1443,6 +1598,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     required String name,
     this.isMainUser = const Value.absent(),
     required DateTime createdAt,
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : name = Value(name),
        createdAt = Value(createdAt);
@@ -1451,6 +1607,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     Expression<String>? name,
     Expression<bool>? isMainUser,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastUpdated,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1458,6 +1615,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
       if (name != null) 'name': name,
       if (isMainUser != null) 'is_main_user': isMainUser,
       if (createdAt != null) 'created_at': createdAt,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1467,6 +1625,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     Value<String>? name,
     Value<bool>? isMainUser,
     Value<DateTime>? createdAt,
+    Value<DateTime>? lastUpdated,
     Value<int>? rowid,
   }) {
     return ParticipantsCompanion(
@@ -1474,6 +1633,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
       name: name ?? this.name,
       isMainUser: isMainUser ?? this.isMainUser,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1493,6 +1653,9 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1506,6 +1669,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
           ..write('name: $name, ')
           ..write('isMainUser: $isMainUser, ')
           ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1629,17 +1793,6 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dateAddedMeta = const VerificationMeta(
-    'dateAdded',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateAdded = GeneratedColumn<DateTime>(
-    'date_added',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -1676,6 +1829,29 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       ).withConverter<List<String>>($ExpensesTable.$convertertags);
+  static const VerificationMeta _dateAddedMeta = const VerificationMeta(
+    'dateAdded',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateAdded = GeneratedColumn<DateTime>(
+    'date_added',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
+    'lastUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+    'last_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1688,11 +1864,12 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     cost,
     currency,
     datePaid,
-    dateAdded,
     notes,
     images,
     type,
     tags,
+    dateAdded,
+    lastUpdated,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1787,14 +1964,6 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     } else if (isInserting) {
       context.missing(_datePaidMeta);
     }
-    if (data.containsKey('date_added')) {
-      context.handle(
-        _dateAddedMeta,
-        dateAdded.isAcceptableOrUnknown(data['date_added']!, _dateAddedMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateAddedMeta);
-    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
@@ -1814,6 +1983,23 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       );
     } else if (isInserting) {
       context.missing(_typeMeta);
+    }
+    if (data.containsKey('date_added')) {
+      context.handle(
+        _dateAddedMeta,
+        dateAdded.isAcceptableOrUnknown(data['date_added']!, _dateAddedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateAddedMeta);
+    }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+        _lastUpdatedMeta,
+        lastUpdated.isAcceptableOrUnknown(
+          data['last_updated']!,
+          _lastUpdatedMeta,
+        ),
+      );
     }
     return context;
   }
@@ -1864,10 +2050,6 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}date_paid'],
       )!,
-      dateAdded: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_added'],
-      )!,
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -1886,6 +2068,14 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
           data['${effectivePrefix}tags'],
         )!,
       ),
+      dateAdded: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_added'],
+      )!,
+      lastUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated'],
+      )!,
     );
   }
 
@@ -1909,11 +2099,12 @@ class Expense extends DataClass implements Insertable<Expense> {
   final double cost;
   final String currency;
   final DateTime datePaid;
-  final DateTime dateAdded;
   final String? notes;
   final String? images;
   final String type;
   final List<String> tags;
+  final DateTime dateAdded;
+  final DateTime lastUpdated;
   const Expense({
     required this.id,
     required this.tripId,
@@ -1925,11 +2116,12 @@ class Expense extends DataClass implements Insertable<Expense> {
     required this.cost,
     required this.currency,
     required this.datePaid,
-    required this.dateAdded,
     this.notes,
     this.images,
     required this.type,
     required this.tags,
+    required this.dateAdded,
+    required this.lastUpdated,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1944,7 +2136,6 @@ class Expense extends DataClass implements Insertable<Expense> {
     map['cost'] = Variable<double>(cost);
     map['currency'] = Variable<String>(currency);
     map['date_paid'] = Variable<DateTime>(datePaid);
-    map['date_added'] = Variable<DateTime>(dateAdded);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
@@ -1955,6 +2146,8 @@ class Expense extends DataClass implements Insertable<Expense> {
     {
       map['tags'] = Variable<String>($ExpensesTable.$convertertags.toSql(tags));
     }
+    map['date_added'] = Variable<DateTime>(dateAdded);
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
     return map;
   }
 
@@ -1970,7 +2163,6 @@ class Expense extends DataClass implements Insertable<Expense> {
       cost: Value(cost),
       currency: Value(currency),
       datePaid: Value(datePaid),
-      dateAdded: Value(dateAdded),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
@@ -1979,6 +2171,8 @@ class Expense extends DataClass implements Insertable<Expense> {
           : Value(images),
       type: Value(type),
       tags: Value(tags),
+      dateAdded: Value(dateAdded),
+      lastUpdated: Value(lastUpdated),
     );
   }
 
@@ -1998,11 +2192,12 @@ class Expense extends DataClass implements Insertable<Expense> {
       cost: serializer.fromJson<double>(json['cost']),
       currency: serializer.fromJson<String>(json['currency']),
       datePaid: serializer.fromJson<DateTime>(json['datePaid']),
-      dateAdded: serializer.fromJson<DateTime>(json['dateAdded']),
       notes: serializer.fromJson<String?>(json['notes']),
       images: serializer.fromJson<String?>(json['images']),
       type: serializer.fromJson<String>(json['type']),
       tags: serializer.fromJson<List<String>>(json['tags']),
+      dateAdded: serializer.fromJson<DateTime>(json['dateAdded']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
     );
   }
   @override
@@ -2019,11 +2214,12 @@ class Expense extends DataClass implements Insertable<Expense> {
       'cost': serializer.toJson<double>(cost),
       'currency': serializer.toJson<String>(currency),
       'datePaid': serializer.toJson<DateTime>(datePaid),
-      'dateAdded': serializer.toJson<DateTime>(dateAdded),
       'notes': serializer.toJson<String?>(notes),
       'images': serializer.toJson<String?>(images),
       'type': serializer.toJson<String>(type),
       'tags': serializer.toJson<List<String>>(tags),
+      'dateAdded': serializer.toJson<DateTime>(dateAdded),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
     };
   }
 
@@ -2038,11 +2234,12 @@ class Expense extends DataClass implements Insertable<Expense> {
     double? cost,
     String? currency,
     DateTime? datePaid,
-    DateTime? dateAdded,
     Value<String?> notes = const Value.absent(),
     Value<String?> images = const Value.absent(),
     String? type,
     List<String>? tags,
+    DateTime? dateAdded,
+    DateTime? lastUpdated,
   }) => Expense(
     id: id ?? this.id,
     tripId: tripId ?? this.tripId,
@@ -2054,11 +2251,12 @@ class Expense extends DataClass implements Insertable<Expense> {
     cost: cost ?? this.cost,
     currency: currency ?? this.currency,
     datePaid: datePaid ?? this.datePaid,
-    dateAdded: dateAdded ?? this.dateAdded,
     notes: notes.present ? notes.value : this.notes,
     images: images.present ? images.value : this.images,
     type: type ?? this.type,
     tags: tags ?? this.tags,
+    dateAdded: dateAdded ?? this.dateAdded,
+    lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   Expense copyWithCompanion(ExpensesCompanion data) {
     return Expense(
@@ -2076,11 +2274,14 @@ class Expense extends DataClass implements Insertable<Expense> {
       cost: data.cost.present ? data.cost.value : this.cost,
       currency: data.currency.present ? data.currency.value : this.currency,
       datePaid: data.datePaid.present ? data.datePaid.value : this.datePaid,
-      dateAdded: data.dateAdded.present ? data.dateAdded.value : this.dateAdded,
       notes: data.notes.present ? data.notes.value : this.notes,
       images: data.images.present ? data.images.value : this.images,
       type: data.type.present ? data.type.value : this.type,
       tags: data.tags.present ? data.tags.value : this.tags,
+      dateAdded: data.dateAdded.present ? data.dateAdded.value : this.dateAdded,
+      lastUpdated: data.lastUpdated.present
+          ? data.lastUpdated.value
+          : this.lastUpdated,
     );
   }
 
@@ -2097,11 +2298,12 @@ class Expense extends DataClass implements Insertable<Expense> {
           ..write('cost: $cost, ')
           ..write('currency: $currency, ')
           ..write('datePaid: $datePaid, ')
-          ..write('dateAdded: $dateAdded, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
           ..write('type: $type, ')
-          ..write('tags: $tags')
+          ..write('tags: $tags, ')
+          ..write('dateAdded: $dateAdded, ')
+          ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
   }
@@ -2118,11 +2320,12 @@ class Expense extends DataClass implements Insertable<Expense> {
     cost,
     currency,
     datePaid,
-    dateAdded,
     notes,
     images,
     type,
     tags,
+    dateAdded,
+    lastUpdated,
   );
   @override
   bool operator ==(Object other) =>
@@ -2138,11 +2341,12 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.cost == this.cost &&
           other.currency == this.currency &&
           other.datePaid == this.datePaid &&
-          other.dateAdded == this.dateAdded &&
           other.notes == this.notes &&
           other.images == this.images &&
           other.type == this.type &&
-          other.tags == this.tags);
+          other.tags == this.tags &&
+          other.dateAdded == this.dateAdded &&
+          other.lastUpdated == this.lastUpdated);
 }
 
 class ExpensesCompanion extends UpdateCompanion<Expense> {
@@ -2156,11 +2360,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<double> cost;
   final Value<String> currency;
   final Value<DateTime> datePaid;
-  final Value<DateTime> dateAdded;
   final Value<String?> notes;
   final Value<String?> images;
   final Value<String> type;
   final Value<List<String>> tags;
+  final Value<DateTime> dateAdded;
+  final Value<DateTime> lastUpdated;
   final Value<int> rowid;
   const ExpensesCompanion({
     this.id = const Value.absent(),
@@ -2173,11 +2378,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.cost = const Value.absent(),
     this.currency = const Value.absent(),
     this.datePaid = const Value.absent(),
-    this.dateAdded = const Value.absent(),
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
     this.type = const Value.absent(),
     this.tags = const Value.absent(),
+    this.dateAdded = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ExpensesCompanion.insert({
@@ -2191,11 +2397,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     required double cost,
     required String currency,
     required DateTime datePaid,
-    required DateTime dateAdded,
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
     required String type,
     required List<String> tags,
+    required DateTime dateAdded,
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : tripId = Value(tripId),
        participantId = Value(participantId),
@@ -2206,9 +2413,9 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
        cost = Value(cost),
        currency = Value(currency),
        datePaid = Value(datePaid),
-       dateAdded = Value(dateAdded),
        type = Value(type),
-       tags = Value(tags);
+       tags = Value(tags),
+       dateAdded = Value(dateAdded);
   static Insertable<Expense> custom({
     Expression<String>? id,
     Expression<String>? tripId,
@@ -2220,11 +2427,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Expression<double>? cost,
     Expression<String>? currency,
     Expression<DateTime>? datePaid,
-    Expression<DateTime>? dateAdded,
     Expression<String>? notes,
     Expression<String>? images,
     Expression<String>? type,
     Expression<String>? tags,
+    Expression<DateTime>? dateAdded,
+    Expression<DateTime>? lastUpdated,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2238,11 +2446,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       if (cost != null) 'cost': cost,
       if (currency != null) 'currency': currency,
       if (datePaid != null) 'date_paid': datePaid,
-      if (dateAdded != null) 'date_added': dateAdded,
       if (notes != null) 'notes': notes,
       if (images != null) 'images': images,
       if (type != null) 'type': type,
       if (tags != null) 'tags': tags,
+      if (dateAdded != null) 'date_added': dateAdded,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2258,11 +2467,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Value<double>? cost,
     Value<String>? currency,
     Value<DateTime>? datePaid,
-    Value<DateTime>? dateAdded,
     Value<String?>? notes,
     Value<String?>? images,
     Value<String>? type,
     Value<List<String>>? tags,
+    Value<DateTime>? dateAdded,
+    Value<DateTime>? lastUpdated,
     Value<int>? rowid,
   }) {
     return ExpensesCompanion(
@@ -2276,11 +2486,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       cost: cost ?? this.cost,
       currency: currency ?? this.currency,
       datePaid: datePaid ?? this.datePaid,
-      dateAdded: dateAdded ?? this.dateAdded,
       notes: notes ?? this.notes,
       images: images ?? this.images,
       type: type ?? this.type,
       tags: tags ?? this.tags,
+      dateAdded: dateAdded ?? this.dateAdded,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2318,9 +2529,6 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     if (datePaid.present) {
       map['date_paid'] = Variable<DateTime>(datePaid.value);
     }
-    if (dateAdded.present) {
-      map['date_added'] = Variable<DateTime>(dateAdded.value);
-    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
@@ -2334,6 +2542,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       map['tags'] = Variable<String>(
         $ExpensesTable.$convertertags.toSql(tags.value),
       );
+    }
+    if (dateAdded.present) {
+      map['date_added'] = Variable<DateTime>(dateAdded.value);
+    }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -2354,11 +2568,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
           ..write('cost: $cost, ')
           ..write('currency: $currency, ')
           ..write('datePaid: $datePaid, ')
-          ..write('dateAdded: $dateAdded, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
           ..write('type: $type, ')
           ..write('tags: $tags, ')
+          ..write('dateAdded: $dateAdded, ')
+          ..write('lastUpdated: $lastUpdated, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2504,6 +2719,18 @@ class $RatingDetailsTable extends RatingDetails
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
+    'lastUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+    'last_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2519,6 +2746,7 @@ class $RatingDetailsTable extends RatingDetails
     images,
     tags,
     createdAt,
+    lastUpdated,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2619,6 +2847,15 @@ class $RatingDetailsTable extends RatingDetails
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+        _lastUpdatedMeta,
+        lastUpdated.isAcceptableOrUnknown(
+          data['last_updated']!,
+          _lastUpdatedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -2682,6 +2919,10 @@ class $RatingDetailsTable extends RatingDetails
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      lastUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated'],
+      )!,
     );
   }
 
@@ -2708,6 +2949,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
   final String? images;
   final List<String> tags;
   final DateTime createdAt;
+  final DateTime lastUpdated;
   const RatingDetail({
     required this.id,
     required this.tripId,
@@ -2722,6 +2964,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
     this.images,
     required this.tags,
     required this.createdAt,
+    required this.lastUpdated,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2753,6 +2996,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
       );
     }
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
     return map;
   }
 
@@ -2781,6 +3025,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
           : Value(images),
       tags: Value(tags),
       createdAt: Value(createdAt),
+      lastUpdated: Value(lastUpdated),
     );
   }
 
@@ -2803,6 +3048,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
       images: serializer.fromJson<String?>(json['images']),
       tags: serializer.fromJson<List<String>>(json['tags']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
     );
   }
   @override
@@ -2822,6 +3068,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
       'images': serializer.toJson<String?>(images),
       'tags': serializer.toJson<List<String>>(tags),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
     };
   }
 
@@ -2839,6 +3086,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
     Value<String?> images = const Value.absent(),
     List<String>? tags,
     DateTime? createdAt,
+    DateTime? lastUpdated,
   }) => RatingDetail(
     id: id ?? this.id,
     tripId: tripId ?? this.tripId,
@@ -2853,6 +3101,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
     images: images.present ? images.value : this.images,
     tags: tags ?? this.tags,
     createdAt: createdAt ?? this.createdAt,
+    lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   RatingDetail copyWithCompanion(RatingDetailsCompanion data) {
     return RatingDetail(
@@ -2873,6 +3122,9 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
       images: data.images.present ? data.images.value : this.images,
       tags: data.tags.present ? data.tags.value : this.tags,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastUpdated: data.lastUpdated.present
+          ? data.lastUpdated.value
+          : this.lastUpdated,
     );
   }
 
@@ -2891,7 +3143,8 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
           ..write('notes: $notes, ')
           ..write('images: $images, ')
           ..write('tags: $tags, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
   }
@@ -2911,6 +3164,7 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
     images,
     tags,
     createdAt,
+    lastUpdated,
   );
   @override
   bool operator ==(Object other) =>
@@ -2928,7 +3182,8 @@ class RatingDetail extends DataClass implements Insertable<RatingDetail> {
           other.notes == this.notes &&
           other.images == this.images &&
           other.tags == this.tags &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.lastUpdated == this.lastUpdated);
 }
 
 class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
@@ -2945,6 +3200,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
   final Value<String?> images;
   final Value<List<String>> tags;
   final Value<DateTime> createdAt;
+  final Value<DateTime> lastUpdated;
   final Value<int> rowid;
   const RatingDetailsCompanion({
     this.id = const Value.absent(),
@@ -2960,6 +3216,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
     this.images = const Value.absent(),
     this.tags = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RatingDetailsCompanion.insert({
@@ -2976,6 +3233,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
     this.images = const Value.absent(),
     required List<String> tags,
     required DateTime createdAt,
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : tripId = Value(tripId),
        placeName = Value(placeName),
@@ -2998,6 +3256,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
     Expression<String>? images,
     Expression<String>? tags,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastUpdated,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3014,6 +3273,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
       if (images != null) 'images': images,
       if (tags != null) 'tags': tags,
       if (createdAt != null) 'created_at': createdAt,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3032,6 +3292,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
     Value<String?>? images,
     Value<List<String>>? tags,
     Value<DateTime>? createdAt,
+    Value<DateTime>? lastUpdated,
     Value<int>? rowid,
   }) {
     return RatingDetailsCompanion(
@@ -3048,6 +3309,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
       images: images ?? this.images,
       tags: tags ?? this.tags,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3096,6 +3358,9 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3118,6 +3383,7 @@ class RatingDetailsCompanion extends UpdateCompanion<RatingDetail> {
           ..write('images: $images, ')
           ..write('tags: $tags, ')
           ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3199,6 +3465,18 @@ class $RatingsMadeTable extends RatingsMade
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
+    'lastUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+    'last_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3207,6 +3485,7 @@ class $RatingsMadeTable extends RatingsMade
     rating,
     expectedRating,
     createdAt,
+    lastUpdated,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3268,6 +3547,15 @@ class $RatingsMadeTable extends RatingsMade
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+        _lastUpdatedMeta,
+        lastUpdated.isAcceptableOrUnknown(
+          data['last_updated']!,
+          _lastUpdatedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3301,6 +3589,10 @@ class $RatingsMadeTable extends RatingsMade
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      lastUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated'],
+      )!,
     );
   }
 
@@ -3317,6 +3609,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
   final double? rating;
   final double? expectedRating;
   final DateTime createdAt;
+  final DateTime lastUpdated;
   const RatingsMadeData({
     required this.id,
     required this.ratingDetailsId,
@@ -3324,6 +3617,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
     this.rating,
     this.expectedRating,
     required this.createdAt,
+    required this.lastUpdated,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3338,6 +3632,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
       map['expected_rating'] = Variable<double>(expectedRating);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
     return map;
   }
 
@@ -3353,6 +3648,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
           ? const Value.absent()
           : Value(expectedRating),
       createdAt: Value(createdAt),
+      lastUpdated: Value(lastUpdated),
     );
   }
 
@@ -3368,6 +3664,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
       rating: serializer.fromJson<double?>(json['rating']),
       expectedRating: serializer.fromJson<double?>(json['expectedRating']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
     );
   }
   @override
@@ -3380,6 +3677,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
       'rating': serializer.toJson<double?>(rating),
       'expectedRating': serializer.toJson<double?>(expectedRating),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
     };
   }
 
@@ -3390,6 +3688,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
     Value<double?> rating = const Value.absent(),
     Value<double?> expectedRating = const Value.absent(),
     DateTime? createdAt,
+    DateTime? lastUpdated,
   }) => RatingsMadeData(
     id: id ?? this.id,
     ratingDetailsId: ratingDetailsId ?? this.ratingDetailsId,
@@ -3399,6 +3698,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
         ? expectedRating.value
         : this.expectedRating,
     createdAt: createdAt ?? this.createdAt,
+    lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   RatingsMadeData copyWithCompanion(RatingsMadeCompanion data) {
     return RatingsMadeData(
@@ -3414,6 +3714,9 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
           ? data.expectedRating.value
           : this.expectedRating,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastUpdated: data.lastUpdated.present
+          ? data.lastUpdated.value
+          : this.lastUpdated,
     );
   }
 
@@ -3425,7 +3728,8 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
           ..write('participantId: $participantId, ')
           ..write('rating: $rating, ')
           ..write('expectedRating: $expectedRating, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
   }
@@ -3438,6 +3742,7 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
     rating,
     expectedRating,
     createdAt,
+    lastUpdated,
   );
   @override
   bool operator ==(Object other) =>
@@ -3448,7 +3753,8 @@ class RatingsMadeData extends DataClass implements Insertable<RatingsMadeData> {
           other.participantId == this.participantId &&
           other.rating == this.rating &&
           other.expectedRating == this.expectedRating &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.lastUpdated == this.lastUpdated);
 }
 
 class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
@@ -3458,6 +3764,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
   final Value<double?> rating;
   final Value<double?> expectedRating;
   final Value<DateTime> createdAt;
+  final Value<DateTime> lastUpdated;
   final Value<int> rowid;
   const RatingsMadeCompanion({
     this.id = const Value.absent(),
@@ -3466,6 +3773,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
     this.rating = const Value.absent(),
     this.expectedRating = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RatingsMadeCompanion.insert({
@@ -3475,6 +3783,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
     this.rating = const Value.absent(),
     this.expectedRating = const Value.absent(),
     required DateTime createdAt,
+    this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : ratingDetailsId = Value(ratingDetailsId),
        participantId = Value(participantId),
@@ -3486,6 +3795,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
     Expression<double>? rating,
     Expression<double>? expectedRating,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastUpdated,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3495,6 +3805,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
       if (rating != null) 'rating': rating,
       if (expectedRating != null) 'expected_rating': expectedRating,
       if (createdAt != null) 'created_at': createdAt,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3506,6 +3817,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
     Value<double?>? rating,
     Value<double?>? expectedRating,
     Value<DateTime>? createdAt,
+    Value<DateTime>? lastUpdated,
     Value<int>? rowid,
   }) {
     return RatingsMadeCompanion(
@@ -3515,6 +3827,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
       rating: rating ?? this.rating,
       expectedRating: expectedRating ?? this.expectedRating,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3540,6 +3853,9 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3555,6 +3871,7 @@ class RatingsMadeCompanion extends UpdateCompanion<RatingsMadeData> {
           ..write('rating: $rating, ')
           ..write('expectedRating: $expectedRating, ')
           ..write('createdAt: $createdAt, ')
+          ..write('lastUpdated: $lastUpdated, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3605,6 +3922,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       required String gender,
       required bool admin,
       required DateTime createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -3616,6 +3934,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> gender,
       Value<bool> admin,
       Value<DateTime> createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 
@@ -3683,6 +4002,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3755,6 +4079,11 @@ class $$UsersTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UsersTableAnnotationComposer
@@ -3786,6 +4115,11 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => column,
+  );
 
   Expression<T> tripsRefs<T extends Object>(
     Expression<T> Function($$TripsTableAnnotationComposer a) f,
@@ -3848,6 +4182,7 @@ class $$UsersTableTableManager
                 Value<String> gender = const Value.absent(),
                 Value<bool> admin = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -3857,6 +4192,7 @@ class $$UsersTableTableManager
                 gender: gender,
                 admin: admin,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3868,6 +4204,7 @@ class $$UsersTableTableManager
                 required String gender,
                 required bool admin,
                 required DateTime createdAt,
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -3877,6 +4214,7 @@ class $$UsersTableTableManager
                 gender: gender,
                 admin: admin,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -3941,6 +4279,7 @@ typedef $$TripsTableCreateCompanionBuilder =
       required DateTime startDate,
       required DateTime endDate,
       required DateTime createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 typedef $$TripsTableUpdateCompanionBuilder =
@@ -3958,6 +4297,7 @@ typedef $$TripsTableUpdateCompanionBuilder =
       Value<DateTime> startDate,
       Value<DateTime> endDate,
       Value<DateTime> createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 
@@ -4085,6 +4425,11 @@ class $$TripsTableFilterComposer extends Composer<_$AppDatabase, $TripsTable> {
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4231,6 +4576,11 @@ class $$TripsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$UsersTableOrderingComposer get userId {
     final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4299,6 +4649,11 @@ class $$TripsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => column,
+  );
 
   $$UsersTableAnnotationComposer get userId {
     final $$UsersTableAnnotationComposer composer = $composerBuilder(
@@ -4419,6 +4774,7 @@ class $$TripsTableTableManager
                 Value<DateTime> startDate = const Value.absent(),
                 Value<DateTime> endDate = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TripsCompanion(
                 id: id,
@@ -4434,6 +4790,7 @@ class $$TripsTableTableManager
                 startDate: startDate,
                 endDate: endDate,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4451,6 +4808,7 @@ class $$TripsTableTableManager
                 required DateTime startDate,
                 required DateTime endDate,
                 required DateTime createdAt,
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TripsCompanion.insert(
                 id: id,
@@ -4466,6 +4824,7 @@ class $$TripsTableTableManager
                 startDate: startDate,
                 endDate: endDate,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4590,6 +4949,7 @@ typedef $$ParticipantsTableCreateCompanionBuilder =
       required String name,
       Value<bool> isMainUser,
       required DateTime createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 typedef $$ParticipantsTableUpdateCompanionBuilder =
@@ -4598,6 +4958,7 @@ typedef $$ParticipantsTableUpdateCompanionBuilder =
       Value<String> name,
       Value<bool> isMainUser,
       Value<DateTime> createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 
@@ -4675,6 +5036,11 @@ class $$ParticipantsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4757,6 +5123,11 @@ class $$ParticipantsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ParticipantsTableAnnotationComposer
@@ -4781,6 +5152,11 @@ class $$ParticipantsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => column,
+  );
 
   Expression<T> expensesRefs<T extends Object>(
     Expression<T> Function($$ExpensesTableAnnotationComposer a) f,
@@ -4865,12 +5241,14 @@ class $$ParticipantsTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<bool> isMainUser = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ParticipantsCompanion(
                 id: id,
                 name: name,
                 isMainUser: isMainUser,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4879,12 +5257,14 @@ class $$ParticipantsTableTableManager
                 required String name,
                 Value<bool> isMainUser = const Value.absent(),
                 required DateTime createdAt,
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ParticipantsCompanion.insert(
                 id: id,
                 name: name,
                 isMainUser: isMainUser,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4982,11 +5362,12 @@ typedef $$ExpensesTableCreateCompanionBuilder =
       required double cost,
       required String currency,
       required DateTime datePaid,
-      required DateTime dateAdded,
       Value<String?> notes,
       Value<String?> images,
       required String type,
       required List<String> tags,
+      required DateTime dateAdded,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 typedef $$ExpensesTableUpdateCompanionBuilder =
@@ -5001,11 +5382,12 @@ typedef $$ExpensesTableUpdateCompanionBuilder =
       Value<double> cost,
       Value<String> currency,
       Value<DateTime> datePaid,
-      Value<DateTime> dateAdded,
       Value<String?> notes,
       Value<String?> images,
       Value<String> type,
       Value<List<String>> tags,
+      Value<DateTime> dateAdded,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 
@@ -5100,11 +5482,6 @@ class $$ExpensesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get dateAdded => $composableBuilder(
-    column: $table.dateAdded,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnFilters(column),
@@ -5125,6 +5502,16 @@ class $$ExpensesTableFilterComposer
         column: $table.tags,
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
+
+  ColumnFilters<DateTime> get dateAdded => $composableBuilder(
+    column: $table.dateAdded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
 
   $$TripsTableFilterComposer get tripId {
     final $$TripsTableFilterComposer composer = $composerBuilder(
@@ -5222,11 +5609,6 @@ class $$ExpensesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get dateAdded => $composableBuilder(
-    column: $table.dateAdded,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnOrderings(column),
@@ -5244,6 +5626,16 @@ class $$ExpensesTableOrderingComposer
 
   ColumnOrderings<String> get tags => $composableBuilder(
     column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateAdded => $composableBuilder(
+    column: $table.dateAdded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5329,9 +5721,6 @@ class $$ExpensesTableAnnotationComposer
   GeneratedColumn<DateTime> get datePaid =>
       $composableBuilder(column: $table.datePaid, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get dateAdded =>
-      $composableBuilder(column: $table.dateAdded, builder: (column) => column);
-
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
@@ -5343,6 +5732,14 @@ class $$ExpensesTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<List<String>, String> get tags =>
       $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateAdded =>
+      $composableBuilder(column: $table.dateAdded, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => column,
+  );
 
   $$TripsTableAnnotationComposer get tripId {
     final $$TripsTableAnnotationComposer composer = $composerBuilder(
@@ -5429,11 +5826,12 @@ class $$ExpensesTableTableManager
                 Value<double> cost = const Value.absent(),
                 Value<String> currency = const Value.absent(),
                 Value<DateTime> datePaid = const Value.absent(),
-                Value<DateTime> dateAdded = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<List<String>> tags = const Value.absent(),
+                Value<DateTime> dateAdded = const Value.absent(),
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExpensesCompanion(
                 id: id,
@@ -5446,11 +5844,12 @@ class $$ExpensesTableTableManager
                 cost: cost,
                 currency: currency,
                 datePaid: datePaid,
-                dateAdded: dateAdded,
                 notes: notes,
                 images: images,
                 type: type,
                 tags: tags,
+                dateAdded: dateAdded,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -5465,11 +5864,12 @@ class $$ExpensesTableTableManager
                 required double cost,
                 required String currency,
                 required DateTime datePaid,
-                required DateTime dateAdded,
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
                 required String type,
                 required List<String> tags,
+                required DateTime dateAdded,
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExpensesCompanion.insert(
                 id: id,
@@ -5482,11 +5882,12 @@ class $$ExpensesTableTableManager
                 cost: cost,
                 currency: currency,
                 datePaid: datePaid,
-                dateAdded: dateAdded,
                 notes: notes,
                 images: images,
                 type: type,
                 tags: tags,
+                dateAdded: dateAdded,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -5584,6 +5985,7 @@ typedef $$RatingDetailsTableCreateCompanionBuilder =
       Value<String?> images,
       required List<String> tags,
       required DateTime createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 typedef $$RatingDetailsTableUpdateCompanionBuilder =
@@ -5601,6 +6003,7 @@ typedef $$RatingDetailsTableUpdateCompanionBuilder =
       Value<String?> images,
       Value<List<String>> tags,
       Value<DateTime> createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 
@@ -5722,6 +6125,11 @@ class $$RatingDetailsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$TripsTableFilterComposer get tripId {
     final $$TripsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -5840,6 +6248,11 @@ class $$RatingDetailsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$TripsTableOrderingComposer get tripId {
     final $$TripsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -5912,6 +6325,11 @@ class $$RatingDetailsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => column,
+  );
 
   $$TripsTableAnnotationComposer get tripId {
     final $$TripsTableAnnotationComposer composer = $composerBuilder(
@@ -6003,6 +6421,7 @@ class $$RatingDetailsTableTableManager
                 Value<String?> images = const Value.absent(),
                 Value<List<String>> tags = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RatingDetailsCompanion(
                 id: id,
@@ -6018,6 +6437,7 @@ class $$RatingDetailsTableTableManager
                 images: images,
                 tags: tags,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6035,6 +6455,7 @@ class $$RatingDetailsTableTableManager
                 Value<String?> images = const Value.absent(),
                 required List<String> tags,
                 required DateTime createdAt,
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RatingDetailsCompanion.insert(
                 id: id,
@@ -6050,6 +6471,7 @@ class $$RatingDetailsTableTableManager
                 images: images,
                 tags: tags,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -6149,6 +6571,7 @@ typedef $$RatingsMadeTableCreateCompanionBuilder =
       Value<double?> rating,
       Value<double?> expectedRating,
       required DateTime createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 typedef $$RatingsMadeTableUpdateCompanionBuilder =
@@ -6159,6 +6582,7 @@ typedef $$RatingsMadeTableUpdateCompanionBuilder =
       Value<double?> rating,
       Value<double?> expectedRating,
       Value<DateTime> createdAt,
+      Value<DateTime> lastUpdated,
       Value<int> rowid,
     });
 
@@ -6234,6 +6658,11 @@ class $$RatingsMadeTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6313,6 +6742,11 @@ class $$RatingsMadeTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$RatingDetailsTableOrderingComposer get ratingDetailsId {
     final $$RatingDetailsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -6382,6 +6816,11 @@ class $$RatingsMadeTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => column,
+  );
 
   $$RatingDetailsTableAnnotationComposer get ratingDetailsId {
     final $$RatingDetailsTableAnnotationComposer composer = $composerBuilder(
@@ -6464,6 +6903,7 @@ class $$RatingsMadeTableTableManager
                 Value<double?> rating = const Value.absent(),
                 Value<double?> expectedRating = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RatingsMadeCompanion(
                 id: id,
@@ -6472,6 +6912,7 @@ class $$RatingsMadeTableTableManager
                 rating: rating,
                 expectedRating: expectedRating,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6482,6 +6923,7 @@ class $$RatingsMadeTableTableManager
                 Value<double?> rating = const Value.absent(),
                 Value<double?> expectedRating = const Value.absent(),
                 required DateTime createdAt,
+                Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RatingsMadeCompanion.insert(
                 id: id,
@@ -6490,6 +6932,7 @@ class $$RatingsMadeTableTableManager
                 rating: rating,
                 expectedRating: expectedRating,
                 createdAt: createdAt,
+                lastUpdated: lastUpdated,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

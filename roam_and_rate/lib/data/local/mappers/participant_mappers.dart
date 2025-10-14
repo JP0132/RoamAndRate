@@ -9,6 +9,7 @@ extension ParticipantEntityMapper on Participant {
       particpantName: name,
       isAdmin: isMainUser,
       createdAt: createdAt,
+      lastUpdated: lastUpdated
     );
   }
 }

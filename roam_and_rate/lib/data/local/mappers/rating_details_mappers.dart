@@ -17,6 +17,7 @@ extension RatingDetailsEntityMapper on RatingDetail {
       notes: notes!,
       datePlanned: datePlanned,
       dateVisited: dateVisited,
+      lastUpdated: lastUpdated
     );
   }
 }

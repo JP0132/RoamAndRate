@@ -14,6 +14,7 @@ class ExpenseModel {
   final List<String> tags;
   final String notes;
   final String image;
+  final DateTime? lastUpdated;
 
   ExpenseModel({
     required this.name,
@@ -31,6 +32,7 @@ class ExpenseModel {
     this.image = "",
     this.notes = "",
     required this.type,
+    this.lastUpdated
   });
 
   ExpenseModel copyWith({
@@ -49,6 +51,8 @@ class ExpenseModel {
     String? notes,
     String? image,
     bool? toBeSplit,
+    DateTime? lastUpdated,
+
   }) {
     return ExpenseModel(
       expenseId: expenseId ?? this.expenseId,
@@ -66,6 +70,7 @@ class ExpenseModel {
       category: category ?? this.category,
       participantId: participantId ?? this.participantId,
       toBeSplit: toBeSplit ?? this.toBeSplit,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }

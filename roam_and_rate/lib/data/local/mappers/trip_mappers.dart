@@ -17,6 +17,7 @@ extension TripEntityMapper on Trip {
       budget: budget,
       notes: notes,
       backgroundColor: bgColour,
+      lastUpdated: lastUpdated
     );
   }
 }

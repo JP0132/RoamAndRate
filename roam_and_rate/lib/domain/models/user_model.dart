@@ -5,6 +5,7 @@ class UserModel {
   final DateTime? dob;
   final String gender;
   final bool admin;
+  final DateTime? lastUpdated;
 
   const UserModel({
     this.userId,
@@ -13,6 +14,7 @@ class UserModel {
     required this.dob,
     required this.gender,
     required this.admin,
+    this.lastUpdated
   });
 
   UserModel copyWith({
@@ -22,6 +24,7 @@ class UserModel {
     DateTime? dob,
     String? gender,
     bool? admin,
+    DateTime? lastUpdated,
   }) {
     return UserModel(
       userId: userId ?? this.userId,
@@ -30,6 +33,7 @@ class UserModel {
       gender: gender ?? this.gender,
       admin: admin ?? this.admin,
       fullName: fullName ?? this.fullName,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }

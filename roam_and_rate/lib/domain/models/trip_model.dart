@@ -14,6 +14,7 @@ class TripModel {
   final DateTime startDate;
   final DateTime endDate;
   final DateTime createdAt;
+  final DateTime? lastUpdated;
 
   const TripModel({
     this.tripId,
@@ -29,6 +30,7 @@ class TripModel {
     required this.startDate,
     required this.endDate,
     this.backgroundColor = "default",
+    this.lastUpdated
   });
 
   TripModel copyWith({
@@ -45,6 +47,9 @@ class TripModel {
     DateTime? startDate,
     DateTime? endDate,
     DateTime? createdAt,
+    DateTime? lastUpdated,
+
+
   }) {
     return TripModel(
       tripId: tripId ?? this.tripId,
@@ -60,6 +65,7 @@ class TripModel {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       createdAt: createdAt ?? this.createdAt,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }

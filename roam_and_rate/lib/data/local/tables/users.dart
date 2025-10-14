@@ -10,6 +10,8 @@ class Users extends Table {
   TextColumn get gender => text()();
   BoolColumn get admin => boolean()();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastUpdated => dateTime().withDefault(currentDateAndTime)();
+
 
   @override
   Set<Column> get primaryKey => {id};
