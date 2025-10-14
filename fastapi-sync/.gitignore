@@ -13,3 +13,4 @@ Thumbs.db
 
 # enviroment variables
 /.env
+.env
