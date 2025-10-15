@@ -25,6 +25,7 @@ class SyncService {
   }
 
   Future<void> syncToServer() async {
+    lastSyncTime = null;
     if (lastSyncTime == null) {
       print("⏰⏰⏰⏰ sync started");
 
