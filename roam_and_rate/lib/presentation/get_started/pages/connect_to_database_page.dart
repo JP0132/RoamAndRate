@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
@@ -19,6 +20,17 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
   @override
   Widget build(BuildContext context) {
     Future<bool> testConnection() async {
+      final result = await http.get(
+        Uri.parse(
+          "${_serverAddressController.text}:${_portNoController.text}/testConnection",
+        ),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (result.statusCode != 200) {
+        print("⏰⏰ IT NOT CORRECT");
+        return false;
+      }
       return true;
     }
 
@@ -51,6 +63,7 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
               onPressed: () async {
                 bool isConnected = await testConnection();
                 if (isConnected) {
+                  print("⏰⏰⏰⏰ IT IS CORRRRTI");
                   handleOnSubmit();
                 }
               },
