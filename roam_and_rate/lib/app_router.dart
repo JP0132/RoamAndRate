@@ -5,6 +5,7 @@ import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/add_expense_page.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/edit_expense_page.dart';
+import 'package:roam_and_rate/presentation/get_started/pages/connect_to_database_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
 import 'package:roam_and_rate/presentation/navigation/navigation_page.dart';
@@ -43,9 +44,13 @@ class AddRatingArguments {
 class EditRatingArguments {
   final RatingDetailsModel rating;
   final RatingsMadeModel? ratingMade;
-  final Map<String, double>? participantRatings; 
+  final Map<String, double>? participantRatings;
 
-  EditRatingArguments({required this.rating, this.ratingMade, this.participantRatings});
+  EditRatingArguments({
+    required this.rating,
+    this.ratingMade,
+    this.participantRatings,
+  });
 }
 
 class AppRouter {
@@ -62,6 +67,7 @@ class AppRouter {
   static const String editExpense = '/editExpense';
   static const String editRating = '/editRating';
   static const String userDetails = '/userDetails';
+  static const String connectToDB = "/connectToDB";
 
   static Route<dynamic> generateRoute(RouteSettings selectedRoute) {
     switch (selectedRoute.name) {
@@ -71,6 +77,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => CustomBottomNavbar());
       case onboarding:
         return MaterialPageRoute(builder: (_) => OnboardingPage());
+      case connectToDB:
+        return MaterialPageRoute(builder: (_) => ConnectToDatabasePage());
       case enterUserDetails:
         return MaterialPageRoute(builder: (_) => EnterUserDetails());
       case getStarted:
