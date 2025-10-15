@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base, Session, relationship
 from sqlalchemy import Column, Integer, String, DateTime, func, Boolean, ForeignKey, Float, JSON
 from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
 import os
 
 # Start python virtual enviroment with: 
@@ -23,6 +26,7 @@ DATABASE_URL = (
 )
 
 engine = create_async_engine(DATABASE_URL, echo=True, future=True)
+
 SessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
@@ -33,7 +37,7 @@ class UsersTable(Base):
     id = Column(String, primary_key=True)
     username = Column(String, nullable=False)
     fullName = Column(String, nullable=False)
-    dateOfBirth = Column(DateTime(timezone=True), nullable=False)
+    dob = Column(DateTime(timezone=True), nullable=False)
     gender = Column(String, nullable=False)
     admin = Column(Boolean, nullable=False)
     createdAt = Column(DateTime(timezone=True), nullable=False)
@@ -48,6 +52,7 @@ class TripsTable(Base):
     tripName = Column(String, nullable=False)
     location = Column(String, nullable=False)
     currency = Column(String, nullable=False)
+    category = Column(String, nullable=False)
     budget = Column(Float, nullable=False)
     notes = Column(String, nullable=True)
     images = Column(String, nullable=True)
@@ -136,7 +141,7 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     username: str
     fullName: str
-    dateOfBirth: datetime
+    dob: datetime
     gender: str
     admin: bool
 
@@ -267,23 +272,25 @@ class RatingMadeRead(RatingMadeBase):
     class Config:
         orm_mode = True
 
+
 app = FastAPI()
 
 # Dependency
-def get_db():
-    db = SessionLocal()
+
+async def get_db():
+    db: AsyncSession = SessionLocal()
     try:
         yield db
     finally:
-        db.close()
-
+        await db.close()
 
 @app.get("/")
 async def root():
     return {"message": "FastAPI is running on your server."}
 
 @app.post("/sync")
-async def syncData(data: dict, db: Session = Depends(get_db)):
+async def syncData(data: dict, db: AsyncSession = Depends(get_db)):
+    print("Sync has been called")
     trips = data.get("trips", [])
     expenses = data.get("expenses", [])
     participants = data.get("participants", [])
@@ -293,19 +300,22 @@ async def syncData(data: dict, db: Session = Depends(get_db)):
 
     for u in users:
         user = UsersTable(**u)
-        db.merge(user)
+        await db.merge(user)
     for t in trips:
         trip = TripsTable(**t)
-        db.merge(trip)
+        await db.merge(trip)
     for e in expenses:
         expense = ExpensesTable(**e)
-        db.merge(expense)
+        await db.merge(expense)
     for p in participants:
         participant = ParticipantsTable(**p)
-        db.merge(participant)
+        await db.merge(participant)
     for rd in ratingDetails:
         ratingDetail = RatingDetailsTable(**rd)
-        db.merge(ratingDetail)
+        await db.merge(ratingDetail)
     for rm in ratingsMade:
         ratingMade = RatingsMadeTable(**rm)
-        db.merge(ratingsMade)
+        await db.merge(ratingsMade)
+
+    await db.commit()
+    return {"message": "Sync complete"}
