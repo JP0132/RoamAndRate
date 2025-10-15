@@ -15,7 +15,7 @@ class SyncService {
 
   void startSyncTimer() {
     print("⏰⏰⏰⏰ timer started");
-    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 30), (timer) {
       syncToServer();
     });
   }
@@ -39,7 +39,6 @@ class SyncService {
 
         print("⏰⏰⏰⏰ got the unsynced data");
 
-
         final payload = {
           "trips": unsyncedTrips.map((t) => t.toJson()).toList(),
           "expenses": unsyncedExpenses.map((e) => e.toJson()).toList(),
@@ -58,7 +57,6 @@ class SyncService {
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(payload),
         );
-
 
         print("⏰⏰⏰⏰ post request made");
 
