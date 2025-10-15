@@ -13,6 +13,20 @@ async def get_db():
 def convert_timestamp(ts: int) -> datetime:
     return datetime.fromtimestamp(ts / 1000)
 
+@router.get("/testConnection")
+async def testConnection():
+    return {"message": "FastAPI is running on your server."}
+
+@router.get("/alldata")
+async def getAllData(db: AsyncSession = Depends(get_db)):
+    print("Get the data from database")
+    allUsers = await db.execute(select(UsersTable))
+    allTrips = await db.execute(select(TripsTable))
+    allExpenses = await db.execute(select(ExpensesTable))
+    allParticipants = await db.execute(select(ParticipantsTable))
+    allRatingDetails = await db.execute(select(RatingDetailsTable))
+    allRatingsMade = await db.execute(select(RatingsMadeTable))
+
 @router.post("/sync")
 async def syncData(data: dict, db: AsyncSession = Depends(get_db)):
     print("Sync has been called")
