@@ -22,7 +22,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   void nextPage() {
     if (state.currentPage == 2) {
-      Navigator.pushReplacementNamed(context, AppRouter.enterUserDetails);
+      Navigator.pushReplacementNamed(context, AppRouter.getStarted);
     }
     final nextPage = (state.currentPage + 1) % 3;
 
@@ -41,12 +41,13 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   void skipPage() {
-    Navigator.pushReplacementNamed(context, AppRouter.enterUserDetails);
+    Navigator.pushNamed(context, AppRouter.getStarted);
+    //Navigator.pushReplacementNamed(context, AppRouter.enterUserDetails);
   }
 
   void dotNavigationClick(int page) {
     if (page == 3) {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushNamed(context, AppRouter.getStarted);
     }
     state.pageController.animateToPage(
       page,

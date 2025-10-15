@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
@@ -68,7 +69,9 @@ class _GetStartedState extends State<GetStarted> {
                   width: double.infinity,
                   child: StartingOptionBtn(
                     btnText: "CONNECT TO DATABASE",
-                    onPress: () {},
+                    onPress: () {
+                      Navigator.pushNamed(context, AppRouter.connectToDB);
+                    },
                   ),
                 ),
                 const SizedBox(height: 12),
