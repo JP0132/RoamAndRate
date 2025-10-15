@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:nativewrappers/_internal/vm/bin/vmservice_io.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManager {
@@ -11,6 +14,8 @@ class SessionManager {
 
   bool? backupToDB;
 
+  Map<String, String>? serverData;
+
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('userId');
@@ -18,7 +23,23 @@ class SessionManager {
     backupToDB = prefs.getBool("backupToDB");
   }
 
-  Future<void> setBackupToDB(bool backingUp) async{
+  Future<void> setServerData(String serverAddress, String portNo) async {
+    serverData?["serverAddress"] = serverAddress;
+    serverData?["portNo"] = portNo;
+
+    final serverDataEncode = jsonEncode(serverData);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("serverData", serverDataEncode);
+  }
+
+  Future<Map<String, String>> getServerData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final serverDataEncoded = prefs.getString("serverData");
+    final serverData = jsonDecode(serverDataEncoded!);
+    return serverData;
+  }
+
+  Future<void> setBackupToDB(bool backingUp) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool("backupToDB", backingUp);
   }
@@ -29,7 +50,7 @@ class SessionManager {
     await prefs.setString('userId', id);
   }
 
-  Future<void> setLastSyncTime(DateTime newSyncTime) async{
+  Future<void> setLastSyncTime(DateTime newSyncTime) async {
     lastSyncTime = newSyncTime.toIso8601String();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("lastSyncTime", lastSyncTime!);
