@@ -17,6 +17,7 @@ import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
 import 'package:roam_and_rate/data/local/daos/trip_dao.dart';
 import 'package:roam_and_rate/data/local/daos/user_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
+import 'package:roam_and_rate/data/remote/sync_service.dart';
 import 'package:roam_and_rate/data/repositories/expense_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/participant_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/ratings_repository_impl.dart';
@@ -37,6 +38,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SessionManager().init();
   await dotenv.load(fileName: ".env");
+  SyncService().startSyncTimer();
+
   runApp(
     MultiBlocProvider(
       providers: [

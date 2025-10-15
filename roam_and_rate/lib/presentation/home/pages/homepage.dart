@@ -80,7 +80,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<RatingsBloc>().add(FetchRatingsAndDetails());
-    SyncService().startSyncTimer();
     //context.read<UserBloc>().add(FetchAdminUser());
   }
 
