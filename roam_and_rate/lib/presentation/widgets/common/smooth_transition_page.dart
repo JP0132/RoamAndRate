@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void SmoothTransitionPage(BuildContext context, Widget page) {
-  Navigator.of(context).pushReplacement(
+  Navigator.of(context).push(
     PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 800),
       pageBuilder: (context, animation, secondaryAnimation) => page,
