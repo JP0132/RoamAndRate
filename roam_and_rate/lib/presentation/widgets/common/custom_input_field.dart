@@ -10,6 +10,7 @@ class CustomInputField extends StatelessWidget {
   final FaIcon inputIcon;
   final TextEditingController controller;
   final bool numberKeyBoard;
+  final String? Function(String?)? validator;
   const CustomInputField({
     super.key,
     required this.inputText,
@@ -18,6 +19,7 @@ class CustomInputField extends StatelessWidget {
     this.isObscureText = false,
     this.regFilter = ".*",
     this.numberKeyBoard = false,
+    this.validator,
   });
 
   @override
@@ -29,16 +31,16 @@ class CustomInputField extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: TextField(
+        child: TextFormField(
           controller: controller,
           obscureText: isObscureText,
+          validator: validator,
           inputFormatters: <TextInputFormatter>[
             FilteringTextInputFormatter.allow(RegExp(regFilter)),
           ],
-          keyboardType:
-              numberKeyBoard
-                  ? TextInputType.numberWithOptions(decimal: true)
-                  : null,
+          keyboardType: numberKeyBoard
+              ? TextInputType.numberWithOptions(decimal: true)
+              : null,
           decoration: InputDecoration(
             hintText: inputText,
             hintStyle: TextStyle(color: CustomColours.darkSecondaryText),
