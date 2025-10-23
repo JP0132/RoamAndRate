@@ -19,10 +19,13 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
       TextEditingController();
   final TextEditingController _portNoController = TextEditingController();
   String serverAddress = "";
+  bool isTestConnection = false;
+  final _formKey = GlobalKey<FormState>();
 
   void _onServerAddressChanged(String value) {
     setState(() {
       serverAddress = value;
+      isTestConnection = false;
     });
     print('Server Address value: $value');
   }
@@ -51,6 +54,7 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
         _serverAddressController.text,
         _portNoController.text,
       );
+
       // TODO: Either handle the get the data from the db here or create another page for it
       //SmoothTransitionPage(context, CustomBottomNavbar());
     }
@@ -60,44 +64,119 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              SizedBox(height: 40),
-              DropdownWithInput(
-                items: protocols,
-                preSelected: selectedProtocol,
-                onChanged: _onServerAddressChanged,
-              ),
-
-              SizedBox(height: 20),
-              CustomInputField(
-                inputText: "Port Number",
-                inputIcon: FaIcon(FontAwesomeIcons.globe),
-                controller: _portNoController,
-              ),
-              SizedBox(height: 40),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    bool isConnected = await testConnection();
-                    if (isConnected) {
-                      print("⏰⏰⏰⏰ IT IS CORRRRTI");
-                      handleOnSubmit();
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                DropdownWithInput(
+                  items: protocols,
+                  preSelected: selectedProtocol,
+                  onChanged: _onServerAddressChanged,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "URL required";
                     }
+                    return null;
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColours.darkPrimary,
-                    foregroundColor: CustomColours.darkBackground,
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  child: Text(
-                    "Submit",
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                ),
+
+                SizedBox(height: 20),
+                CustomInputField(
+                  inputText: "Port Number",
+                  inputIcon: FaIcon(FontAwesomeIcons.globe),
+                  controller: _portNoController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          final tryTestConnection = await testConnection();
+                          setState(() {
+                            isTestConnection = tryTestConnection;
+                          });
+                        } catch (e) {
+                          setState(() {
+                            isTestConnection = false;
+                          });
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              backgroundColor: CustomColours.darkSurface,
+                              title: const Text("Connection Failed"),
+                              content: Text(
+                                "Unable to connect to the provided server address.\nEnsure you have entered the correct server address and Roam&Rate docker is running.",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Ok'),
+                                ),
+                              ],
+                            ),
+                          );
+                          //print("Connection failed: $e");
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: CustomColours.darkPrimary,
+                      foregroundColor: CustomColours.darkBackground,
+                      padding: EdgeInsets.all(8.0),
+                    ),
+                    child: Text(
+                      "Press to test connection",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+                isTestConnection
+                    ? Text("Successful Connection ✔️")
+                    : Text("Unable to connect ❌"),
+                SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isTestConnection
+                        ? () {
+                            if (_formKey.currentState!.validate()) {
+                              print("⏰⏰⏰⏰ IT IS CORRRRTI");
+                              handleOnSubmit();
+                            }
+                          }
+                        : null,
+
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: CustomColours.darkPrimary,
+                      foregroundColor: CustomColours.darkBackground,
+                      padding: EdgeInsets.all(8.0),
+                      disabledBackgroundColor: Colors.grey.shade400,
+                      disabledForegroundColor: Colors.white,
+                    ),
+                    child: Text(
+                      "Submit",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
