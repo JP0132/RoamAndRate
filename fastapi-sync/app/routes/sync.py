@@ -3,6 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import SessionLocal
 from app.models.tables import UsersTable, TripsTable, ParticipantsTable, RatingsMadeTable, RatingDetailsTable, ExpensesTable
 from datetime import datetime
+from sqlalchemy.future import select
+from typing import List
+from app.schemas.users import UserBase, UserCreate, UserRead 
+
 
 router = APIRouter()
 
@@ -16,6 +20,15 @@ def convert_timestamp(ts: int) -> datetime:
 @router.get("/testConnection")
 async def testConnection():
     return {"message": "FastAPI is running on your server."}
+
+@router.get("/getUsers", response_model=dict)
+async def getUsers(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(UsersTable))
+    users = result.scalars().all()
+    users_out = [UserRead.from_orm(u).dict() for u in users]
+    return {"users": users_out}
+
+    
 
 @router.get("/alldata")
 async def getAllData(db: AsyncSession = Depends(get_db)):
