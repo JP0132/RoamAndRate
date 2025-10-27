@@ -5,8 +5,12 @@ from app.models.tables import UsersTable, TripsTable, ParticipantsTable, Ratings
 from datetime import datetime
 from sqlalchemy.future import select
 from typing import List
-from app.schemas.users import UserBase, UserCreate, UserRead 
-
+from app.schemas.users import UserRead 
+from app.schemas.participants import ParticipantRead
+from app.schemas.expenses import ExpenseRead
+from app.schemas.trips import TripRead
+from app.schemas.ratingsMade import RatingMadeRead
+from app.schemas.ratingDetails import RatingDetailRead
 
 router = APIRouter()
 
@@ -25,10 +29,12 @@ async def testConnection():
 async def getUsers(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(UsersTable))
     users = result.scalars().all()
-    users_out = [UserRead.from_orm(u).dict() for u in users]
+    users_out = [UserRead.model_validate(u).model_dump() for u in users]
     return {"users": users_out}
 
     
+
+
 
 @router.get("/alldata")
 async def getAllData(db: AsyncSession = Depends(get_db)):
