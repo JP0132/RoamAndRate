@@ -27,3 +27,7 @@ class RatingDetailRead(RatingDetailBase):
 
     class Config:
         from_attributes = True
+
+# import after definition to avoid circular dependency
+from .ratingsMade import RatingMadeRead
+RatingDetailRead.model_rebuild()

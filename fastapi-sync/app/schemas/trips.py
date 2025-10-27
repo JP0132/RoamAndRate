@@ -27,3 +27,8 @@ class TripRead(TripBase):
 
     class Config:
         from_attributes = True
+
+# import after definition to avoid circular dependency
+from .expenses import ExpenseRead
+from .ratingDetails import RatingDetailRead
+TripRead.model_rebuild()

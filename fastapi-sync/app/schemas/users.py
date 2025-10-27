@@ -16,7 +16,11 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     id: str
     createdAt: datetime
-    trips: List["TripRead"] = []  # forward ref
+    #trips: List["TripRead"] = []  # forward ref
 
     class Config:
         from_attributes = True
+
+# importing after definition to avoid circular dependency
+# from .trips import TripRead
+# UserRead.model_rebuild()
