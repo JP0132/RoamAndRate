@@ -19,4 +19,4 @@ class UserRead(UserBase):
     trips: List["TripRead"] = []  # forward ref
 
     class Config:
-        orm_mode = True
+        from_attributes = True
