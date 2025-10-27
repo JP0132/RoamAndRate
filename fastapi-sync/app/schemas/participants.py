@@ -14,13 +14,13 @@ class ParticipantCreate(ParticipantBase):
 class ParticipantRead(ParticipantBase):
     id: str
     createdAt: datetime
-    expenses: List["ExpenseRead"] = []
-    ratingsMade: List["RatingMadeRead"] = []
+    # expenses: List["ExpenseRead"] = []
+    # ratingsMade: List["RatingMadeRead"] = []
 
     class Config:
         from_attributes = True
 
 # import after definition to avoid circular dependency
-from .expenses import ExpenseRead
-from .ratingsMade import RatingMadeRead
-ParticipantRead.model_rebuild()
+# from .expenses import ExpenseRead
+# from .ratingsMade import RatingMadeRead
+# ParticipantRead.model_rebuild()

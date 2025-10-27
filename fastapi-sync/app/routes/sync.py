@@ -11,6 +11,7 @@ from app.schemas.expenses import ExpenseRead
 from app.schemas.trips import TripRead
 from app.schemas.ratingsMade import RatingMadeRead
 from app.schemas.ratingDetails import RatingDetailRead
+from sqlalchemy.orm import selectinload
 
 router = APIRouter()
 
@@ -27,10 +28,29 @@ async def testConnection():
 
 @router.get("/getUsers", response_model=dict)
 async def getUsers(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(UsersTable))
+    result = await db.execute(select(UsersTable).options(selectinload(UsersTable.trips).options(selectinload(TripsTable.expenses).options(selectinload(ExpensesTable.participant)), selectinload(TripsTable.ratingDetails).selectinload(RatingDetailsTable.ratingsMade).options(selectinload(RatingsMadeTable.participant)))))
     users = result.scalars().all()
     users_out = [UserRead.model_validate(u).model_dump() for u in users]
     return {"users": users_out}
+
+
+@router.get("/restore/{user_id}", response_model=dict)
+async def restore(user_id: str, db: AsyncSession = Depends(get_db)):
+    users = await db.execute(select(UsersTable)).filter(UsersTable.id == user_id).scalars.first()
+    trips = await db.execute(select(TripsTable)).filter(TripsTable.userId == user_id).scalars().all()
+    expenses = await db.execute(select(ExpensesTable)).scalars().all()
+    participants = await db.execute(select(ParticipantsTable)).scalars().all()
+    ratingDetails = await db.execute(select(RatingDetailsTable)).scalars().all()
+    ratingsMade = await db.execute(select(RatingsMadeTable)).scalars().all()
+
+    users_out = [UserRead.model_validate(u).model_dump() for u in users]
+    trips_out = [UserRead.model_validate(u).model_dump() for u in users]
+    expenses_out = [UserRead.model_validate(u).model_dump() for u in users]
+    participants_out = [UserRead.model_validate(u).model_dump() for u in users]
+    ratingDetails_out = [UserRead.model_validate(u).model_dump() for u in users]
+    ratingsMade_out = [UserRead.model_validate(u).model_dump() for u in users]
+
+
 
     
 
