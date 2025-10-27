@@ -3,9 +3,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
+import 'package:roam_and_rate/presentation/get_started/pages/restore_db_backup.dart';
 import 'package:roam_and_rate/presentation/get_started/widgets/dropdown_with_input.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
+import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 
 class ConnectToDatabasePage extends StatefulWidget {
   const ConnectToDatabasePage({super.key});
@@ -24,7 +26,7 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
 
   void _onServerAddressChanged(String value) {
     setState(() {
-      serverAddress = value;
+      serverAddress = value.trim();
       isTestConnection = false;
     });
     print('Server Address value: $value');
@@ -37,7 +39,9 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
 
     Future<bool> testConnection() async {
       final result = await http.get(
-        Uri.parse("$serverAddress:${_portNoController.text}/testConnection"),
+        Uri.parse(
+          "$serverAddress:${_portNoController.text.trim()}/testConnection",
+        ),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -49,14 +53,15 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
     }
 
     void handleOnSubmit() async {
+      print("⚠️ ⚠️ ⚠️  $serverAddress ⚠️ ⚠️ ⚠️ ");
+      print("⚠️ ⚠️ ⚠️  ${_portNoController.text} ⚠️ ⚠️ ⚠️ ");
       final sm = SessionManager();
       await sm.setServerData(
-        _serverAddressController.text,
-        _portNoController.text,
+        serverAddress.trim(),
+        _portNoController.text.trim(),
       );
 
-      // TODO: Either handle the get the data from the db here or create another page for it
-      //SmoothTransitionPage(context, CustomBottomNavbar());
+      SmoothTransitionPage(context, RestoreDbBackup());
     }
 
     return Scaffold(
