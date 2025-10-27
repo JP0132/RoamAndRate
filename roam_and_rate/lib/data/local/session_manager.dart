@@ -13,7 +13,7 @@ class SessionManager {
 
   bool? backupToDB;
 
-  Map<String, String>? serverData;
+  // Map<String, String>? serverData;
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -23,19 +23,39 @@ class SessionManager {
   }
 
   Future<void> setServerData(String serverAddress, String portNo) async {
-    serverData?["serverAddress"] = serverAddress;
-    serverData?["portNo"] = portNo;
+    print("⚠️ ⚠️ ⚠️  Getting the data $serverAddress $portNo");
+    final Map<String, String> serverData = {
+      "serverAddress": serverAddress,
+      "portNo": portNo,
+    };
 
     final serverDataEncode = jsonEncode(serverData);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("serverData", serverDataEncode);
   }
 
-  Future<Map<String, String>> getServerData() async {
+  Future<Map<String, String>?> getServerData() async {
     final prefs = await SharedPreferences.getInstance();
     final serverDataEncoded = prefs.getString("serverData");
-    final serverData = jsonDecode(serverDataEncoded!);
-    return serverData;
+
+    // No data saved yet
+    if (serverDataEncoded == null) {
+      return null;
+    }
+
+    try {
+      final Map<String, dynamic> decoded = jsonDecode(serverDataEncoded);
+
+      // Convert dynamic map into Map<String, String>
+      final Map<String, String> serverData = decoded.map(
+        (key, value) => MapEntry(key, value.toString()),
+      );
+
+      return serverData;
+    } catch (e) {
+      print("Failed to decode server data: $e");
+      return null;
+    }
   }
 
   Future<void> setBackupToDB(bool backingUp) async {
