@@ -9,7 +9,7 @@ class TripModel {
   final double budget;
   final String category;
   final String? notes;
-  final String images;
+  final String? images;
   final String backgroundColor;
   final DateTime startDate;
   final DateTime endDate;

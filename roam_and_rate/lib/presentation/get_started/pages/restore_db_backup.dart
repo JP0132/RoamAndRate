@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
+import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/models/user_model.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
@@ -34,7 +35,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
 
       final response = await http.get(
         Uri.parse(
-          "${serverAddress!["serverAddress"]}:${serverAddress["portNo"]}/getUsers",
+          "${serverAddress!["serverAddress"]}:${serverAddress["portNo"]}/getUsersData",
         ),
       );
 
@@ -170,25 +171,42 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
   }
 
   // TODO: Create the endpoint in fastapi and handle the restoring here.
-  Future<void> _restoreBackup(Map<String, dynamic> user) async {
+  Future<void> _restoreBackup(Map<String, dynamic> userData) async {
     try {
-      final serverAddress = await _sessionManager.getServerData();
+      // final serverAddress = await _sessionManager.getServerData();
 
-      final response = await http.post(
-        Uri.parse(
-          '${serverAddress!["serverAddress"]}:${serverAddress["portNo"]}/restore',
-        ),
-      );
+      // final response = await http.post(
+      //   Uri.parse(
+      //     '${serverAddress!["serverAddress"]}:${serverAddress["portNo"]}/restore',
+      //   ),
+      // );
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Backup restored successfully")),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to restore backup")),
-        );
+      // if (response.statusCode == 200) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(content: Text("Backup restored successfully")),
+      //   );
+      // } else {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(content: Text("Failed to restore backup")),
+      //   );
+      // }
+
+      UserModel user = UserModel(fullName: userData["fullName"], username: userData["username"], dob: DateTime.parse(userData["dob"]), gender: userData["gender"], admin: userData["admin"], userId: userData["id"]);
+
+      List<dynamic> tripsData = userData["trips"];
+      List<TripModel> trips = [];
+      
+      for(var t in tripsData){
+        print("⚠️ ⚠️ ⚠️$t");
+        print('${t['tripName']} - ${t['location']}');
+
+        TripModel currentTrip = TripModel(userId: userData["id"], tripName: t["tripName"], location: t["location"], currency: t["currency"], backgroundColor: t["bgColour"], budget: t["budget"], category: t["category"], createdAt: DateTime.parse(t["createdAt"]), startDate: DateTime.parse(t["startDate"]), endDate: DateTime.parse(t["endDate"]));
+        trips.add(currentTrip);
       }
+
+
+      
+     
     } catch (e) {
       debugPrint("Error restoring backup: $e");
       ScaffoldMessenger.of(
