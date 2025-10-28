@@ -9,7 +9,7 @@ extension ParticipantEntityMapper on Participant {
       particpantName: name,
       isAdmin: isMainUser,
       createdAt: createdAt,
-      lastUpdated: lastUpdated
+      lastUpdated: lastUpdated, userId: userId
     );
   }
 }
@@ -20,7 +20,7 @@ extension ParticipantModelMapper on ParticipantModel {
       name: particpantName,
       id: id != null ? Value(id!) : const Value.absent(),
       isMainUser: Value(isAdmin),
-      createdAt: createdAt,
+      createdAt: createdAt, userId: userId,
     );
   }
 }

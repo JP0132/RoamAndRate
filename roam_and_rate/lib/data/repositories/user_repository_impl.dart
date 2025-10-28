@@ -32,7 +32,7 @@ class UserRepositoryImpl implements UserRepository {
     final participant = ParticipantModel(
       particpantName: user.username,
       isAdmin: true,
-      createdAt: DateTime.now(),
+      createdAt: DateTime.now(), userId: user.userId!,
     );
     await participantDao.insertParticipant(participant.toCompanion());
   }

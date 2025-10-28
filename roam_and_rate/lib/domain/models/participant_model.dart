@@ -2,6 +2,7 @@ class ParticipantModel {
   final String? id;
   final String particpantName;
   final bool isAdmin;
+  final String userId;
   final DateTime createdAt;
   final DateTime? lastUpdated;
 
@@ -10,6 +11,7 @@ class ParticipantModel {
     required this.particpantName,
     required this.isAdmin,
     required this.createdAt,
+    required this.userId,
     this.lastUpdated
   });
 
@@ -26,7 +28,8 @@ class ParticipantModel {
       particpantName: particpantName ?? this.particpantName,
       createdAt: createdAt ?? this.createdAt,
       isAdmin: isAdmin ?? this.isAdmin,
-      lastUpdated: lastUpdated ?? this.lastUpdated,
+      lastUpdated: lastUpdated ?? this.lastUpdated, 
+      userId: userId ?? this.userId,
     );
   }
 }

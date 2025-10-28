@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:roam_and_rate/application/navigation/navigation_state.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_event.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 
 class ParticipantPage extends StatefulWidget {
@@ -285,7 +287,9 @@ class _ParticipantPageState extends State<ParticipantPage> {
                     ),
                     onSubmitted: (value) {
                       if (value.trim().isNotEmpty) {
+                        final sm = SessionManager();
                         final newParticipant = ParticipantModel(
+                          userId: sm.userId!,
                           particpantName: value.trim(),
                           isAdmin: false,
                           createdAt: DateTime.now(),
