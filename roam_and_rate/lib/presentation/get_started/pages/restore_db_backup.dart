@@ -6,6 +6,10 @@ import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
+import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
+import 'package:roam_and_rate/domain/models/rating_details_model.dart';
+import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/models/user_model.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
@@ -246,13 +250,20 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
       );
 
       List<dynamic> tripsData = userData["trips"];
+      List<dynamic> participantData = userData["participants"];
+
       List<TripModel> trips = [];
+      List<ParticipantModel> participants = [];
+      List<ExpenseModel> expenses = [];
+      List<RatingsMadeModel> ratingsMade = [];
+      List<RatingDetailsModel> ratingDetails = [];
 
       for (var t in tripsData) {
         print("⚠️ ⚠️ ⚠️$t");
         print('${t['tripName']} - ${t['location']}');
 
         TripModel currentTrip = TripModel(
+          tripId: t["id"],
           userId: userData["id"],
           tripName: t["tripName"],
           location: t["location"],
@@ -263,8 +274,76 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
           createdAt: DateTime.parse(t["createdAt"]),
           startDate: DateTime.parse(t["startDate"]),
           endDate: DateTime.parse(t["endDate"]),
+          lastUpdated: DateTime.parse(t["lastUpdated"]),
         );
         trips.add(currentTrip);
+
+        List<dynamic> expensesData = t["expenses"];
+        List<dynamic> ratingDetailsData = t["ratingDetails"];
+
+        if (expensesData.isNotEmpty) {
+          for (var e in expensesData) {
+            ExpenseModel currentExpense = ExpenseModel(
+              expenseId: e["id"],
+              name: e["expenseName"],
+              tripId: t["id"],
+              participantId: e["participantId"],
+              paid: e["paid"],
+              cost: e["cost"],
+              dateTimeAdded: e["dateAdded"],
+              datePaid: e["datePaid"],
+              currency: e["currency"],
+              toBeSplit: e[""],
+              category: e["category"],
+              type: e["paymentType"],
+              notes: e["notes"],
+              image: e["images"],
+              tags: e["tags"],
+              lastUpdated: e["lastUpdated"],
+            );
+
+            expenses.add(currentExpense);
+          }
+        }
+
+        if (ratingDetailsData.isNotEmpty) {
+          for (var rd in ratingDetailsData) {
+            RatingDetailsModel currentRD = RatingDetailsModel(
+              id: rd["id"],
+              tripId: t["id"],
+              placeName: rd["ratingName"],
+              location: rd["location"],
+              category: rd["category"],
+              status: rd["status"],
+              createdAt: rd["createdAt"],
+              tags: rd["tags"],
+              image: rd["images"],
+              value: rd["value"],
+              dateVisited: rd["dateVisited"],
+              datePlanned: rd["datePlanned"],
+              lastUpdated: rd["lastUpdated"]
+            );
+
+
+            ratingDetails.add(currentRD);
+
+            if (rd["ratingsMade"].isNotEmpty) {
+              for (var rm in rd["ratingsMade"]) {
+                RatingsMadeModel currentRM = RatingsMadeModel(
+                  particpantId: rm["participantId"],
+                  ratingDetailsId: rd["id"],
+                  createdAt: rm["createdAt"],
+                  rating: rm["rating"],
+                  expectedRating: rm["expectedRating"],
+                  lastUpdated: rm["lastUpdated"],
+                );
+
+                ratingsMade.add(currentRM);
+
+              }
+            }
+          }
+        }
       }
     } catch (e) {
       debugPrint("Error restoring backup: $e");
