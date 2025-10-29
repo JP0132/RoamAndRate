@@ -18,6 +18,7 @@ import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class EnterUserDetails extends StatefulWidget {
   const EnterUserDetails({super.key});
@@ -290,6 +291,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                         });
                         if (formValid.values.every((v) => v)) {
                           final UserModel newUser = UserModel(
+                            userId: const Uuid().v4(),
                             fullName: _nameController.text,
                             username: _usernameController.text,
                             dob: selectedDate,
