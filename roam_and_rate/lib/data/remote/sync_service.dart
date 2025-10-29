@@ -15,7 +15,7 @@ class SyncService {
 
   void startSyncTimer() {
     print("⏰⏰⏰⏰ timer started");
-    _timer = Timer.periodic(const Duration(minutes: 30), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 20), (timer) {
       syncToServer();
     });
   }

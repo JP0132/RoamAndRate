@@ -23,6 +23,7 @@ import 'package:roam_and_rate/data/repositories/participant_repository_impl.dart
 import 'package:roam_and_rate/data/repositories/ratings_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/trip_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/user_repository_impl.dart';
+import 'package:roam_and_rate/lifecycle_watcher.dart';
 
 Future<void> main() async {
   final db = AppDatabase.instance;
@@ -38,19 +39,21 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SessionManager().init();
   await dotenv.load(fileName: ".env");
-  SyncService().startSyncTimer();
+  //SyncService().startSyncTimer();
 
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => UserBloc(userRepository)),
-        BlocProvider(create: (_) => TripBloc(tripRepository)),
-        BlocProvider(create: (_) => ParticipantBloc(participantRepository)),
-        BlocProvider(create: (_) => ExpenseBloc(expenseRepository)),
-        BlocProvider(create: (_) => RatingsBloc(ratingsRepository)),
-        BlocProvider(create: (_) => CurrencyBloc()),
-      ],
-      child: const MainApp(),
+    LifecycleWatcher(
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => UserBloc(userRepository)),
+          BlocProvider(create: (_) => TripBloc(tripRepository)),
+          BlocProvider(create: (_) => ParticipantBloc(participantRepository)),
+          BlocProvider(create: (_) => ExpenseBloc(expenseRepository)),
+          BlocProvider(create: (_) => RatingsBloc(ratingsRepository)),
+          BlocProvider(create: (_) => CurrencyBloc()),
+        ],
+        child: const MainApp(),
+      ),
     ),
   );
 }
