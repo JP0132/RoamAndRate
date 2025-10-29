@@ -9,7 +9,7 @@ class ParticipantBase(BaseModel):
     lastUpdated: datetime
 
 class ParticipantCreate(ParticipantBase):
-    pass
+    userId: str
 
 class ParticipantRead(ParticipantBase):
     id: str
