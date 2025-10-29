@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
@@ -47,10 +48,8 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
           setState(() {
             _backUpFound = false;
             _isChecking = false;
-            _newDb = true;
+            //_newDb = true;
           });
-
-          SmoothTransitionPage(context, EnterUserDetails());
         } else {
           setState(() {
             _backUpFound = true;
@@ -159,8 +158,54 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
                   child: const Text('Yes, Restore'),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _showCancelDialog();
+                    });
+                  },
                   child: const Text('Cancel'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showCancelDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        int? selectedIndex; // track selected backup
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: CustomColours.darkSurface,
+              title: const Text("Do you want to start fresh?"),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 300,
+                child: Text(
+                  "No backup will be restored, you will start with a empty database.",
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }, // disable button if nothing selected
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey.withValues(alpha: 0.5)),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      SmoothTransitionPage(context, EnterUserDetails()),
+                  child: const Text('Start New'),
                 ),
               ],
             );
@@ -191,22 +236,36 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
       //   );
       // }
 
-      UserModel user = UserModel(fullName: userData["fullName"], username: userData["username"], dob: DateTime.parse(userData["dob"]), gender: userData["gender"], admin: userData["admin"], userId: userData["id"]);
+      UserModel user = UserModel(
+        fullName: userData["fullName"],
+        username: userData["username"],
+        dob: DateTime.parse(userData["dob"]),
+        gender: userData["gender"],
+        admin: userData["admin"],
+        userId: userData["id"],
+      );
 
       List<dynamic> tripsData = userData["trips"];
       List<TripModel> trips = [];
-      
-      for(var t in tripsData){
+
+      for (var t in tripsData) {
         print("⚠️ ⚠️ ⚠️$t");
         print('${t['tripName']} - ${t['location']}');
 
-        TripModel currentTrip = TripModel(userId: userData["id"], tripName: t["tripName"], location: t["location"], currency: t["currency"], backgroundColor: t["bgColour"], budget: t["budget"], category: t["category"], createdAt: DateTime.parse(t["createdAt"]), startDate: DateTime.parse(t["startDate"]), endDate: DateTime.parse(t["endDate"]));
+        TripModel currentTrip = TripModel(
+          userId: userData["id"],
+          tripName: t["tripName"],
+          location: t["location"],
+          currency: t["currency"],
+          backgroundColor: t["bgColour"],
+          budget: t["budget"],
+          category: t["category"],
+          createdAt: DateTime.parse(t["createdAt"]),
+          startDate: DateTime.parse(t["startDate"]),
+          endDate: DateTime.parse(t["endDate"]),
+        );
         trips.add(currentTrip);
       }
-
-
-      
-     
     } catch (e) {
       debugPrint("Error restoring backup: $e");
       ScaffoldMessenger.of(
@@ -230,7 +289,36 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
               )
             : _backUpFound
             ? const Text("Backup found — waiting for user response...")
-            : const Text("No backup found."),
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "No backup has been found!",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          SmoothTransitionPage(context, EnterUserDetails()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: CustomColours.darkPrimary,
+                        foregroundColor: CustomColours.darkBackground,
+                        padding: EdgeInsets.all(8.0),
+                      ),
+                      child: Text(
+                        "Start fresh",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
