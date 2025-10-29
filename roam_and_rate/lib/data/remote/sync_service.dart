@@ -10,8 +10,8 @@ class SyncService {
   Timer? _timer;
   String? lastSyncTime = SessionManager().lastSyncTime;
   final db = AppDatabase.instance;
-  final String baseUrl = dotenv.env['BASE_URL'] ?? 'default_url';
-  final portnumber = dotenv.env['PORT_NUMBER'] ?? 8000;
+  // final String baseUrl = SessionManager();
+  // final portnumber = dotenv.env['PORT_NUMBER'] ?? 8000;
 
   void startSyncTimer() {
     print("⏰⏰⏰⏰ timer started");
@@ -52,8 +52,12 @@ class SyncService {
 
         print("⏰⏰⏰⏰ created the payload");
 
+        final serverAddress = await SessionManager().getServerData();
+
         await http.post(
-          Uri.parse("$baseUrl:$portnumber/sync"),
+          Uri.parse(
+            "${serverAddress!["serverAddress"]}:${serverAddress["portNo"]}/sync",
+          ),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(payload),
         );
