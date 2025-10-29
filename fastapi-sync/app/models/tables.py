@@ -15,6 +15,7 @@ class UsersTable(Base):
     admin = Column(Boolean, nullable=False)
     createdAt = Column(DateTime(timezone=True), nullable=False)
     trips = relationship("TripsTable", back_populates="user")
+    participants = relationship("ParticipantsTable", back_populates="user")
     lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
@@ -43,12 +44,14 @@ class TripsTable(Base):
 class ParticipantsTable(Base):
     __tablename__ = "participants"
     id = Column(String, primary_key=True)
+    userId = Column(String, ForeignKey("users.id"))
     name = Column(String, nullable=False)
     isMainUser = Column(Boolean, nullable=False)
     createdAt = Column(DateTime(timezone=True), nullable=False)
     expenses = relationship("ExpensesTable", back_populates="participant")
     ratingsMade = relationship("RatingsMadeTable", back_populates="participant")
     lastUpdated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    user = relationship("UsersTable", back_populates="participants")
 
 
 class ExpensesTable(Base):
@@ -66,6 +69,7 @@ class ExpensesTable(Base):
     notes = Column(String, nullable=True)
     images = Column(String, nullable=True)
     paymentType = Column(String, nullable=False)
+    toBeSplit = Column(Boolean, nullable=False)
     tags = Column(JSON, nullable=True)
     createdAt = Column(DateTime(timezone=True), nullable=False)
     trip = relationship("TripsTable", back_populates="expenses")
