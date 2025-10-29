@@ -1,7 +1,9 @@
 import asyncio
 from app.database import SessionLocal  # your SQLAlchemy session
-from app.models.tables import UsersTable  # your ORM models
+from app.models.tables import UsersTable, ParticipantsTable # your ORM models
 from sqlalchemy.future import select
+
+from app.database import DATABASE_URL
 
 async def check_users_orm():
     async with SessionLocal() as session:
@@ -10,4 +12,14 @@ async def check_users_orm():
         for u in users:
             print(u.username, u.id)
 
-asyncio.run(check_users_orm())
+
+async def check_participant_migration_orm():
+    async with SessionLocal() as session:
+        result = await session.execute(select(ParticipantsTable).limit(2))
+        participant = result.scalars().all()
+        for p in participant:
+            print(p.name, p.userId)
+
+
+print(DATABASE_URL)
+# asyncio.run(check_participant_migration_orm())
