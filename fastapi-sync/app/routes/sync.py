@@ -26,9 +26,9 @@ def convert_timestamp(ts: int) -> datetime:
 async def testConnection():
     return {"message": "FastAPI is running on your server."}
 
-@router.get("/getUsers", response_model=dict)
-async def getUsers(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(UsersTable).options(selectinload(UsersTable.trips).options(selectinload(TripsTable.expenses).options(selectinload(ExpensesTable.participant)), selectinload(TripsTable.ratingDetails).selectinload(RatingDetailsTable.ratingsMade).options(selectinload(RatingsMadeTable.participant)))))
+@router.get("/getUsersData", response_model=dict)
+async def getUsersData(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(UsersTable).options(selectinload(UsersTable.participants), selectinload(UsersTable.trips).options(selectinload(TripsTable.expenses).options(selectinload(ExpensesTable.participant)), selectinload(TripsTable.ratingDetails).selectinload(RatingDetailsTable.ratingsMade).options(selectinload(RatingsMadeTable.participant)))))
     users = result.scalars().all()
     users_out = [UserRead.model_validate(u).model_dump() for u in users]
     return {"users": users_out}
@@ -92,7 +92,7 @@ async def syncData(data: dict, db: AsyncSession = Depends(get_db)):
         await db.merge(trip)
     for e in expenses:
         e['datePaid'] = convert_timestamp(e['datePaid'])
-        e['createdAt'] = convert_timestamp(e['createdAt'])
+        e['dateAdded'] = convert_timestamp(e['dateAdded'])
         e['lastUpdated'] = convert_timestamp(e['lastUpdated'])
         expense = ExpensesTable(**e)
         await db.merge(expense)
@@ -112,7 +112,7 @@ async def syncData(data: dict, db: AsyncSession = Depends(get_db)):
         rm['createdAt'] = convert_timestamp(rm['createdAt'])
         rm['lastUpdated'] = convert_timestamp(rm['lastUpdated'])
         ratingMade = RatingsMadeTable(**rm)
-        await db.merge(ratingsMade)
+        await db.merge(ratingMade)
 
     await db.commit()
     return {"message": "Sync complete"}
