@@ -12,6 +12,7 @@ class TripBase(BaseModel):
     notes: Optional[str] = None
     images: Optional[str] = None
     bgColour: str
+    category: str
     startDate: datetime
     endDate: datetime
     lastUpdated: datetime
