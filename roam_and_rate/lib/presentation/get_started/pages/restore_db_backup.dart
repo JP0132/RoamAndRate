@@ -258,6 +258,18 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
       List<RatingsMadeModel> ratingsMade = [];
       List<RatingDetailsModel> ratingDetails = [];
 
+      for (var p in participantData) {
+        ParticipantModel currentParticipant = ParticipantModel(
+          id: p["id"],
+          particpantName: p["name"],
+          isAdmin: p["isMainUser"],
+          createdAt: p["createdAt"],
+          userId: p["userId"],
+          lastUpdated: p["lastUpdated"],
+        );
+        participants.add(currentParticipant);
+      }
+
       for (var t in tripsData) {
         print("⚠️ ⚠️ ⚠️$t");
         print('${t['tripName']} - ${t['location']}');
@@ -321,9 +333,8 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
               value: rd["value"],
               dateVisited: rd["dateVisited"],
               datePlanned: rd["datePlanned"],
-              lastUpdated: rd["lastUpdated"]
+              lastUpdated: rd["lastUpdated"],
             );
-
 
             ratingDetails.add(currentRD);
 
@@ -339,12 +350,23 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
                 );
 
                 ratingsMade.add(currentRM);
-
               }
             }
           }
         }
       }
+
+      final backUpData = {
+        "user": user,
+        "trips": trips,
+        "participants": participants,
+        "expenses": expenses,
+        "ratingsMade": ratingsMade,
+        "ratingDetails": ratingDetails,
+      };
+
+
+      
     } catch (e) {
       debugPrint("Error restoring backup: $e");
       ScaffoldMessenger.of(
