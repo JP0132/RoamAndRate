@@ -36,7 +36,7 @@ class UserRepositoryImpl implements UserRepository {
     );
     await participantDao.insertParticipant(participant.toCompanion());
   }
-
+  
   @override
   Future<void> deleteUser(String id) async {
     await dao.deleteUser(id);
