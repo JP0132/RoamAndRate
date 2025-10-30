@@ -364,9 +364,6 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
         "ratingsMade": ratingsMade,
         "ratingDetails": ratingDetails,
       };
-
-
-      
     } catch (e) {
       debugPrint("Error restoring backup: $e");
       ScaffoldMessenger.of(
