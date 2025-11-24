@@ -26,7 +26,7 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
     'Tourist Attraction': Colors.red,
     'Accommodation': Colors.purple,
     'Shopping': Colors.orange,
-    'Nature & Outdoors': Colors.green,
+    'Nature': Colors.green,
     'Wellness': Colors.pink,
     'Other': Colors.grey,
     'Transport': Colors.yellow,

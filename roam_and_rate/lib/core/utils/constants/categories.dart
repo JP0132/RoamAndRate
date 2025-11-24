@@ -20,7 +20,7 @@ class Categories {
     ),
     CategoryModel(name: "Accommodation", icon: FontAwesomeIcons.hotel),
     CategoryModel(name: "Shopping", icon: FontAwesomeIcons.bagShopping),
-    CategoryModel(name: "Nature & Outdoors", icon: FontAwesomeIcons.tree),
+    CategoryModel(name: "Nature", icon: FontAwesomeIcons.tree),
     CategoryModel(name: "Wellness", icon: FontAwesomeIcons.spa),
     CategoryModel(name: "Transport", icon: FontAwesomeIcons.taxi),
     CategoryModel(name: "Other", icon: FontAwesomeIcons.alignJustify),

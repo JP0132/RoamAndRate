@@ -260,6 +260,8 @@ class _AddTripPageState extends State<AddTripPage> {
                 backgroundColour: CustomColours.darkSurface,
                 borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
+                selectedItemColour: CustomColours.darkPrimary,
+                selectedItemTextColour: CustomColours.darkBackground,
                 borderRadius: 20,
                 menuMaxHeight: 100,
                 onChanged: (value) {

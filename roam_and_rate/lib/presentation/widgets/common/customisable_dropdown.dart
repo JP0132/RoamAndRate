@@ -23,6 +23,7 @@ class CustomisableDropdown<T> extends StatefulWidget {
   final Color? unselectedItemTextColour;
   final TextStyle? unselectedItemTextStyle;
   final Widget Function(T, bool isSelected)? dropdownItemBuilder;
+  final double? selectedItemTextSize;
 
   const CustomisableDropdown({
     super.key,
@@ -45,7 +46,7 @@ class CustomisableDropdown<T> extends StatefulWidget {
     this.selectedItemTextStyle,
     this.unselectedItemTextColour,
     this.unselectedItemTextStyle,
-    this.dropdownItemBuilder,
+    this.dropdownItemBuilder, this.selectedItemTextSize,
   });
 
   @override
@@ -193,6 +194,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
       effectiveTextStyle = TextStyle(
         color: widget.selectedItemTextColour ?? Theme.of(context).primaryColor,
         fontWeight: FontWeight.bold,
+        fontSize: widget.selectedItemTextSize ?? 16,
       ).merge(widget.selectedItemTextStyle);
     } else {
       effectiveTextStyle = TextStyle(

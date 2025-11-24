@@ -227,22 +227,27 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                   ),
                 ),
                 SizedBox(height: 10),
-                CustomisableDropdown<String>(
-                  items: genderOptions,
-                  value: selectedGender,
-                  backgroundColour: CustomColours.darkSurface,
-                  borderColour: Colors.transparent,
-                  padding: EdgeInsets.all(20),
-                  borderRadius: 20,
-                  hint: 'Select your gender',
-                  onChanged: (value) {
+                 Padding(
+                   padding: const EdgeInsets.only(bottom: 8),
+                   child: CustomisableDropdown<String>(
+                                   items: genderOptions,
+                                   hint: "What is your gender?",
+                                   value: selectedGender,
+                                   backgroundColour: CustomColours.darkSurface,
+                                   selectedItemTextColour: CustomColours.darkBackground,
+                                   selectedItemColour: CustomColours.darkPrimary,
+                                   borderColour: Colors.transparent,
+                                   padding: EdgeInsets.all(20),
+                                   borderRadius: 20,
+                                   menuMaxHeight: 120,
+                                   onChanged: (value) {
                     setState(() {
                       selectedGender = value;
                     });
-                  },
-                  itemBuilder: (gender) => Text(gender),
-                  menuMaxHeight: 200,
-                ),
+                                   },
+                                   itemBuilder: (currency) => Text(currency),
+                                 ),
+                 ),
                 Text(
                   formValid["gender"] == true ? "" : "Gender cannot be blank!",
                   style: TextStyle(color: CustomColours.darkError),
