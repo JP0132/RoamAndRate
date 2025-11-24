@@ -48,7 +48,7 @@ class _GetStartedState extends State<GetStarted> {
                   child: StartingOptionBtn(
                     btnText: "GET STARTED",
                     onPress: () =>
-                        SmoothTransitionPage(context, EnterUserDetails()),
+                        SmoothTransitionPage(context, EnterUserDetails(), replace: false),
                   ),
                 ),
               ],
