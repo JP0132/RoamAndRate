@@ -41,8 +41,16 @@ class EditRatingsMade extends RatingsEvent {
 class AddRatingWithParticipants extends RatingsEvent {
   final RatingDetailsModel ratingDetails;
   final Map<String, double> participantRatings;
+  final bool expected;
 
-  AddRatingWithParticipants(this.ratingDetails, this.participantRatings);
+  AddRatingWithParticipants(this.ratingDetails, this.participantRatings, {this.expected = false});
+}
+
+class AddExpectedRatingWithParticipants extends RatingsEvent {
+  final RatingDetailsModel ratingDetails;
+  final Map<String, double> participantRatings;
+
+  AddExpectedRatingWithParticipants(this.ratingDetails, this.participantRatings);
 }
 
 class EditRatingWithParticipants extends RatingsEvent {

@@ -94,35 +94,55 @@ class RatingsRepositoryImpl implements RatingsRepository {
   @override
   Future<void> addRatingWithParticipants(
     RatingDetailsModel ratingDetails,
-    Map<String, double> participantRatings,
+    Map<String, double> participantRatings, 
+    bool expected
   ) async {
-    print("🚀 Repository.addRatingWithParticipants called");
-    print("😂😂 AM HERE");
-    final ratingDetailsId = ratingDetails.id ?? const Uuid().v4();
-    final ratingDetailsWithId = ratingDetails.copyWith(id: ratingDetailsId);
+    if (!expected) {
+      print("🚀 Repository.addRatingWithParticipants called");
+      print("😂😂 AM HERE");
+      final ratingDetailsId = ratingDetails.id ?? const Uuid().v4();
+      final ratingDetailsWithId = ratingDetails.copyWith(id: ratingDetailsId);
 
-    print("😂😂😂😂 ratingDetails: ${ratingDetailsWithId.placeName}");
+      print("😂😂😂😂 ratingDetails: ${ratingDetailsWithId.placeName}");
 
-    // First, add the rating details
-    await addRatingDetails(ratingDetailsWithId);
-    // await ratingDetailsDao.insertRatingDetails(
+      // First, add the rating details
+      await addRatingDetails(ratingDetailsWithId);
+      // await ratingDetailsDao.insertRatingDetails(
 
-    // );
+      // );
 
-    print("😂😂 ratingDetailsid: ${ratingDetailsWithId.id}");
+      print("😂😂 ratingDetailsid: ${ratingDetailsWithId.id}");
 
-    // Then, add all the participant ratings
-    for (final entry in participantRatings.entries) {
-      print("😂😂 id: ${entry.key} ${entry.value}");
-      final ratingsMade = RatingsMadeModel(
-        particpantId: entry.key,
-        ratingDetailsId: ratingDetailsId,
-        rating: entry.value,
-        expectedRating: 0.0,
-        createdAt: DateTime.now(),
-      );
+      // Then, add all the participant ratings
+      for (final entry in participantRatings.entries) {
+        print("😂😂 id: ${entry.key} ${entry.value}");
+        final ratingsMade = RatingsMadeModel(
+          particpantId: entry.key,
+          ratingDetailsId: ratingDetailsId,
+          rating: entry.value,
+          expectedRating: 0.0,
+          createdAt: DateTime.now(),
+        );
 
-      await ratingsMadeDao.insertRatingsMade(ratingsMade.toCompanion());
+        await ratingsMadeDao.insertRatingsMade(ratingsMade.toCompanion());
+      }
+    } else{
+      final ratingDetailsId = ratingDetails.id ?? const Uuid().v4();
+      final ratingDetailsWithId = ratingDetails.copyWith(id: ratingDetailsId);
+      await addRatingDetails(ratingDetailsWithId);
+
+      for (final entry in participantRatings.entries) {
+        print("😂😂 id: ${entry.key} ${entry.value}");
+        final ratingsMade = RatingsMadeModel(
+          particpantId: entry.key,
+          ratingDetailsId: ratingDetailsId,
+          rating: 0.0,
+          expectedRating: entry.value,
+          createdAt: DateTime.now(),
+        );
+
+        await ratingsMadeDao.insertRatingsMade(ratingsMade.toCompanion());
+      }
     }
   }
 

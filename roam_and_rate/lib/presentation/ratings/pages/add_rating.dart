@@ -57,7 +57,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
     "Tourist Attraction",
     "Accommodation",
     "Shopping",
-    "Nature & Outdoors",
+    "Nature",
     "Wellness",
     "Other",
   ];
@@ -252,7 +252,17 @@ class _AddRatingPageState extends State<AddRatingPage> {
                             selectedItemTextColour:
                                 CustomColours.darkBackground,
                             unselectedItemTextColour: Colors.grey[300],
-
+                            //selectedItemTextSize: selectedCategory == "Accommodation" ? 12 : 16,
+                            selectedItemBuilder: (value) => Text(
+                              value,
+                              style: TextStyle(
+                                fontSize:
+                                    selectedCategory == "Accommodation" ||
+                                        selectedCategory == "Tourist Attraction"
+                                    ? 12
+                                    : 16,
+                              ),
+                            ),
                             onChanged: (category) {
                               setState(() {
                                 selectedCategory = category;
@@ -309,7 +319,9 @@ class _AddRatingPageState extends State<AddRatingPage> {
 
                 if (!{"Dropped", "On-hold", ""}.contains(selectedStatus)) ...[
                   Text(
-                    "Rating",
+                    selectedStatus == "Plan to Visit"
+                        ? "Expected Rating"
+                        : "Rating",
                     style: TextStyle(
                       fontSize: 14,
                       color: CustomColours.darkPrimary,
@@ -561,6 +573,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                           "Dropped",
                           "On-hold",
                           "",
+                          "Plan to Visit",
                         }.contains(selectedStatus)) {
                           Map<String, double> newRatingMade = {};
                           selectedParticipants.forEach((participant, rating) {
@@ -569,7 +582,6 @@ class _AddRatingPageState extends State<AddRatingPage> {
                           RatingDetailsModel updatedRatingDetails =
                               newRatingDetails.copyWith(
                                 dateVisited: selectedDate,
-
                                 value: selectedValue,
                               );
                           context.read<RatingsBloc>().add(
@@ -579,9 +591,28 @@ class _AddRatingPageState extends State<AddRatingPage> {
                             ),
                           );
                         } else {
-                          context.read<RatingsBloc>().add(
-                            AddRatingDetails(newRatingDetails),
-                          );
+                          if (selectedStatus == "Plan to Visit") {
+                            Map<String, double> newPlanRatingMade = {};
+                            selectedParticipants.forEach((participant, rating) {
+                              newPlanRatingMade[participant] = rating;
+                            });
+
+                            RatingDetailsModel updatedRatingDetails =
+                                newRatingDetails.copyWith(
+                                  datePlanned: selectedDate,
+                                );
+                            context.read<RatingsBloc>().add(
+                              AddRatingWithParticipants(
+                                updatedRatingDetails,
+                                newPlanRatingMade,
+                                expected: true
+                              ),
+                            );
+                          } else {
+                            context.read<RatingsBloc>().add(
+                              AddRatingDetails(newRatingDetails),
+                            );
+                          }
                         }
                         if (formValid.values.every((v) => v)) {}
                       },

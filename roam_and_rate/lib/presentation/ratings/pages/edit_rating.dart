@@ -64,7 +64,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
     "Tourist Attraction",
     "Accommodation",
     "Shopping",
-    "Nature & Outdoors",
+    "Nature",
     "Transport",
     "Wellness",
     "Other",
@@ -273,6 +273,16 @@ class _EditRatingPageState extends State<EditRatingPage> {
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
+                            selectedItemBuilder: (value) => Text(
+                              value,
+                              style: TextStyle(
+                                fontSize:
+                                    selectedCategory == "Accommodation" ||
+                                        selectedCategory == "Tourist Attraction"
+                                    ? 12
+                                    : 16,
+                              ),
+                            ),
                             selectedItemColour: CustomColours.darkPrimary,
                             selectedItemTextColour:
                                 CustomColours.darkBackground,

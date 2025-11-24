@@ -164,6 +164,7 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
       await _repository.addRatingWithParticipants(
         event.ratingDetails,
         event.participantRatings,
+        event.expected,
       );
 
       print("😂😂😂😂😂😂😂😂 YOU BEST BE EMITTING");

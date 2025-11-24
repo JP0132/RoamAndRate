@@ -37,7 +37,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
     if (widget.participantRatings.isEmpty) return 0.0;
     final total = widget.participantRatings.fold<double>(
       0.0,
-      (sum, r) => sum + (r.rating ?? 0.0),
+      (sum, r) => sum + (widget.ratingDetails.status == "Plan to Visit" ? r.expectedRating ?? 0.0: r.rating ?? 0.0),
     );
     return total / widget.participantRatings.length;
   }
@@ -198,6 +198,9 @@ class _FullRatingCardState extends State<FullRatingCard> {
                       ),
                       const SizedBox(height: 4),
                       Text(
+                        widget.ratingDetails.status == "Plan to Visit" ? DateFormat(
+                                'EE, dd MMM yyyy',
+                              ).format(widget.ratingDetails.datePlanned!) :
                         widget.ratingDetails.dateVisited != null
                             ? DateFormat(
                                 'EE, dd MMM yyyy',
@@ -237,6 +240,11 @@ class _FullRatingCardState extends State<FullRatingCard> {
 
             const SizedBox(height: 8),
 
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Center(child: Text(widget.ratingDetails.status == "Plan to Visit" ? "Your Expected Ratings" : "Your Ratings")),
+            ),
+
             // Participant Ratings
             if (widget.participantRatings.isNotEmpty)
               BlocBuilder<ParticipantBloc, ParticipantState>(
@@ -253,6 +261,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                     //     .where((p) => p.isAdmin)
                     //     .first
                     //     .particpantName;
+
                     return Column(
                       children: widget.participantRatings.asMap().entries.map((
                         entry,
@@ -295,13 +304,19 @@ class _FullRatingCardState extends State<FullRatingCard> {
                                           ),
                                           child: _buildStar(
                                             starIdx,
-                                            pRating.rating ?? 0.0,
+                                            widget.ratingDetails.status == "Plan to Visit" ? pRating.expectedRating ?? 0.0 : pRating.rating ?? 0.0,
                                           ),
                                         );
                                       }),
                                     ),
                                     SizedBox(width: 10),
-                                    Text(
+                                    widget.ratingDetails.status == "Plan to Visit" ? Text(
+                                      "${(pRating.expectedRating! * 2).truncate()} / 10",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: CustomColours.darkPrimaryText,
+                                      ),
+                                    ) : Text(
                                       "${(pRating.rating! * 2).truncate()} / 10",
                                       style: TextStyle(
                                         fontSize: 14,
@@ -310,7 +325,10 @@ class _FullRatingCardState extends State<FullRatingCard> {
                                     ),
                                     SizedBox(width: 10),
                                     Text(
+                                      widget.ratingDetails.status == "Plan to Visit" ?
                                       Helperfunctions.getRatingDescription(
+                                        (pRating.expectedRating! * 2).truncate(),
+                                      ) : Helperfunctions.getRatingDescription(
                                         (pRating.rating! * 2).truncate(),
                                       ),
                                       style: TextStyle(

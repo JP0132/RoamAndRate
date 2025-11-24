@@ -51,7 +51,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     "Tourist Attraction",
     "Accommodation",
     "Shopping",
-    "Nature & Outdoors",
+    "Nature",
     "Transport",
     "Wellness",
     "Other",
@@ -309,6 +309,16 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             value: selectedCategory,
                             backgroundColour: CustomColours.darkSurface,
                             borderColour: Colors.transparent,
+                            selectedItemBuilder: (value) => Text(
+                              value,
+                              style: TextStyle(
+                                fontSize:
+                                    selectedCategory == "Accommodation" ||
+                                        selectedCategory == "Tourist Attraction"
+                                    ? 12
+                                    : 16,
+                              ),
+                            ),
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
