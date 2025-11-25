@@ -94,8 +94,8 @@ class RatingsRepositoryImpl implements RatingsRepository {
   @override
   Future<void> addRatingWithParticipants(
     RatingDetailsModel ratingDetails,
-    Map<String, double> participantRatings, 
-    bool expected
+    Map<String, double> participantRatings,
+    bool expected,
   ) async {
     if (!expected) {
       print("🚀 Repository.addRatingWithParticipants called");
@@ -126,7 +126,7 @@ class RatingsRepositoryImpl implements RatingsRepository {
 
         await ratingsMadeDao.insertRatingsMade(ratingsMade.toCompanion());
       }
-    } else{
+    } else {
       final ratingDetailsId = ratingDetails.id ?? const Uuid().v4();
       final ratingDetailsWithId = ratingDetails.copyWith(id: ratingDetailsId);
       await addRatingDetails(ratingDetailsWithId);
@@ -161,6 +161,7 @@ class RatingsRepositoryImpl implements RatingsRepository {
   Future<void> editRatingWithParticipants(
     RatingDetailsModel ratingDetails,
     Map<String, double> participantRatings,
+    bool expected,
   ) async {
     final ratingDetailsId = ratingDetails.id;
     await editRatingDetails(ratingDetails);
@@ -169,6 +170,7 @@ class RatingsRepositoryImpl implements RatingsRepository {
       final existingRatings = await ratingsMadeDao.getRatingsMadeByDetailsId(
         ratingDetailsId,
       );
+
       final existingParticipantIds = existingRatings
           .map((e) => e.participantId)
           .toSet();
@@ -187,21 +189,35 @@ class RatingsRepositoryImpl implements RatingsRepository {
           final existingRating = existingRatings.firstWhere(
             (r) => r.participantId == entry.key,
           );
-          final updatedRating = existingRating.copyWith(
-            rating: Value(entry.value),
-            expectedRating: Value(existingRating.expectedRating ?? 0.0),
-            participantId: existingRating.participantId,
-          );
+
+          RatingsMadeData updatedRating;
+
+          if (!expected) {
+            print(entry.value);
+            updatedRating = existingRating.copyWith(
+              rating: Value(entry.value),
+              participantId: existingRating.participantId,
+            );
+          } else{
+            print(entry.value);
+            updatedRating = existingRating.copyWith(
+              expectedRating: Value(entry.value),
+              participantId: existingRating.participantId,
+            );
+          }
+
           await editRatingsMade(fromDataToModel(updatedRating));
         } else {
           // Add new rating
+         
           final newRating = RatingsMadeModel(
             particpantId: entry.key,
             ratingDetailsId: ratingDetailsId,
-            rating: entry.value,
-            expectedRating: 0.0,
+            rating: !expected ? 0.0 : entry.value,
+            expectedRating: expected ? entry.value : 0.0,
             createdAt: DateTime.now(),
           );
+
           await addRatingsMade(newRating);
         }
       }

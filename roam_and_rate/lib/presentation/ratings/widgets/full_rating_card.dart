@@ -83,7 +83,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                       rating: widget.ratingDetails,
                       participantRatings: {
                         for (var r in widget.participantRatings)
-                          r.participantId: r.rating ?? 0.0,
+                          r.participantId: {"expectedRating": r.expectedRating ?? 0.0, "rating": r.rating ?? 0.0}
                       },
                     ),
                   );

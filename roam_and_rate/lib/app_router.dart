@@ -44,8 +44,7 @@ class AddRatingArguments {
 class EditRatingArguments {
   final RatingDetailsModel rating;
   final RatingsMadeModel? ratingMade;
-  final Map<String, double>? participantRatings;
-
+  final Map<String, Map<String, double>>? participantRatings;
   EditRatingArguments({
     required this.rating,
     this.ratingMade,

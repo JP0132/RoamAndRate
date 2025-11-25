@@ -27,5 +27,6 @@ abstract class RatingsRepository {
   Future<void> editRatingWithParticipants(
     RatingDetailsModel ratingDetails,
     Map<String, double> participantRatings,
+    bool expected
   );
 }

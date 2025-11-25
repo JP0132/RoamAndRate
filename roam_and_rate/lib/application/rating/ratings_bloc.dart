@@ -186,6 +186,7 @@ class RatingsBloc extends Bloc<RatingsEvent, RatingsState> {
       await _repository.editRatingWithParticipants(
         event.ratingDetails,
         event.participantRatings,
+        event.expected
       );
 
       emit(RatingWithParticipantsEdited());

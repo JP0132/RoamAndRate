@@ -25,7 +25,7 @@ import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 class EditRatingPage extends StatefulWidget {
   final RatingDetailsModel rating;
   final RatingsMadeModel? ratingMade;
-  final Map<String, double>? participantRatings;
+  final Map<String, Map<String, double>>? participantRatings;
   const EditRatingPage({
     super.key,
     required this.rating,
@@ -155,18 +155,35 @@ class _EditRatingPageState extends State<EditRatingPage> {
   }
 
   List<ParticipantModel> _participants = [];
-  Map<String, double> selectedParticipants = {};
+  Map<String, Map<String, double>> selectedParticipants = {};
 
   void updateParticipantRatings(Map<String, double> ratings) {
-    print("😂😂😂😂adas ${selectedParticipants["Sejal"]}");
+    String ratingToUpdate = selectedStatus == "Plan to Visit"
+        ? "expectedRating"
+        : "rating";
+
     setState(() {
-      selectedParticipants = ratings;
+      for (var r in ratings.entries) {
+        if (selectedParticipants[r.key] == null) {
+          selectedParticipants[r.key] = {};
+        }
+        selectedParticipants[r.key]![ratingToUpdate] = r.value;
+      }
     });
   }
 
   void handleRatingsUpdate(Map<String, double> ratings) {
+    String ratingToUpdate = selectedStatus == "Plan to Visit"
+        ? "expectedRating"
+        : "rating";
+
     setState(() {
-      selectedParticipants = ratings;
+      for (var r in ratings.entries) {
+        if (selectedParticipants[r.key] == null) {
+          selectedParticipants[r.key] = {};
+        }
+        selectedParticipants[r.key]![ratingToUpdate] = r.value;
+      }
     });
 
     // print("Received ratings update:");
@@ -362,19 +379,34 @@ class _EditRatingPageState extends State<EditRatingPage> {
                         }
 
                         _participants = state.participants;
-                        // selectedParticipant = _participants
-                        //     .where((p) => p.isAdmin)
-                        //     .first
-                        //     .particpantName;
+
+                        List<double> currentRatings = [];
+                        List<String> currentRatingParticipants = [];
+
+                        if (selectedStatus == "Plan to Visit") {
+                          currentRatings = selectedParticipants.entries
+                              .where(
+                                (entry) =>
+                                    entry.value["expectedRating"] != null,
+                              )
+                              .map((entry) => entry.value["expectedRating"]!)
+                              .toList();
+                        } else {
+                          currentRatings = selectedParticipants.entries
+                              .where((entry) => entry.value["rating"] != null)
+                              .map((entry) => entry.value["rating"]!)
+                              .toList();
+                        }
+
+
                         return RatingContainer(
+                          key: ValueKey('rating_container_${selectedStatus}'),
                           selectedParticipants: updateParticipantRatings,
                           participants: _participants,
-                          ratings: selectedParticipants.values.toList(),
-                          ratingParticipants: selectedParticipants.keys
-                              .toList(),
+                          ratings: currentRatings,
+                          ratingParticipants: selectedParticipants.keys.toList(),
                           editMode: true,
-                          onRatingsUpdate:
-                              handleRatingsUpdate, // Change this line
+                          onRatingsUpdate: handleRatingsUpdate,
                         );
                       } else if (state is ParticipantError) {
                         return Text("Error: ${state.message}");
@@ -599,10 +631,12 @@ class _EditRatingPageState extends State<EditRatingPage> {
                           "Dropped",
                           "On-hold",
                           "",
+                          "Plan to Visit",
                         }.contains(selectedStatus)) {
                           Map<String, double> updatedRatingMade = {};
                           selectedParticipants.forEach((participant, rating) {
-                            updatedRatingMade[participant] = rating;
+                            updatedRatingMade[participant] =
+                                rating["rating"] ?? 0.0;
                           });
                           RatingDetailsModel updatedRating =
                               updatedRatingDetails.copyWith(
@@ -616,9 +650,30 @@ class _EditRatingPageState extends State<EditRatingPage> {
                             ),
                           );
                         } else {
-                          context.read<RatingsBloc>().add(
-                            EditRatingDetails(updatedRatingDetails),
-                          );
+                          // Plan to Visit
+                          if (selectedStatus == "Plan to Visit") {
+                            Map<String, double> updatedRatingMade = {};
+                            selectedParticipants.forEach((participant, rating) {
+                              updatedRatingMade[participant] =
+                                  rating["expectedRating"] ?? 0.0;
+                            });
+
+                            RatingDetailsModel updatedRating =
+                                updatedRatingDetails.copyWith(
+                                  datePlanned: selectedDate,
+                                );
+                            context.read<RatingsBloc>().add(
+                              EditRatingWithParticipants(
+                                updatedRating,
+                                updatedRatingMade,
+                                expected: true,
+                              ),
+                            );
+                          } else {
+                            context.read<RatingsBloc>().add(
+                              EditRatingDetails(updatedRatingDetails),
+                            );
+                          }
                         }
                         if (formValid.values.every((v) => v)) {}
                       },
