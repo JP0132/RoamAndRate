@@ -1,7 +1,7 @@
+import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
-import 'package:roam_and_rate/domain/models/expense_model.dart';
 
 class ExpensePieChart extends StatefulWidget {
   final Map<String, double> categoryExpensesMap;
@@ -37,95 +37,101 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
   @override
   Widget build(BuildContext context) {
     // Map<String, double> dataMap = {};
+    final dataMap = widget.categoryExpensesMap;
 
-    // for (var expense in widget.expenses) {
-    //   if (dataMap.containsKey(expense.category)) {
-    //     dataMap[expense.category] = dataMap[expense.category]! + expense.paid;
-    //   } else {
-    //     dataMap[expense.category] = expense.paid;
-    //   }
-    // }
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: CustomColours.darkSurface,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
+    return Container(
+      decoration: BoxDecoration(
+        color: CustomColours.darkSurface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      child: LayoutBuilder(builder: (context, constraints) {
+        if (dataMap.isEmpty) {
+          return Center(
+            child: Text('No expense data', style: TextStyle(color: CustomColours.darkPrimary)),
+          );
+        }
+    
+        final isWide = constraints.maxWidth > 600;
+    final widthBased = isWide
+      ? min(constraints.maxWidth * 0.45, 320.0)
+      : min(constraints.maxWidth * 0.8, 260.0);
+    final chartSize = min(widthBased, max(120.0, constraints.maxHeight * 0.6));
+    
+        Widget pie = SizedBox(
+          height: chartSize,
+          width: chartSize,
+          child: PieChart(
+            PieChartData(
+              pieTouchData: PieTouchData(
+                touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                  setState(() {
+                    if (!event.isInterestedForInteractions || pieTouchResponse == null || pieTouchResponse.touchedSection == null) {
+                      touchedIndex = -1;
+                      return;
+                    }
+                    touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                  });
+                },
+              ),
+              borderData: FlBorderData(show: false),
+              sectionsSpace: 4,
+              centerSpaceRadius: max(28, chartSize * 0.18),
+              sections: showingSections(dataMap, categoryColors),
+            ),
+          ),
+        );
+    
+        Widget legend = SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: dataMap.keys.map((label) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Indicator(
+                  color: categoryColors[label] ?? Colors.grey,
+                  text: label,
+                  isSquare: true,
+                  textColor: CustomColours.darkSecondaryText,
+                ),
+              );
+            }).toList(),
+          ),
+        );
+    
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16),
-            Text(
-              'Expense Distribution',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: CustomColours.darkPrimary,
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Text(
+                  'Expense Distribution',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: CustomColours.darkPrimary),
+                ),
               ),
             ),
-            SizedBox(height: 30),
-            AspectRatio(
-              aspectRatio: 1.3,
-              child: Column(
-                children: <Widget>[
-                  
-                  Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: PieChart(
-                        PieChartData(
-                          pieTouchData: PieTouchData(
-                            touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                              setState(() {
-                                if (!event.isInterestedForInteractions ||
-                                    pieTouchResponse == null ||
-                                    pieTouchResponse.touchedSection == null) {
-                                  touchedIndex = -1;
-                                  return;
-                                }
-                                touchedIndex = pieTouchResponse
-                                    .touchedSection!
-                                    .touchedSectionIndex;
-                              });
-                            },
-                          ),
-                          borderData: FlBorderData(show: false),
-                          sectionsSpace: 0,
-                          centerSpaceRadius: 40,
-                          sections: showingSections(widget.categoryExpensesMap, categoryColors),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Legend
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: widget.categoryExpensesMap.keys.toList().asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final label = entry.value;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Indicator(
-                            color: categoryColors[label] ?? Colors.grey,
-                            text: label,
-                            isSquare: true,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
+            const SizedBox(height: 6),
+            if (isWide)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  pie,
+                  const SizedBox(width: 18),
+                  Expanded(child: legend),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  Center(child: pie),
+                  const SizedBox(height: 12),
+                  ConstrainedBox(constraints: BoxConstraints(maxHeight: 180), child: legend),
                 ],
               ),
-            ),
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 
