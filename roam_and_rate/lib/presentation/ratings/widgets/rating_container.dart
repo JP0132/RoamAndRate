@@ -19,7 +19,8 @@ class RatingContainer extends StatefulWidget {
     required this.selectedParticipants,
     required this.participants,
     required this.ratings,
-    required this.onRatingsUpdate, this.editMode = false,
+    required this.onRatingsUpdate,
+    this.editMode = false,
     this.ratingParticipants = const [],
   });
 
@@ -36,22 +37,51 @@ class _RatingContainerState extends State<RatingContainer> {
   @override
   void initState() {
     if (widget.editMode) {
-      widgetIndexes = List.generate(widget.ratings.length, (index) => index + 1);
+      widgetIndexes = List.generate(
+        widget.ratings.length,
+        (index) => index + 1,
+      );
       ratings = List.from(widget.ratings);
       selectedParticipants = widget.ratingParticipants!.map((pId) {
-        return widget.participants.firstWhere(
-          (p) => p.id == pId,
-        );
+        return widget.participants.firstWhere((p) => p.id == pId);
       }).toList();
-      
-    } else{
+    } else {
       widgetIndexes = [1];
       selectedParticipants = List.from(selectedParticipants)..add(null);
       ratings = List.filled(widgetIndexes.length, 0.0);
-      
     }
 
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant RatingContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Always update when ratings or participants change, regardless of editMode
+    if (oldWidget.ratings != widget.ratings ||
+        oldWidget.ratingParticipants != widget.ratingParticipants) {
+      setState(() {
+        ratings = List.from(widget.ratings);
+
+        if (widget.ratingParticipants != null &&
+            widget.ratingParticipants!.isNotEmpty) {
+          selectedParticipants = widget.ratingParticipants!.map((pId) {
+            return widget.participants.firstWhere(
+              (p) => p.id == pId,
+              orElse: () => widget.participants.firstWhere(
+                (p) => p.particpantName == pId,
+                orElse: () => widget.participants.first,
+              ),
+            );
+          }).toList();
+        } else {
+          selectedParticipants = List.filled(widget.ratings.length, null);
+        }
+
+        widgetIndexes = List.generate(widget.ratings.length, (i) => i + 1);
+      });
+    }
   }
 
   void addWidget() {
