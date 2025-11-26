@@ -82,22 +82,30 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
           ),
         );
     
-        Widget legend = SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: dataMap.keys.map((label) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: Indicator(
-                  color: categoryColors[label] ?? Colors.grey,
-                  text: label,
-                  isSquare: true,
-                  textColor: CustomColours.darkSecondaryText,
-                ),
-              );
-            }).toList(),
-          ),
-        );
+          // two-column legend using Wrap so it uses available space
+          final legendAvailableWidth = isWide ? (constraints.maxWidth - chartSize - 18) : constraints.maxWidth;
+          final columnWidth = (legendAvailableWidth - 12) / 2;
+
+          Widget legend = SingleChildScrollView(
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: dataMap.keys.map((label) {
+                return SizedBox(
+                  width: columnWidth.clamp(140.0, legendAvailableWidth),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6.0),
+                    child: Indicator(
+                      color: categoryColors[label] ?? Colors.grey,
+                      text: label,
+                      isSquare: true,
+                      textColor: CustomColours.darkSecondaryText,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          );
     
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
