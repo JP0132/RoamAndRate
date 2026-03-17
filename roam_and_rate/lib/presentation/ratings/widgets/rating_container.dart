@@ -18,7 +18,7 @@ class RatingContainer extends StatefulWidget {
     super.key,
     required this.selectedParticipants,
     required this.participants,
-    required this.ratings,
+    this.ratings = const [0.0],
     required this.onRatingsUpdate,
     this.editMode = false,
     this.ratingParticipants = const [],
@@ -47,42 +47,24 @@ class _RatingContainerState extends State<RatingContainer> {
       }).toList();
     } else {
       widgetIndexes = [1];
-      selectedParticipants = List.from(selectedParticipants)..add(null);
+      selectedParticipants = [null];
       ratings = List.filled(widgetIndexes.length, 0.0);
     }
 
     super.initState();
   }
 
-  @override
-  void didUpdateWidget(covariant RatingContainer oldWidget) {
-    super.didUpdateWidget(oldWidget);
+@override
+void didUpdateWidget(covariant RatingContainer oldWidget) {
+  super.didUpdateWidget(oldWidget);
 
-    // Always update when ratings or participants change, regardless of editMode
-    if (oldWidget.ratings != widget.ratings ||
-        oldWidget.ratingParticipants != widget.ratingParticipants) {
-      setState(() {
-        ratings = List.from(widget.ratings);
-
-        if (widget.ratingParticipants != null &&
-            widget.ratingParticipants!.isNotEmpty) {
-          selectedParticipants = widget.ratingParticipants!.map((pId) {
-            return widget.participants.firstWhere(
-              (p) => p.id == pId,
-              orElse: () => widget.participants.firstWhere(
-                (p) => p.particpantName == pId,
-                orElse: () => widget.participants.first,
-              ),
-            );
-          }).toList();
-        } else {
-          selectedParticipants = List.filled(widget.ratings.length, null);
-        }
-
-        widgetIndexes = List.generate(widget.ratings.length, (i) => i + 1);
-      });
-    }
+  // Only update if participants actually changed
+  if (oldWidget.participants != widget.participants) {
+    setState(() {
+      selectedParticipants = List.filled(widgetIndexes.length, null);
+    });
   }
+}
 
   void addWidget() {
     setState(() {
@@ -125,6 +107,7 @@ class _RatingContainerState extends State<RatingContainer> {
   void _sendUpdate() {
     // Create a map of participant-rating pairs only when both are set
     final Map<String, double> result = {};
+    print("👹👹👹👹👹👹👹👹 ${selectedParticipants.length}");
     for (int i = 0; i < selectedParticipants.length; i++) {
       final participant = selectedParticipants[i]?.id;
       final rating = ratings[i];
@@ -134,6 +117,7 @@ class _RatingContainerState extends State<RatingContainer> {
         result[participant] = rating;
       }
     }
+    print("👹👹👹👹👹👹👹👹 ${result}");
     widget.onRatingsUpdate(result);
   }
 
@@ -197,8 +181,6 @@ class _RatingContainerState extends State<RatingContainer> {
   }
 
   Widget _buildNewRating(int index) {
-    List<ParticipantModel> _participants = [];
-
     return Column(
       children: [
         Text(
@@ -214,47 +196,27 @@ class _RatingContainerState extends State<RatingContainer> {
           onRatingChanged: (rating) => _updateRating(index, rating),
         ),
         SizedBox(height: 10),
-        BlocBuilder<ParticipantBloc, ParticipantState>(
-          builder: (context, state) {
-            if (state is ParticipantLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is ParticipantLoaded) {
-              if (state.participants.isEmpty) {
-                return Text("SOMETHING WENT WRONG");
-              }
 
-              _participants = state.participants;
-              // selectedParticipant = _participants
-              //     .where((p) => p.isAdmin)
-              //     .first
-              //     .particpantName;
-              return CustomisableDropdown<String>(
-                items: state.participants.map((p) => p.particpantName).toList(),
-                hint: "Whose rating?",
-                value: selectedParticipants[index]?.particpantName,
-                backgroundColour: CustomColours.darkSecondarySurface,
-                borderColour: Colors.transparent,
-                padding: EdgeInsets.all(20),
-                borderRadius: 20,
-                menuMaxHeight: 200,
-                selectedItemColour: CustomColours.darkPrimary,
-                selectedItemTextColour: CustomColours.darkBackground,
-                unselectedItemTextColour: Colors.grey[300],
+        CustomisableDropdown<String>(
+          items: widget.participants.map((p) => p.particpantName).toList(),
+          hint: "Whose rating?",
+          value: selectedParticipants[index]?.particpantName,
+          backgroundColour: CustomColours.darkSecondarySurface,
+          borderColour: Colors.transparent,
+          padding: EdgeInsets.all(20),
+          borderRadius: 20,
+          menuMaxHeight: 200,
+          selectedItemColour: CustomColours.darkPrimary,
+          selectedItemTextColour: CustomColours.darkBackground,
+          unselectedItemTextColour: Colors.grey[300],
 
-                onChanged: (participantName) {
-                  final participant = state.participants.firstWhere(
-                    (p) => p.particpantName == participantName,
-                  );
-                  _updateParticipant(index, participant);
-                },
-                itemBuilder: (value) => Text(value),
-              );
-            } else if (state is ParticipantError) {
-              return Text("Error: ${state.message}");
-            } else {
-              return const Text("Something went wrong!");
-            }
+          onChanged: (participantName) {
+            final participant = widget.participants.firstWhere(
+              (p) => p.particpantName == participantName,
+            );
+            _updateParticipant(index, participant);
           },
+          itemBuilder: (value) => Text(value),
         ),
       ],
     );

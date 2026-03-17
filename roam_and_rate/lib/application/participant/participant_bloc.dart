@@ -25,10 +25,22 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
     on<AddParticipant>(_onAddParticipant);
     on<DeleteParticipant>(_onDeleteParticipant);
     on<EditParticipant>(_onEditParticipant);
-
+    
     on<ParticipantsUpdated>((event, emit) {
       emit(ParticipantLoaded(event.participants));
     });
+
+    on<LoadParticipants>(_onLoadParticipants);
+  }
+
+  Future<void> _onLoadParticipants(LoadParticipants event, Emitter<ParticipantState> emit) async {
+    try {
+      emit(ParticipantLoading());
+      final participants = await _repository.getParticipants();
+      emit(ParticipantLoaded(participants));
+    } catch (e) {
+      emit(ParticipantError("Failed to load participants: $e"));
+    } 
   }
 
   Future<void> _onAddParticipant(

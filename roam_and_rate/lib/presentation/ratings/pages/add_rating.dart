@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
+import 'package:roam_and_rate/application/participant/participant_event.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_event.dart';
@@ -31,15 +33,55 @@ class AddRatingPage extends StatefulWidget {
 }
 
 class _AddRatingPageState extends State<AddRatingPage> {
+  // List that will be used to store user's participants
+  List<ParticipantModel> _participants = [];
+  bool _participantsLoaded = false;
+  late final StreamSubscription _participantSubscription;
+
+/// Initializes the state of the widget.
+/// Requests the participants of the trip and listens for the
+/// loaded state exactly once. When the state is loaded, it
+/// sets the participants and cancels the subscription.
+  @override
+  void initState() {
+    super.initState();
+    // Request participants
+    context.read<ParticipantBloc>().add(LoadParticipants());
+
+    // Listen for the loaded state exactly once
+    _participantSubscription = context.read<ParticipantBloc>().stream.listen((
+      state,
+    ) {
+      if (state is ParticipantLoaded && !_participantsLoaded) {
+        setState(() {
+          _participants = state.participants;
+          _participantsLoaded = true;
+        });
+        _participantSubscription.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _participantSubscription.cancel();
+    super.dispose();
+  }
+
+  // TextEditingControllers that will be used to collect user input
   final TextEditingController _placeNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   //final TextEditingController _valueController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+
+  // DateTime that will be used to collect user's date entry
   DateTime? selectedDate = DateTime.now();
   DateTimeRange? selectedRange;
 
+  // Variable that will be used to store user's rating
   double _currentRating = 0.0;
 
+  // Constant list that will be used for the ratings status dropdown
   final List<String> statuses = [
     "Plan to Visit",
     "Visited",
@@ -49,6 +91,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
   ];
   String? selectedStatus = "";
 
+  // Constant list that will be used for the ratings value dropdown
   final List<String> value = ["Cheap", "Just Right", "Expensive"];
   String? selectedValue = "";
 
@@ -61,14 +104,16 @@ class _AddRatingPageState extends State<AddRatingPage> {
     "Wellness",
     "Other",
   ];
-
   String? selectedCategory;
 
+  // List that will be used to store user's tags
   List<String> addedTags = [];
 
+  // Variable that will be used to store user's image
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
+  // Function that will be used to pick user's image
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -78,6 +123,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
     }
   }
 
+  // Function that will be used to show user's image
   void _showPickOptionsDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -106,6 +152,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
     );
   }
 
+  // Function that will be used to handle user's tags
   void handleTagsChanged(List<String> tags) {
     addedTags = tags;
     setState(() {
@@ -146,7 +193,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
     return "Rating"; // default fallback
   }
 
-  List<ParticipantModel> _participants = [];
+  // Map that will be used to store user's and participant ratings
   Map<String, double> selectedParticipants = {};
   void updateParticipantRatings(Map<String, double> ratings) {
     //print("😂😂😂😂adas ${selectedParticipants["Sejal"]}");
@@ -328,34 +375,12 @@ class _AddRatingPageState extends State<AddRatingPage> {
                     ),
                   ),
 
-                  BlocBuilder<ParticipantBloc, ParticipantState>(
-                    builder: (context, state) {
-                      if (state is ParticipantLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state is ParticipantLoaded) {
-                        if (state.participants.isEmpty) {
-                          return Text("SOMETHING WENT WRONG");
-                        }
-
-                        _participants = state.participants;
-                        // selectedParticipant = _participants
-                        //     .where((p) => p.isAdmin)
-                        //     .first
-                        //     .particpantName;
-                        return RatingContainer(
-                          selectedParticipants: updateParticipantRatings,
-                          participants: _participants,
-                          ratings: [0.0],
-                          onRatingsUpdate:
-                              handleRatingsUpdate, // Change this line
-                        );
-                      } else if (state is ParticipantError) {
-                        return Text("Error: ${state.message}");
-                      } else {
-                        return const Text("Something went wrong!");
-                      }
-                    },
-                  ),
+                  RatingContainer(
+                      selectedParticipants: updateParticipantRatings,
+                      participants: _participants,
+                      onRatingsUpdate: handleRatingsUpdate
+                    ),
+                  
 
                   // RatingInput(
                   //   initalRating: 0,
@@ -370,7 +395,6 @@ class _AddRatingPageState extends State<AddRatingPage> {
                   Row(
                     children: [
                       // Select the date you visted
-                      // TODO: If status is marked as planned then disable the field
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -558,6 +582,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                         setState(() {
                           validateDetails();
                         });
+                        print("🥶🥶🥶🥶");
                         RatingDetailsModel newRatingDetails =
                             RatingDetailsModel(
                               tripId: widget.tripId,
@@ -575,8 +600,11 @@ class _AddRatingPageState extends State<AddRatingPage> {
                           "",
                           "Plan to Visit",
                         }.contains(selectedStatus)) {
+                          print("👹👹👹👹");
                           Map<String, double> newRatingMade = {};
+                          print(selectedParticipants);
                           selectedParticipants.forEach((participant, rating) {
+                            print("😂😂😂😂😂😂😂😂🎯 ${rating.toString()}");
                             newRatingMade[participant] = rating;
                           });
                           RatingDetailsModel updatedRatingDetails =
@@ -605,7 +633,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                               AddRatingWithParticipants(
                                 updatedRatingDetails,
                                 newPlanRatingMade,
-                                expected: true
+                                expected: true,
                               ),
                             );
                           } else {

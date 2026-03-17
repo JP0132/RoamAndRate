@@ -21,3 +21,7 @@ class EditParticipant extends ParticipantEvent {
   final ParticipantModel participant;
   EditParticipant(this.participant);
 }
+
+class LoadParticipants extends ParticipantEvent {
+  LoadParticipants();
+}
