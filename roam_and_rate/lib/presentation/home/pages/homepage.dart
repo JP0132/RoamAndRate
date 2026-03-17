@@ -73,6 +73,8 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
+
+
   bool _expandedExpenses = false;
   bool _expandedRatings = false;
 
@@ -86,7 +88,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Center(child: Text("Home"))),
+      appBar: AppBar(title: Text("Home"), centerTitle: true,),
       body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -152,6 +154,7 @@ class _HomePageState extends State<HomePage> {
             ),
 
             SizedBox(height: 10),
+           
             BlocBuilder<ExpenseBloc, ExpenseState>(
               builder: (context, state) {
                 if (state is ExpenseInitial) {
@@ -163,15 +166,8 @@ class _HomePageState extends State<HomePage> {
                     return Column(
                       children: [
                         Container(
-                          padding: EdgeInsets.only(bottom: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: CustomColours.darkSecondaryText,
-                                width: 1,
-                              ),
-                            ),
-                          ),
+                          padding: EdgeInsets.all(8.0),
+                          
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -180,6 +176,7 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                   color: CustomColours.darkPrimary,
                                   fontWeight: FontWeight.bold,
+                                  fontSize: 16.0,
                                 ),
                               ),
                             ],
@@ -250,21 +247,14 @@ class _HomePageState extends State<HomePage> {
                     return Column(
                       children: [
                         Container(
-                          padding: EdgeInsets.only(bottom: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: CustomColours.darkSecondaryText,
-                                width: 1,
-                              ),
-                            ),
-                          ),
+                          padding: EdgeInsets.all(8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 "Ratings",
                                 style: TextStyle(
+                                  fontSize: 16.0,
                                   color: CustomColours.darkPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -279,15 +269,7 @@ class _HomePageState extends State<HomePage> {
                   return Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: CustomColours.darkSecondaryText,
-                              width: 1,
-                            ),
-                          ),
-                        ),
+                        padding: EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -296,6 +278,7 @@ class _HomePageState extends State<HomePage> {
                               style: TextStyle(
                                 color: CustomColours.darkPrimary,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
                               ),
                             ),
                             GestureDetector(

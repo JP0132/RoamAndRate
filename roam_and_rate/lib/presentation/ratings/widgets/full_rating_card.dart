@@ -19,7 +19,7 @@ import 'package:roam_and_rate/presentation/expenses/widgets/tag_widget.dart';
 
 class FullRatingCard extends StatefulWidget {
   final RatingDetailsModel ratingDetails;
-  final List<RatingsMadeData> participantRatings; // 👈 Pass participants here
+  final List<RatingsMadeData> participantRatings;
   const FullRatingCard({
     super.key,
     required this.ratingDetails,

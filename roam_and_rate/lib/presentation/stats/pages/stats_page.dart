@@ -337,6 +337,7 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
                 );
               },
             ),
+             SizedBox(height: 150),
 
           ],
         ),
