@@ -6,6 +6,9 @@ import 'package:roam_and_rate/application/currency/currency_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
+import 'package:roam_and_rate/application/theme/theme_cubit.dart';
+import 'package:roam_and_rate/application/theme/theme_state.dart';
+import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/core/themes/theme.dart';
@@ -51,6 +54,7 @@ Future<void> main() async {
           BlocProvider(create: (_) => ExpenseBloc(expenseRepository)),
           BlocProvider(create: (_) => RatingsBloc(ratingsRepository)),
           BlocProvider(create: (_) => CurrencyBloc()),
+          BlocProvider(create: (_) => TripDataBloc(ExpenseDao(db), RatingDetailsDao(db), RatingsMadeDao(db))),
         ],
         child: const MainApp(),
       ),
@@ -63,12 +67,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: CustomAppTheme.lightTheme,
-      darkTheme: CustomAppTheme.darkTheme,
-      initialRoute: AppRouter.splash,
-      onGenerateRoute: AppRouter.generateRoute,
+    return BlocProvider(
+      create: (context) => ThemeCubit(),
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: CustomAppTheme.lightTheme,
+            darkTheme: CustomAppTheme.darkTheme,
+            initialRoute: AppRouter.splash,
+            onGenerateRoute: AppRouter.generateRoute,
+          );
+        },
+      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +21,7 @@ import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/full_rating_card.dart';
+import 'package:roam_and_rate/presentation/trips/widgets/trip_overview_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
@@ -39,6 +42,8 @@ class _ViewTripState extends State<ViewTrip> {
   List<ExpenseModel> _expenses = [];
   List<RatingDetailsModel> _filteredRatings = [];
   List<ExpenseModel> _filteredExpenses = [];
+  TripDataState state = TripDataState(expenses: [], ratings: [], ratingsMade: []);
+  TripDataState? _latestState;
   final _controller = SuperTooltipController();
 
   // Track converted costs
@@ -137,13 +142,13 @@ class _ViewTripState extends State<ViewTrip> {
 
   // This gets called when conversion completes in FullExpenseCard
   void _onCostConverted(String expenseId, double convertedValue) {
-    print("🔄 Conversion callback: $expenseId = $convertedValue");
+    print("Conversion callback: $expenseId = $convertedValue");
 
     // Only update if the value changed
     if (_convertedCosts[expenseId] != convertedValue) {
       setState(() {
         _convertedCosts[expenseId] = convertedValue;
-        print("✅ Updated _convertedCosts: $_convertedCosts");
+        print("Updated _convertedCosts: $_convertedCosts");
       });
     }
   }
@@ -156,23 +161,23 @@ class _ViewTripState extends State<ViewTrip> {
       // If currencies match, use original paid amount
       if (widget.tripDetails.currency == expense.currency) {
         total += expense.paid;
-        print("💰 Same currency: ${expense.name} = ${expense.paid}");
+        print("Same currency: ${expense.name} = ${expense.paid}");
       }
       // If we have a converted value, use it
       else if (_convertedCosts.containsKey(expense.expenseId)) {
         total += _convertedCosts[expense.expenseId]!;
         print(
-          "🔄 Converted: ${expense.name} = ${_convertedCosts[expense.expenseId]}",
+          "Converted: ${expense.name} = ${_convertedCosts[expense.expenseId]}",
         );
       }
       // Fallback: use original amount (conversion might be in progress)
       else {
         total += expense.paid;
-        print("⏳ Waiting conversion: ${expense.name} = ${expense.paid}");
+        print("Waiting conversion: ${expense.name} = ${expense.paid}");
       }
     }
 
-    print("🎯 FINAL TOTAL: $total");
+    print("FINAL TOTAL: $total");
     return total;
   }
 
@@ -186,9 +191,39 @@ class _ViewTripState extends State<ViewTrip> {
     print("🏁 Initialized _convertedCosts: $_convertedCosts");
   }
 
+  bool _dataLoaded = false;
+  late final StreamSubscription<TripDataState> _tripDataSubscription;
+
   @override
   void initState() {
     super.initState();
+    context.read<TripDataBloc>().add(
+      StartWatchingTrip(widget.tripDetails.tripId!),
+    );
+
+    // Listen for the loaded state exactly once
+    _tripDataSubscription = context.read<TripDataBloc>().stream.listen((state) {
+      final hasData =
+          state.expenses.isNotEmpty ||
+          state.ratings.isNotEmpty ||
+          state.ratingsMade.isNotEmpty;
+
+      if (hasData && !_dataLoaded) {
+        setState(() {
+          state = state;
+          _expenses = state.expenses.map((e) => e.toModel())
+                        .toList();
+          _ratings = state.ratings.map((e) => e.toModel())
+                        .toList();;
+          
+          _dataLoaded = true;
+        });
+
+        // Cancel the subscription after first successful load
+        _tripDataSubscription.cancel();
+      }
+    });
+
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -196,208 +231,209 @@ class _ViewTripState extends State<ViewTrip> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _tripDataSubscription.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) {
-        final db = AppDatabase.instance;
-        return TripDataBloc(
-          ExpenseDao(db),
-          RatingDetailsDao(db),
-          RatingsMadeDao(db),
-        )..add(StartWatchingTrip(widget.tripDetails.tripId!));
-      },
-      child: Scaffold(
-        appBar: AppBar(centerTitle: true, title: const Text("Trip Details")),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              TripCards(tripModel: widget.tripDetails),
-              const SizedBox(height: 20),
-
-              // Total spent - uses the getter that calculates on-the-fly
-              Text(
-                "Total spent: ${_totalSpent.toStringAsFixed(2)} ${widget.tripDetails.currency}",
-                style: TextStyle(
-                  color: CustomColours.darkPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+    return Scaffold(
+      appBar: AppBar(centerTitle: true, title: const Text("Trip Overview")),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            TripOverviewCard(tripModel: widget.tripDetails),
+            //TripCards(tripModel: widget.tripDetails),
+            const SizedBox(height: 20),
+    
+            // Total spent - uses the getter that calculates on-the-fly
+            Text(
+              "Total spent: ${_totalSpent.toStringAsFixed(2)} ${widget.tripDetails.currency}",
+              style: TextStyle(
+                color: CustomColours.darkPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
-
-              const SizedBox(height: 20),
-
-              // Search bar
-              Container(
-                height: 40.0,
-                decoration: BoxDecoration(
-                  color: CustomColours.darkSurface,
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search, color: Colors.white),
-                      const SizedBox(width: 8.0),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            controller: _searchController,
-                            decoration: const InputDecoration(
-                              hintText: 'Search',
-                              border: InputBorder.none,
-                              hintStyle: TextStyle(fontSize: 14),
-                            ),
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          await _controller.showTooltip();
-                        },
-                        child: SuperTooltip(
-                          showBarrier: true,
-                          popupDirection: TooltipDirection.left,
-                          controller: _controller,
-                          content: const SizedBox(
-                            width: 250,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "The search bar can be used to filter by names and tags.",
-                                ),
-                                SizedBox(height: 12),
-                                Text("Types of searches:"),
-                                SizedBox(height: 4),
-                                Text("• Used commas to multi-search."),
-                                Text(
-                                  "• Use the keyword 'tags:' to search tags only.",
-                                ),
-                                Text(
-                                  "• Use the keyword 'category:' to search categories only.",
-                                ),
-                              ],
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.info_outline,
-                            color: CustomColours.darkPrimary,
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            ),
+    
+            const SizedBox(height: 20),
+    
+            // Search bar
+            Container(
+              height: 40.0,
+              decoration: BoxDecoration(
+                color: CustomColours.darkSurface,
+                borderRadius: BorderRadius.circular(20.0),
               ),
-              const SizedBox(height: 20),
-
-              // Toggle buttons
-              SizedBox(
-                height: 40,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
                   children: [
+                    const Icon(Icons.search, color: Colors.white),
+                    const SizedBox(width: 8.0),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedIndex = 0),
-                        child: Container(
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 0
-                                ? CustomColours.darkPrimary
-                                : CustomColours.darkSurface,
-                            borderRadius: BorderRadius.circular(10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: const InputDecoration(
+                            hintText: 'Search',
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(fontSize: 14),
                           ),
-                          child: Text(
-                            "Ratings",
-                            style: TextStyle(
-                              color: _selectedIndex == 0
-                                  ? CustomColours.darkSurface
-                                  : CustomColours.darkPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedIndex = 1),
-                        child: Container(
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 1
-                                ? CustomColours.darkPrimary
-                                : CustomColours.darkSurface,
-                            borderRadius: BorderRadius.circular(10),
+                    GestureDetector(
+                      onTap: () async {
+                        await _controller.showTooltip();
+                      },
+                      child: SuperTooltip(
+                        showBarrier: true,
+                        popupDirection: TooltipDirection.left,
+                        controller: _controller,
+                        content: const SizedBox(
+                          width: 250,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "The search bar can be used to filter by names and tags.",
+                              ),
+                              SizedBox(height: 12),
+                              Text("Types of searches:"),
+                              SizedBox(height: 4),
+                              Text("• Used commas to multi-search."),
+                              Text(
+                                "• Use the keyword 'tags:' to search tags only.",
+                              ),
+                              Text(
+                                "• Use the keyword 'category:' to search categories only.",
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            "Expenses",
-                            style: TextStyle(
-                              color: _selectedIndex == 1
-                                  ? CustomColours.darkSurface
-                                  : CustomColours.darkPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                        ),
+                        child: Icon(
+                          Icons.info_outline,
+                          color: CustomColours.darkPrimary,
+                          size: 24,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
-
-              // Content
-              Expanded(
-                child: BlocBuilder<TripDataBloc, TripDataState>(
-                  builder: (context, state) {
-                    // Update data
-                    final newRatings = state.ratings
-                        .map((e) => e.toModel())
-                        .toList();
-                    final newExpenses = state.expenses
-                        .map((e) => e.toModel())
-                        .toList();
-
-                    // Only update if data actually changed
-                    if (!listEquals(newExpenses, _expenses) ||
-                        !listEquals(newRatings, _ratings)) {
-                      _ratings = newRatings;
-                      _expenses = newExpenses;
-                      _filterTripData();
-
-                      // Initialize converted costs for matching currencies
-                      _initializeConvertedCosts();
-                    }
-
-                    if (_selectedIndex == 0) {
-                      return _buildRatingsList(state);
-                    } else {
-                      return _buildExpensesList();
-                    }
-                  },
+            ),
+            const SizedBox(height: 20),
+    
+            // Toggle buttons
+            SizedBox(
+              height: 40,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedIndex = 0),
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: _selectedIndex == 0
+                              ? CustomColours.darkPrimary
+                              : CustomColours.darkSurface,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "Expenses",
+                          style: TextStyle(
+                            color: _selectedIndex == 0
+                                ? CustomColours.darkSurface
+                                : CustomColours.darkPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedIndex = 1),
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: _selectedIndex == 1
+                              ? CustomColours.darkPrimary
+                              : CustomColours.darkSurface,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "Ratings",
+                          style: TextStyle(
+                            color: _selectedIndex == 1
+                                ? CustomColours.darkSurface
+                                : CustomColours.darkPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+    
+            // Content
+             BlocListener<TripDataBloc, TripDataState>(
+                listener: (context, state) {
+                  _latestState = state;
+                  
+                  // Update data
+                  final newRatings = state.ratings
+                      .map((e) => e.toModel())
+                      .toList();
+                  final newExpenses = state.expenses
+                      .map((e) => e.toModel())
+                      .toList();
+    
+                  // Only update if data actually changed
+                  if (!listEquals(newExpenses, _expenses) ||
+                      !listEquals(newRatings, _ratings)) {
+                  setState(() {
+                    _ratings = newRatings;
+                    _expenses = newExpenses;
+                    _filterTripData();
+    
+                    // Initialize converted costs for matching currencies
+                    _initializeConvertedCosts();
+                    
+                  });
+                    
+                  }
+    
+                  // if (_selectedIndex == 0) {
+                  //   return _buildRatingsList(state);
+                  // } else {
+                  //   return _buildExpensesList();
+                  // }
+                },
+                child: Expanded(
+                  child: _selectedIndex == 1
+                      ? _buildRatingsList(_latestState)
+                      : _buildExpensesList(),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
-        bottomNavigationBar: _buildBottomButtons(),
       ),
+      bottomNavigationBar: _buildBottomButtons(),
     );
   }
 
-  Widget _buildRatingsList(TripDataState state) {
-    if (_filteredRatings.isEmpty) {
+  Widget _buildRatingsList(TripDataState? state) {
+    if (state == null || _filteredRatings.isEmpty) {
       return const Center(child: Text("No ratings yet"));
     }
 
