@@ -43,6 +43,9 @@ class FullExpenseCard extends StatefulWidget {
 class _FullExpenseCardState extends State<FullExpenseCard> {
   bool _expanded = false;
   late Future<String?> _conversionFuture; // Store the future
+  
+  
+
 
   @override
   void initState() {
@@ -107,6 +110,10 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
 
   @override
   Widget build(BuildContext context) {
+
+    final id = widget.expenseDetails.expenseId!;
+    final converted = widget.convertedCosts[id];
+
     return Slidable(
       key: Key(widget.expenseDetails.expenseId!),
       endActionPane: ActionPane(
@@ -310,60 +317,24 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       widget.tripDetails.currency ==
                               widget.expenseDetails.currency
                           ? SizedBox() // no need to convert
-                          : FutureBuilder<String?>(
-                              future: _conversionFuture,
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Text(
+                          : converted == null ?
+                               const Text(
                                     "Converting...",
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 16,
                                     ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text(
-                                    "Conversion failed",
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 16,
-                                    ),
-                                  );
-                                } else if (snapshot.hasData &&
-                                    snapshot.data != null) {
-                                  // snapshot.data contains the converted value as String
-                                  final id = widget.expenseDetails.expenseId!;
-                                  final newValue = double.parse(snapshot.data!);
-
-                                  // Call the callback to update the converted cost
-                                  // Use a small delay to ensure we're not in build phase
-                                  Future.microtask(() {
-                                    if (mounted) {
-                                      widget.onCostConverted(id, newValue);
-                                    }
-                                  });
-
-                                  return Text(
-                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${snapshot.data!}",
+                                  )
+                                : Text(
+                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${converted.toStringAsFixed(2)}",
                                     style: TextStyle(
                                       color: Color.fromARGB(255, 69, 219, 156),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                     ),
-                                  );
-                                } else {
-                                  // No data and no error (might happen if API returns null)
-                                  return Text(
-                                    "Conversion unavailable",
-                                    style: TextStyle(
-                                      color: Colors.orange,
-                                      fontSize: 16,
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
+                                  ),
+                                
+                             
                       Text(
                         "Cost: ${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toString()}",
                         style: TextStyle(

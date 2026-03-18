@@ -10,6 +10,7 @@ import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_event.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
 import 'package:roam_and_rate/data/local/daos/rating_details_dao.dart';
 import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
@@ -46,8 +47,12 @@ class _ViewTripState extends State<ViewTrip> {
   TripDataState? _latestState;
   final _controller = SuperTooltipController();
 
+  bool _isConverting = false;
+
+  
+
   // Track converted costs
-  final Map<String, double> _convertedCosts = {};
+  Map<String, double> _convertedCosts = {};
 
   void _onSearchChanged() {
     setState(() {
@@ -157,6 +162,8 @@ class _ViewTripState extends State<ViewTrip> {
   double get _totalSpent {
     double total = 0.0;
 
+    if (_filteredExpenses.isEmpty) return 0.0;
+
     for (final expense in _filteredExpenses) {
       // If currencies match, use original paid amount
       if (widget.tripDetails.currency == expense.currency) {
@@ -193,6 +200,46 @@ class _ViewTripState extends State<ViewTrip> {
 
   bool _dataLoaded = false;
   late final StreamSubscription<TripDataState> _tripDataSubscription;
+
+  Future<void> _convertAllExpenses() async {
+  if (_isConverting) return;
+
+  _isConverting = true;
+
+  final Map<String, double> newConverted = {};
+
+  for (final expense in _expenses) {
+    final id = expense.expenseId!;
+
+    // Same currency → no conversion needed
+    if (widget.tripDetails.currency == expense.currency) {
+      newConverted[id] = expense.paid;
+      continue;
+    }
+
+    try {
+      final result = await CurrencyHelper().getConvertedAmount(
+        base: expense.currency.toUpperCase(),
+        target: widget.tripDetails.currency.toUpperCase(),
+        value: expense.paid,
+      );
+
+      if (result != null) {
+        newConverted[id] = double.parse(result);
+      }
+    } catch (e) {
+      debugPrint("Conversion failed for $id: $e");
+    }
+  }
+
+  if (mounted) {
+    setState(() {
+      _convertedCosts = newConverted;
+    });
+  }
+
+  _isConverting = false;
+}
 
   @override
   void initState() {
@@ -243,7 +290,7 @@ class _ViewTripState extends State<ViewTrip> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            TripOverviewCard(tripModel: widget.tripDetails),
+            TripOverviewCard(tripModel: widget.tripDetails, totalSpent: _totalSpent,),
             //TripCards(tripModel: widget.tripDetails),
             const SizedBox(height: 20),
     
@@ -407,9 +454,11 @@ class _ViewTripState extends State<ViewTrip> {
                     _filterTripData();
     
                     // Initialize converted costs for matching currencies
-                    _initializeConvertedCosts();
+                    //_initializeConvertedCosts();
                     
                   });
+
+                  _convertAllExpenses();
                     
                   }
     
