@@ -21,6 +21,26 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
     );
     int days = diff.inDays;
 
+    String getDays() {
+      if(DateTime.now().isAfter(widget.tripModel.endDate)) return "Finished";
+      if(DateTime.now().isBefore(widget.tripModel.startDate)) return "Upcoming";
+
+      String daysLeft = (days - DateTime.now().difference(widget.tripModel.startDate).inDays).toString();
+      String daysDone = DateTime.now().difference(widget.tripModel.startDate).inDays.toString();
+      
+      return  "${daysDone} days in | ${daysLeft} remaining";
+    }
+
+    Color getBudgetColor(){
+      double progress = (widget.totalSpent / widget.tripModel.budget).clamp(0.0, 1.0);
+
+      if(progress >= 0.9) return CustomColours.darkError;
+      if(progress >= 0.6) return Colors.amber.shade400;
+      return CustomColours.darkSuccess;
+    }
+
+    
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -149,12 +169,13 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                       style: const TextStyle(
                         color: CustomColours.darkSecondaryText,
                         fontSize: 10,
+                        
                       ),
                     ),
                     Text(
                       "${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${(widget.tripModel.budget - widget.totalSpent).toStringAsFixed(2)}",
-                      style: const TextStyle(
-                        color: CustomColours.darkPrimaryText,
+                      style:  TextStyle(
+                        color: getBudgetColor(),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -162,9 +183,51 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                 ),
               ],
             ),
+            const SizedBox(height: 4),
+            BudgetBar(budget: widget.tripModel.budget, spent: widget.totalSpent),
+            const SizedBox(height: 4),
+             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Total Spent: ${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${widget.totalSpent.toString()}",
+                  style: const TextStyle(
+                    color: CustomColours.darkSecondaryText,
+                  ),
+                ),
+                Text(
+                  getDays(),
+                  style: TextStyle(
+                    color: Colors.amber.shade500,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
+  }
+}
+
+class BudgetBar extends StatelessWidget{
+  final double budget;
+  final double spent;
+
+  const BudgetBar({super.key, required this.budget, required this.spent});
+  
+  @override
+  Widget build(Object context) {
+    double progress = (spent / budget).clamp(0.0, 1.0);
+
+    return LinearProgressIndicator(
+      value: progress,
+      minHeight: 5,
+      backgroundColor: CustomColours.darkSecondarySurface,
+      valueColor: AlwaysStoppedAnimation<Color>(progress >= 0.9 ? CustomColours.darkError : progress >= 0.6 ? Colors.amber.shade400 : CustomColours.darkPrimary),
+      borderRadius: BorderRadius.circular(10),
+    );
+    
   }
 }
