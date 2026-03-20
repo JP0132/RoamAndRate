@@ -16,12 +16,18 @@ import 'package:roam_and_rate/presentation/settings/pages/participant_page.dart'
 import 'package:roam_and_rate/presentation/settings/pages/user_details_page.dart';
 import 'package:roam_and_rate/presentation/splash/splash_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
+import 'package:roam_and_rate/presentation/trips/pages/edit_trip_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';
 
 class ViewTripArguments {
   final TripModel tripDetails;
 
   ViewTripArguments({required this.tripDetails});
+}
+
+class EditTripArguments {
+  final TripModel tripDetails;
+  EditTripArguments({required this.tripDetails});
 }
 
 class AddExpenseArguments {
@@ -59,6 +65,7 @@ class AppRouter {
   static const String enterUserDetails = '/enterUserDetails';
   static const String getStarted = '/getStarted';
   static const String addTrip = '/addTrip';
+  static const String editTrip = '/editTrip';
   static const String viewTrip = '/viewTrip';
   static const String addRating = '/addRating';
   static const String addExpense = '/addExpense';
@@ -84,6 +91,11 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => GetStarted());
       case addTrip:
         return MaterialPageRoute(builder: (_) => AddTripPage());
+      case editTrip:
+        final args = selectedRoute.arguments as EditTripArguments;
+        return MaterialPageRoute(
+          builder: (_) => EditTripPage(tripDetails: args.tripDetails),
+        );
       case addRating:
         final args = selectedRoute.arguments as AddRatingArguments;
         return MaterialPageRoute(
