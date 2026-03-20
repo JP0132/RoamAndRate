@@ -14,6 +14,11 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
+  Future<void> editTrip(TripModel trip) async {
+    await dao.updateTrip(trip);
+  }
+
+  @override
   Future<void> deleteTrip(String id) async {
     await dao.deleteTrip(id);
   }

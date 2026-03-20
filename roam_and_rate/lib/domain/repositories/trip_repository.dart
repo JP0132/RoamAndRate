@@ -5,4 +5,5 @@ abstract class TripRepository {
   Stream<List<TripModel>> watchTrips();
   Future<void> addTrip(TripModel trip);
   Future<void> deleteTrip(String id);
+  Future<void> editTrip(TripModel trip);
 }

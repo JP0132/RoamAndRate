@@ -8,6 +8,8 @@ class TripLoading extends TripState {}
 
 class TripAdded extends TripState {}
 
+class TripEdited extends TripState {}
+
 class TripLoaded extends TripState {
   final List<TripModel> trips;
   TripLoaded(this.trips);

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/repositories/trip_repository.dart';
 import 'trip_event.dart';
@@ -12,6 +13,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
   TripBloc(this._repository) : super(TripInitial()) {
     on<AddTrip>(_onAddTrip);
     on<DeleteTrip>(_onDeleteTrip);
+    on<EditTrip>(_onEditTrip);
 
     _subscription = _repository.watchTrips().listen(
       (trips) {
@@ -36,6 +38,19 @@ class TripBloc extends Bloc<TripEvent, TripState> {
       // emit(TripLoaded(event.trips));
     } catch (e) {
       emit(TripError("Failed to add trip: $e"));
+    }
+  }
+
+  Future<void> _onEditTrip(
+    EditTrip event,
+    Emitter<TripState> emit,
+  ) async {
+    try {
+      print("📢 Stream emitted ${event.trip} TRIPS");
+      await _repository.editTrip(event.trip);
+      emit(TripEdited());
+    } catch (e) {
+      emit(TripError("Failed to edit trip: $e"));
     }
   }
 

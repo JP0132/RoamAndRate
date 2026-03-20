@@ -7,6 +7,11 @@ class AddTrip extends TripEvent {
   AddTrip(this.trip);
 }
 
+class EditTrip extends TripEvent {
+  final TripModel trip;
+  EditTrip(this.trip);
+}
+
 class DeleteTrip extends TripEvent {
   final String tripId;
   DeleteTrip(this.tripId);

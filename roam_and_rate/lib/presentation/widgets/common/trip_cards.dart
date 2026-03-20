@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_event.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
@@ -47,6 +48,31 @@ class _TripCardsState extends State<TripCards> {
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
         children: [
+          Builder(
+            builder: (con) {
+              return ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.editTrip,
+                    arguments: EditTripArguments(
+                      tripDetails: widget.tripModel, 
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.all(10),
+                ),
+                child: const Icon(
+                  FontAwesomeIcons.pencil,
+                  color: Colors.white,
+                  size: 25,
+                ),
+              );
+            },
+          ),
           Builder(
             builder: (context) {
               return ElevatedButton.icon(
