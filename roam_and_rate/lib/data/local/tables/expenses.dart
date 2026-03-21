@@ -11,6 +11,7 @@ class Expenses extends Table {
   TextColumn get participantId =>
       text().references(Participants, #id)(); // Many to 1
   BoolColumn get toBeSplit => boolean()();
+  BoolColumn get isNotBudget => boolean().withDefault(const Constant(false))();
   TextColumn get expenseName => text()();
   TextColumn get category => text()();
   RealColumn get paid => real()();
@@ -22,7 +23,8 @@ class Expenses extends Table {
   TextColumn get type => text()();
   TextColumn get tags => text().map(const StringListConverter())();
   DateTimeColumn get dateAdded => dateTime()();
-  DateTimeColumn get lastUpdated => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get lastUpdated =>
+      dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};

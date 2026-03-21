@@ -1780,6 +1780,21 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       'CHECK ("to_be_split" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _isNotBudgetMeta = const VerificationMeta(
+    'isNotBudget',
+  );
+  @override
+  late final GeneratedColumn<bool> isNotBudget = GeneratedColumn<bool>(
+    'is_not_budget',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_not_budget" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _expenseNameMeta = const VerificationMeta(
     'expenseName',
   );
@@ -1907,6 +1922,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     tripId,
     participantId,
     toBeSplit,
+    isNotBudget,
     expenseName,
     category,
     paid,
@@ -1961,6 +1977,15 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       );
     } else if (isInserting) {
       context.missing(_toBeSplitMeta);
+    }
+    if (data.containsKey('is_not_budget')) {
+      context.handle(
+        _isNotBudgetMeta,
+        isNotBudget.isAcceptableOrUnknown(
+          data['is_not_budget']!,
+          _isNotBudgetMeta,
+        ),
+      );
     }
     if (data.containsKey('expense_name')) {
       context.handle(
@@ -2075,6 +2100,10 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         DriftSqlType.bool,
         data['${effectivePrefix}to_be_split'],
       )!,
+      isNotBudget: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_not_budget'],
+      )!,
       expenseName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}expense_name'],
@@ -2142,6 +2171,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   final String tripId;
   final String participantId;
   final bool toBeSplit;
+  final bool isNotBudget;
   final String expenseName;
   final String category;
   final double paid;
@@ -2159,6 +2189,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     required this.tripId,
     required this.participantId,
     required this.toBeSplit,
+    required this.isNotBudget,
     required this.expenseName,
     required this.category,
     required this.paid,
@@ -2179,6 +2210,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     map['trip_id'] = Variable<String>(tripId);
     map['participant_id'] = Variable<String>(participantId);
     map['to_be_split'] = Variable<bool>(toBeSplit);
+    map['is_not_budget'] = Variable<bool>(isNotBudget);
     map['expense_name'] = Variable<String>(expenseName);
     map['category'] = Variable<String>(category);
     map['paid'] = Variable<double>(paid);
@@ -2206,6 +2238,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       tripId: Value(tripId),
       participantId: Value(participantId),
       toBeSplit: Value(toBeSplit),
+      isNotBudget: Value(isNotBudget),
       expenseName: Value(expenseName),
       category: Value(category),
       paid: Value(paid),
@@ -2235,6 +2268,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       tripId: serializer.fromJson<String>(json['tripId']),
       participantId: serializer.fromJson<String>(json['participantId']),
       toBeSplit: serializer.fromJson<bool>(json['toBeSplit']),
+      isNotBudget: serializer.fromJson<bool>(json['isNotBudget']),
       expenseName: serializer.fromJson<String>(json['expenseName']),
       category: serializer.fromJson<String>(json['category']),
       paid: serializer.fromJson<double>(json['paid']),
@@ -2257,6 +2291,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       'tripId': serializer.toJson<String>(tripId),
       'participantId': serializer.toJson<String>(participantId),
       'toBeSplit': serializer.toJson<bool>(toBeSplit),
+      'isNotBudget': serializer.toJson<bool>(isNotBudget),
       'expenseName': serializer.toJson<String>(expenseName),
       'category': serializer.toJson<String>(category),
       'paid': serializer.toJson<double>(paid),
@@ -2277,6 +2312,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     String? tripId,
     String? participantId,
     bool? toBeSplit,
+    bool? isNotBudget,
     String? expenseName,
     String? category,
     double? paid,
@@ -2294,6 +2330,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     tripId: tripId ?? this.tripId,
     participantId: participantId ?? this.participantId,
     toBeSplit: toBeSplit ?? this.toBeSplit,
+    isNotBudget: isNotBudget ?? this.isNotBudget,
     expenseName: expenseName ?? this.expenseName,
     category: category ?? this.category,
     paid: paid ?? this.paid,
@@ -2315,6 +2352,9 @@ class Expense extends DataClass implements Insertable<Expense> {
           ? data.participantId.value
           : this.participantId,
       toBeSplit: data.toBeSplit.present ? data.toBeSplit.value : this.toBeSplit,
+      isNotBudget: data.isNotBudget.present
+          ? data.isNotBudget.value
+          : this.isNotBudget,
       expenseName: data.expenseName.present
           ? data.expenseName.value
           : this.expenseName,
@@ -2341,6 +2381,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           ..write('tripId: $tripId, ')
           ..write('participantId: $participantId, ')
           ..write('toBeSplit: $toBeSplit, ')
+          ..write('isNotBudget: $isNotBudget, ')
           ..write('expenseName: $expenseName, ')
           ..write('category: $category, ')
           ..write('paid: $paid, ')
@@ -2363,6 +2404,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     tripId,
     participantId,
     toBeSplit,
+    isNotBudget,
     expenseName,
     category,
     paid,
@@ -2384,6 +2426,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.tripId == this.tripId &&
           other.participantId == this.participantId &&
           other.toBeSplit == this.toBeSplit &&
+          other.isNotBudget == this.isNotBudget &&
           other.expenseName == this.expenseName &&
           other.category == this.category &&
           other.paid == this.paid &&
@@ -2403,6 +2446,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<String> tripId;
   final Value<String> participantId;
   final Value<bool> toBeSplit;
+  final Value<bool> isNotBudget;
   final Value<String> expenseName;
   final Value<String> category;
   final Value<double> paid;
@@ -2421,6 +2465,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.tripId = const Value.absent(),
     this.participantId = const Value.absent(),
     this.toBeSplit = const Value.absent(),
+    this.isNotBudget = const Value.absent(),
     this.expenseName = const Value.absent(),
     this.category = const Value.absent(),
     this.paid = const Value.absent(),
@@ -2440,6 +2485,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     required String tripId,
     required String participantId,
     required bool toBeSplit,
+    this.isNotBudget = const Value.absent(),
     required String expenseName,
     required String category,
     required double paid,
@@ -2470,6 +2516,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Expression<String>? tripId,
     Expression<String>? participantId,
     Expression<bool>? toBeSplit,
+    Expression<bool>? isNotBudget,
     Expression<String>? expenseName,
     Expression<String>? category,
     Expression<double>? paid,
@@ -2489,6 +2536,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       if (tripId != null) 'trip_id': tripId,
       if (participantId != null) 'participant_id': participantId,
       if (toBeSplit != null) 'to_be_split': toBeSplit,
+      if (isNotBudget != null) 'is_not_budget': isNotBudget,
       if (expenseName != null) 'expense_name': expenseName,
       if (category != null) 'category': category,
       if (paid != null) 'paid': paid,
@@ -2510,6 +2558,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Value<String>? tripId,
     Value<String>? participantId,
     Value<bool>? toBeSplit,
+    Value<bool>? isNotBudget,
     Value<String>? expenseName,
     Value<String>? category,
     Value<double>? paid,
@@ -2529,6 +2578,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       tripId: tripId ?? this.tripId,
       participantId: participantId ?? this.participantId,
       toBeSplit: toBeSplit ?? this.toBeSplit,
+      isNotBudget: isNotBudget ?? this.isNotBudget,
       expenseName: expenseName ?? this.expenseName,
       category: category ?? this.category,
       paid: paid ?? this.paid,
@@ -2559,6 +2609,9 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     }
     if (toBeSplit.present) {
       map['to_be_split'] = Variable<bool>(toBeSplit.value);
+    }
+    if (isNotBudget.present) {
+      map['is_not_budget'] = Variable<bool>(isNotBudget.value);
     }
     if (expenseName.present) {
       map['expense_name'] = Variable<String>(expenseName.value);
@@ -2611,6 +2664,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
           ..write('tripId: $tripId, ')
           ..write('participantId: $participantId, ')
           ..write('toBeSplit: $toBeSplit, ')
+          ..write('isNotBudget: $isNotBudget, ')
           ..write('expenseName: $expenseName, ')
           ..write('category: $category, ')
           ..write('paid: $paid, ')
@@ -5637,6 +5691,7 @@ typedef $$ExpensesTableCreateCompanionBuilder =
       required String tripId,
       required String participantId,
       required bool toBeSplit,
+      Value<bool> isNotBudget,
       required String expenseName,
       required String category,
       required double paid,
@@ -5657,6 +5712,7 @@ typedef $$ExpensesTableUpdateCompanionBuilder =
       Value<String> tripId,
       Value<String> participantId,
       Value<bool> toBeSplit,
+      Value<bool> isNotBudget,
       Value<String> expenseName,
       Value<String> category,
       Value<double> paid,
@@ -5730,6 +5786,11 @@ class $$ExpensesTableFilterComposer
 
   ColumnFilters<bool> get toBeSplit => $composableBuilder(
     column: $table.toBeSplit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isNotBudget => $composableBuilder(
+    column: $table.isNotBudget,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5860,6 +5921,11 @@ class $$ExpensesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isNotBudget => $composableBuilder(
+    column: $table.isNotBudget,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get expenseName => $composableBuilder(
     column: $table.expenseName,
     builder: (column) => ColumnOrderings(column),
@@ -5982,6 +6048,11 @@ class $$ExpensesTableAnnotationComposer
   GeneratedColumn<bool> get toBeSplit =>
       $composableBuilder(column: $table.toBeSplit, builder: (column) => column);
 
+  GeneratedColumn<bool> get isNotBudget => $composableBuilder(
+    column: $table.isNotBudget,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get expenseName => $composableBuilder(
     column: $table.expenseName,
     builder: (column) => column,
@@ -6101,6 +6172,7 @@ class $$ExpensesTableTableManager
                 Value<String> tripId = const Value.absent(),
                 Value<String> participantId = const Value.absent(),
                 Value<bool> toBeSplit = const Value.absent(),
+                Value<bool> isNotBudget = const Value.absent(),
                 Value<String> expenseName = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<double> paid = const Value.absent(),
@@ -6119,6 +6191,7 @@ class $$ExpensesTableTableManager
                 tripId: tripId,
                 participantId: participantId,
                 toBeSplit: toBeSplit,
+                isNotBudget: isNotBudget,
                 expenseName: expenseName,
                 category: category,
                 paid: paid,
@@ -6139,6 +6212,7 @@ class $$ExpensesTableTableManager
                 required String tripId,
                 required String participantId,
                 required bool toBeSplit,
+                Value<bool> isNotBudget = const Value.absent(),
                 required String expenseName,
                 required String category,
                 required double paid,
@@ -6157,6 +6231,7 @@ class $$ExpensesTableTableManager
                 tripId: tripId,
                 participantId: participantId,
                 toBeSplit: toBeSplit,
+                isNotBudget: isNotBudget,
                 expenseName: expenseName,
                 category: category,
                 paid: paid,

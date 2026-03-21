@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase._internal();
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: 'roamandrate_db',
@@ -57,4 +57,13 @@ class AppDatabase extends _$AppDatabase {
       // If you need web support, see https://drift.simonbinder.eu/platforms/web/
     );
   }
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.addColumn(expenses, expenses.isNotBudget);
+      }
+    },
+  );
 }
