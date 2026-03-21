@@ -43,8 +43,11 @@ class _EditTripPageState extends State<EditTripPage> {
     selectedCategory = widget.tripDetails.category;
     selectedCurrency = widget.tripDetails.currency;
     selectedStartDate = widget.tripDetails.startDate;
-    selectedEndDate= widget.tripDetails.endDate;
-    selectedRange = DateTimeRange(start: widget.tripDetails.startDate, end: widget.tripDetails.endDate);
+    selectedEndDate = widget.tripDetails.endDate;
+    selectedRange = DateTimeRange(
+      start: widget.tripDetails.startDate,
+      end: widget.tripDetails.endDate,
+    );
   }
 
   final Map<String, bool> formValid = {
@@ -85,8 +88,6 @@ class _EditTripPageState extends State<EditTripPage> {
     formValid["currency"] =
         selectedCurrency != null && selectedCurrency!.isNotEmpty;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -296,10 +297,10 @@ class _EditTripPageState extends State<EditTripPage> {
               SizedBox(height: 50),
               BlocConsumer<TripBloc, TripState>(
                 listener: (context, state) {
-                  if (state is TripAdded) {
+                  if (state is TripEdited) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Trip created!"),
+                        content: Text("Trip Edited!"),
                         backgroundColor: CustomColours.darkSuccess,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -327,8 +328,7 @@ class _EditTripPageState extends State<EditTripPage> {
                         validateDetails();
                       });
                       if (formValid.values.every((v) => v)) {
-                        final TripModel newTrip = TripModel(
-                          userId: SessionManager().userId!,
+                        TripModel updatedTrip = widget.tripDetails.copyWith(
                           tripName: _tripNameController.text.trim(),
                           location: _locationController.text.trim(),
                           currency: selectedCurrency!,
@@ -338,7 +338,8 @@ class _EditTripPageState extends State<EditTripPage> {
                           endDate: selectedRange!.end,
                           budget: double.parse(_budgetController.text.trim()),
                         );
-                        context.read<TripBloc>().add(EditTrip(newTrip));
+
+                        context.read<TripBloc>().add(EditTrip(updatedTrip));
                       }
                     },
                     style: ElevatedButton.styleFrom(
