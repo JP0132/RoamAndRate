@@ -39,6 +39,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   DateTime? selectedDate = DateTime.now();
   bool toBeSplit = false;
+  bool isNotBudget = false;
 
   final List<String> value = ["Cheap", "Just Right", "Expensive"];
   final List<String> types = ["card", "cash", "bank transfer"];
@@ -405,6 +406,22 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
                 SizedBox(height: 20),
                 Text(
+                  "Is this expense part of the budget?",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: CustomColours.darkPrimary,
+                  ),
+                ),
+                Switch(
+                  value: isNotBudget,
+                  onChanged: (bool value) {
+                    setState(() {
+                      isNotBudget = value;
+                    });
+                  },
+                ),
+                SizedBox(height: 20),
+                Text(
                   "Who paid for it? *",
                   style: TextStyle(
                     fontSize: 14,
@@ -595,6 +612,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 ? _notesController.text
                                 : "",
                             tags: addedTags.isNotEmpty ? addedTags : [],
+                            isNotBudget: isNotBudget,
                           );
 
                           context.read<ExpenseBloc>().add(

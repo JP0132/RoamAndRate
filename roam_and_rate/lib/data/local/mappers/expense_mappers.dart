@@ -21,7 +21,8 @@ extension ExpenseEntityMapper on Expense {
       toBeSplit: toBeSplit,
       image: images!,
       notes: notes!,
-      lastUpdated: lastUpdated
+      lastUpdated: lastUpdated,
+      isNotBudget: isNotBudget,
     );
   }
 }
@@ -44,6 +45,7 @@ extension ExpenseModelMapper on ExpenseModel {
       notes: Value(notes),
       images: Value(image),
       toBeSplit: toBeSplit,
+      isNotBudget: Value(isNotBudget),
     );
   }
 }

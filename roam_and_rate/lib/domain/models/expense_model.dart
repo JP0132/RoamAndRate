@@ -8,6 +8,7 @@ class ExpenseModel {
   final String currency;
   final String category;
   final bool toBeSplit;
+  final bool isNotBudget;
   final DateTime dateTimeAdded;
   final DateTime datePaid;
   final String type;
@@ -27,12 +28,13 @@ class ExpenseModel {
     required this.datePaid,
     required this.currency,
     required this.toBeSplit,
+    required this.isNotBudget,
     this.tags = const [],
     required this.category,
     this.image = "",
     this.notes = "",
     required this.type,
-    this.lastUpdated
+    this.lastUpdated,
   });
 
   ExpenseModel copyWith({
@@ -51,8 +53,8 @@ class ExpenseModel {
     String? notes,
     String? image,
     bool? toBeSplit,
+    bool? isNotBudget,
     DateTime? lastUpdated,
-
   }) {
     return ExpenseModel(
       expenseId: expenseId ?? this.expenseId,
@@ -70,6 +72,7 @@ class ExpenseModel {
       category: category ?? this.category,
       participantId: participantId ?? this.participantId,
       toBeSplit: toBeSplit ?? this.toBeSplit,
+      isNotBudget: isNotBudget ?? this.isNotBudget,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
