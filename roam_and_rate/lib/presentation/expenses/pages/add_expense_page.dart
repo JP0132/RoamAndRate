@@ -22,6 +22,7 @@ import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
+import 'package:roam_and_rate/presentation/widgets/date_picker/show_custom_styled_picker.dart';
 
 class AddExpensePage extends StatefulWidget {
   final String tripId;
@@ -74,6 +75,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
       });
     }
   }
+
 
   void _showPickOptionsDialog(BuildContext context) {
     showModalBottomSheet(
@@ -150,8 +152,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
     formValid["type"] = selectedType != null && selectedType!.isNotEmpty;
   }
 
+  void _setDate(DateTime date) async => setState(() => selectedDate = date);
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Add Expense")),
       floatingActionButton: FloatingActionButton(
@@ -487,7 +493,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                 ),
                 InkWell(
-                  onTap: () => _showCustomStyledPicker(),
+                  onTap: () => ShowPicker.showCustomStyledPicker(context, selectedDate, _setDate),
 
                   child: Container(
                     decoration: BoxDecoration(
@@ -641,38 +647,5 @@ class _AddExpensePageState extends State<AddExpensePage> {
         ),
       ),
     );
-  }
-
-  Future<void> _showCustomStyledPicker() async {
-    final date = await CustomDatePicker.showSingleDatePicker(
-      context: context,
-      config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
-        selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
-        borderRadius: 20.0,
-        headerTextStyle: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
-        ),
-        dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        yearTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        enableManualEdit: true,
-      ),
-      initialDate: selectedDate,
-    );
-
-    if (date != null) {
-      setState(() {
-        selectedDate = date;
-      });
-    }
   }
 }

@@ -82,7 +82,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
-          // 1️⃣ Top area outside dropdown
+          // Top area outside dropdown
           Positioned(
             top: 0,
             left: 0,
@@ -93,7 +93,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
               onTap: _closeDropdown,
             ),
           ),
-          // 2️⃣ Bottom area outside dropdown
+          // Bottom area outside dropdown
           Positioned(
             top: buttonOffset.dy + renderBox.size.height,
             left: 0,
@@ -104,7 +104,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
               onTap: _closeDropdown,
             ),
           ),
-          // 3️⃣ The dropdown menu itself
+          // The dropdown menu itself
           CompositedTransformFollower(
             link: _layerLink,
             showWhenUnlinked: false,

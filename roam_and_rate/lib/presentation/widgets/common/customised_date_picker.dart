@@ -30,30 +30,33 @@ class CustomDatePicker extends StatefulWidget {
     DatePickerConfig? config,
     DateTime? initialDate,
   }) async {
+    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+
     DateTime? selectedDate;
 
     await showDialog(
       context: context,
       barrierColor: Colors.black54,
-      builder:
-          (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(config?.borderRadius ?? 12.0),
-            ),
-            elevation: 8,
-            child: CustomDatePicker(
-              config: (config ?? const DatePickerConfig()).copyWith(
-                isRangePicker: false,
-              ),
-              initialDate: initialDate,
-              onDateSelected: (date) {
-                selectedDate = date;
-                Navigator.of(context).pop();
-              },
-            ),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(config?.borderRadius ?? 12.0),
+        ),
+        elevation: 8,
+        child: CustomDatePicker(
+          config: (config ?? const DatePickerConfig()).copyWith(
+            isRangePicker: false,
           ),
+          initialDate: initialDate,
+          onDateSelected: (date) {
+            selectedDate = date;
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
     );
 
+    FocusManager.instance.primaryFocus?.unfocus();
     return selectedDate;
   }
 
@@ -63,30 +66,34 @@ class CustomDatePicker extends StatefulWidget {
     DatePickerConfig? config,
     DateTimeRange? initialRange,
   }) async {
+
+    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     DateTimeRange? selectedRange;
 
     await showDialog(
       context: context,
       barrierColor: Colors.black54,
-      builder:
-          (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(config?.borderRadius ?? 12.0),
-            ),
-            elevation: 8,
-            child: CustomDatePicker(
-              config: (config ?? const DatePickerConfig()).copyWith(
-                isRangePicker: true,
-              ),
-              initialRange: initialRange,
-              onRangeSelected: (range) {
-                selectedRange = range;
-                Navigator.of(context).pop();
-              },
-            ),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(config?.borderRadius ?? 12.0),
+        ),
+        elevation: 8,
+        child: CustomDatePicker(
+          config: (config ?? const DatePickerConfig()).copyWith(
+            isRangePicker: true,
           ),
+          initialRange: initialRange,
+          onRangeSelected: (range) {
+            selectedRange = range;
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
     );
 
+    FocusManager.instance.primaryFocus?.unfocus();
     return selectedRange;
   }
 }
@@ -213,10 +220,9 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
           onPressed: _canNavigateBack() ? () => _navigateBack() : null,
           icon: Icon(
             Icons.chevron_left,
-            color:
-                _canNavigateBack()
-                    ? widget.config.primaryColor
-                    : widget.config.disabledTextColor,
+            color: _canNavigateBack()
+                ? widget.config.primaryColor
+                : widget.config.disabledTextColor,
             size: 28,
           ),
           style: IconButton.styleFrom(
@@ -249,10 +255,9 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
           onPressed: _canNavigateForward() ? () => _navigateForward() : null,
           icon: Icon(
             Icons.chevron_right,
-            color:
-                _canNavigateForward()
-                    ? widget.config.primaryColor
-                    : widget.config.disabledTextColor,
+            color: _canNavigateForward()
+                ? widget.config.primaryColor
+                : widget.config.disabledTextColor,
             size: 28,
           ),
           style: IconButton.styleFrom(
@@ -316,27 +321,21 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
             onTap: () => _onMonthSelected(month),
             child: Container(
               decoration: BoxDecoration(
-                color:
-                    isSelectedMonth || isCurrentMonth
-                        ? widget.config.primaryColor
-                        : widget.config.hoverColor,
+                color: isSelectedMonth || isCurrentMonth
+                    ? widget.config.primaryColor
+                    : widget.config.hoverColor,
                 borderRadius: BorderRadius.circular(8),
-                border:
-                    isCurrentMonth && !isSelectedMonth
-                        ? Border.all(
-                          color: widget.config.primaryColor,
-                          width: 2,
-                        )
-                        : null,
+                border: isCurrentMonth && !isSelectedMonth
+                    ? Border.all(color: widget.config.primaryColor, width: 2)
+                    : null,
               ),
               child: Center(
                 child: Text(
                   months[index].substring(0, 3),
                   style: widget.config.monthTextStyle.copyWith(
-                    color:
-                        isSelectedMonth || isCurrentMonth
-                            ? widget.config.selectedTextColor
-                            : widget.config.textColor,
+                    color: isSelectedMonth || isCurrentMonth
+                        ? widget.config.selectedTextColor
+                        : widget.config.textColor,
                   ),
                 ),
               ),
@@ -371,24 +370,21 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
             onTap: () => _onYearSelected(year),
             child: Container(
               decoration: BoxDecoration(
-                color:
-                    isSelectedYear || isCurrentYear
-                        ? widget.config.primaryColor
-                        : widget.config.hoverColor,
+                color: isSelectedYear || isCurrentYear
+                    ? widget.config.primaryColor
+                    : widget.config.hoverColor,
                 borderRadius: BorderRadius.circular(8),
-                border:
-                    isTodayYear && !isSelectedYear && !isCurrentYear
-                        ? Border.all(color: widget.config.todayColor, width: 2)
-                        : null,
+                border: isTodayYear && !isSelectedYear && !isCurrentYear
+                    ? Border.all(color: widget.config.todayColor, width: 2)
+                    : null,
               ),
               child: Center(
                 child: Text(
                   year.toString(),
                   style: widget.config.yearTextStyle.copyWith(
-                    color:
-                        isSelectedYear || isCurrentYear
-                            ? widget.config.selectedTextColor
-                            : widget.config.textColor,
+                    color: isSelectedYear || isCurrentYear
+                        ? widget.config.selectedTextColor
+                        : widget.config.textColor,
                   ),
                 ),
               ),
@@ -523,29 +519,31 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        children:
-            weekDays
-                .map(
-                  (day) => Expanded(
-                    child: Center(
-                      child: Text(
-                        day,
-                        style: widget.config.dayTextStyle.copyWith(
-                          color: widget.config.disabledTextColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+        children: weekDays
+            .map(
+              (day) => Expanded(
+                child: Center(
+                  child: Text(
+                    day,
+                    style: widget.config.dayTextStyle.copyWith(
+                      color: widget.config.disabledTextColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                )
-                .toList(),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }
 
   Widget _buildCalendarGrid() {
-    final daysInMonth =
-        DateTime(_currentMonth.year, _currentMonth.month + 1, 0).day;
+    final daysInMonth = DateTime(
+      _currentMonth.year,
+      _currentMonth.month + 1,
+      0,
+    ).day;
     final firstDayOfMonth = DateTime(
       _currentMonth.year,
       _currentMonth.month,
@@ -573,10 +571,9 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   }
 
   Widget _buildDayCell(DateTime date) {
-    final isSelected =
-        widget.config.isRangePicker
-            ? _isDateInRange(date)
-            : _selectedDate != null && _isSameDay(date, _selectedDate!);
+    final isSelected = widget.config.isRangePicker
+        ? _isDateInRange(date)
+        : _selectedDate != null && _isSameDay(date, _selectedDate!);
 
     final isRangeStart =
         widget.config.isRangePicker &&
@@ -624,8 +621,9 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
             date.day.toString(),
             style: widget.config.dayTextStyle.copyWith(
               color: textColor,
-              fontWeight:
-                  isToday || isSelected ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isToday || isSelected
+                  ? FontWeight.bold
+                  : FontWeight.normal,
             ),
           ),
         ),

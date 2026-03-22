@@ -23,6 +23,7 @@ import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_p
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_input.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
+import 'package:roam_and_rate/presentation/widgets/date_picker/show_custom_styled_picker.dart';
 
 class AddRatingPage extends StatefulWidget {
   final String tripId;
@@ -218,6 +219,9 @@ class _AddRatingPageState extends State<AddRatingPage> {
     // print("Total entries: ${ratings.length}");
   }
 
+  void _setDate(DateTime date) async => setState(() => selectedDate = date);
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -337,7 +341,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                           ),
                           CustomisableDropdown<String>(
                             items: statuses,
-                            hint: "Select which Status?",
+                            hint: "Select the Status?",
                             value: selectedStatus,
                             backgroundColour: CustomColours.darkSurface,
                             borderColour: Colors.transparent,
@@ -407,7 +411,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                               ),
                             ),
                             InkWell(
-                              onTap: () => _showCustomStyledPicker(),
+                              onTap: () => ShowPicker.showCustomStyledPicker(context, selectedDate, _setDate),
 
                               child: Container(
                                 decoration: BoxDecoration(
@@ -481,6 +485,10 @@ class _AddRatingPageState extends State<AddRatingPage> {
                               padding: EdgeInsets.all(20),
                               borderRadius: 20,
                               menuMaxHeight: 200,
+                              selectedItemColour: CustomColours.darkPrimary,
+                              selectedItemTextColour:
+                                CustomColours.darkBackground,
+                              unselectedItemTextColour: Colors.grey[300],
                               onChanged: (value) {
                                 setState(() {
                                   selectedValue = value;
@@ -667,36 +675,5 @@ class _AddRatingPageState extends State<AddRatingPage> {
     );
   }
 
-  Future<void> _showCustomStyledPicker() async {
-    final date = await CustomDatePicker.showSingleDatePicker(
-      context: context,
-      config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
-        selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
-        borderRadius: 20.0,
-        headerTextStyle: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
-        ),
-        dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        yearTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        enableManualEdit: true,
-      ),
-      initialDate: selectedDate,
-    );
-
-    if (date != null) {
-      setState(() {
-        selectedDate = date;
-      });
-    }
-  }
+  
 }
