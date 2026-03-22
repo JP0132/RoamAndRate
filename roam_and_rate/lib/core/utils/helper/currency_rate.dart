@@ -78,12 +78,12 @@ final Map<String, int> _failureCount = {};
 // }
 
 Future<String?> fetchRate(String base, String target, double value) async {
-  print("🔄 fetchRate called: $base -> $target, value: $value");
+  print("✅ fetchRate called: $base -> $target, value: $value");
   final session = SessionManager();
 
   try {
     double? cachedRate = await session.getRate(base, target);
-    print("📋 Cached rate: $cachedRate");
+    print("✅  Cached rate: $cachedRate");
 
     if (cachedRate != null) {
       final converted = convertAmount(value, cachedRate);
@@ -95,7 +95,7 @@ Future<String?> fetchRate(String base, String target, double value) async {
     final rate = await getExchangeRate(base, target);
 
     if (rate != null) {
-      print("📥 API response: ${rate.mid}");
+      print("✅  API response: ${rate.mid}");
       await session.saveRate(rate.base, rate.target, rate.mid);
       final converted = convertAmount(value, rate.mid);
       print("✅ Converted amount: $converted");

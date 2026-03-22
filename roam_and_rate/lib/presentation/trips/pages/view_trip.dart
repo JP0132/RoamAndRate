@@ -10,6 +10,7 @@ import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_event.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
 import 'package:roam_and_rate/data/local/daos/rating_details_dao.dart';
@@ -43,13 +44,15 @@ class _ViewTripState extends State<ViewTrip> {
   List<ExpenseModel> _expenses = [];
   List<RatingDetailsModel> _filteredRatings = [];
   List<ExpenseModel> _filteredExpenses = [];
-  TripDataState state = TripDataState(expenses: [], ratings: [], ratingsMade: []);
+  TripDataState state = TripDataState(
+    expenses: [],
+    ratings: [],
+    ratingsMade: [],
+  );
   TripDataState? _latestState;
   final _controller = SuperTooltipController();
 
   bool _isConverting = false;
-
-  
 
   // Track converted costs
   Map<String, double> _convertedCosts = {};
@@ -202,44 +205,44 @@ class _ViewTripState extends State<ViewTrip> {
   late final StreamSubscription<TripDataState> _tripDataSubscription;
 
   Future<void> _convertAllExpenses() async {
-  if (_isConverting) return;
+    if (_isConverting) return;
 
-  _isConverting = true;
+    _isConverting = true;
 
-  final Map<String, double> newConverted = {};
+    final Map<String, double> newConverted = {};
 
-  for (final expense in _expenses) {
-    final id = expense.expenseId!;
+    for (final expense in _expenses) {
+      final id = expense.expenseId!;
 
-    // Same currency → no conversion needed
-    if (widget.tripDetails.currency == expense.currency) {
-      newConverted[id] = expense.paid;
-      continue;
-    }
-
-    try {
-      final result = await CurrencyHelper().getConvertedAmount(
-        base: expense.currency.toUpperCase(),
-        target: widget.tripDetails.currency.toUpperCase(),
-        value: expense.paid,
-      );
-
-      if (result != null) {
-        newConverted[id] = double.parse(result);
+      // Same currency → no conversion needed
+      if (widget.tripDetails.currency == expense.currency) {
+        newConverted[id] = expense.paid;
+        continue;
       }
-    } catch (e) {
-      debugPrint("Conversion failed for $id: $e");
+
+      try {
+        final result = await CurrencyHelper().getConvertedAmount(
+          base: expense.currency.toUpperCase(),
+          target: widget.tripDetails.currency.toUpperCase(),
+          value: expense.paid,
+        );
+
+        if (result != null) {
+          newConverted[id] = double.parse(result);
+        }
+      } catch (e) {
+        debugPrint("Conversion failed for $id: $e");
+      }
     }
-  }
 
-  if (mounted) {
-    setState(() {
-      _convertedCosts = newConverted;
-    });
-  }
+    if (mounted) {
+      setState(() {
+        _convertedCosts = newConverted;
+      });
+    }
 
-  _isConverting = false;
-}
+    _isConverting = false;
+  }
 
   @override
   void initState() {
@@ -258,11 +261,10 @@ class _ViewTripState extends State<ViewTrip> {
       if (hasData && !_dataLoaded) {
         setState(() {
           state = state;
-          _expenses = state.expenses.map((e) => e.toModel())
-                        .toList();
-          _ratings = state.ratings.map((e) => e.toModel())
-                        .toList();;
-          
+          _expenses = state.expenses.map((e) => e.toModel()).toList();
+          _ratings = state.ratings.map((e) => e.toModel()).toList();
+          ;
+
           _dataLoaded = true;
         });
 
@@ -290,10 +292,46 @@ class _ViewTripState extends State<ViewTrip> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            TripOverviewCard(tripModel: widget.tripDetails, totalSpent: _totalSpent,),
+            TripOverviewCard(
+              tripModel: widget.tripDetails,
+              totalSpent: _totalSpent,
+            ),
             //TripCards(tripModel: widget.tripDetails),
             const SizedBox(height: 20),
-    
+
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: CustomColours.darkSurface,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: CustomColours.darkPrimary),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Spent",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: CustomColours.darkPrimary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalSpent.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          color: CustomColours.darkPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
             // Total spent - uses the getter that calculates on-the-fly
             Text(
               "Total spent: ${_totalSpent.toStringAsFixed(2)} ${widget.tripDetails.currency}",
@@ -303,9 +341,9 @@ class _ViewTripState extends State<ViewTrip> {
                 fontSize: 16,
               ),
             ),
-    
+
             const SizedBox(height: 20),
-    
+
             // Search bar
             Container(
               height: 40.0,
@@ -375,7 +413,7 @@ class _ViewTripState extends State<ViewTrip> {
               ),
             ),
             const SizedBox(height: 20),
-    
+
             // Toggle buttons
             SizedBox(
               height: 40,
@@ -431,49 +469,47 @@ class _ViewTripState extends State<ViewTrip> {
               ),
             ),
             const SizedBox(height: 12),
-    
+
             // Content
-             BlocListener<TripDataBloc, TripDataState>(
-                listener: (context, state) {
-                  _latestState = state;
-                  
-                  // Update data
-                  final newRatings = state.ratings
-                      .map((e) => e.toModel())
-                      .toList();
-                  final newExpenses = state.expenses
-                      .map((e) => e.toModel())
-                      .toList();
-    
-                  // Only update if data actually changed
-                  if (!listEquals(newExpenses, _expenses) ||
-                      !listEquals(newRatings, _ratings)) {
+            BlocListener<TripDataBloc, TripDataState>(
+              listener: (context, state) {
+                _latestState = state;
+
+                // Update data
+                final newRatings = state.ratings
+                    .map((e) => e.toModel())
+                    .toList();
+                final newExpenses = state.expenses
+                    .map((e) => e.toModel())
+                    .toList();
+
+                // Only update if data actually changed
+                if (!listEquals(newExpenses, _expenses) ||
+                    !listEquals(newRatings, _ratings)) {
                   setState(() {
                     _ratings = newRatings;
                     _expenses = newExpenses;
                     _filterTripData();
-    
+
                     // Initialize converted costs for matching currencies
                     //_initializeConvertedCosts();
-                    
                   });
 
                   _convertAllExpenses();
-                    
-                  }
-    
-                  // if (_selectedIndex == 0) {
-                  //   return _buildRatingsList(state);
-                  // } else {
-                  //   return _buildExpensesList();
-                  // }
-                },
-                child: Expanded(
-                  child: _selectedIndex == 1
-                      ? _buildRatingsList(_latestState)
-                      : _buildExpensesList(),
-                ),
+                }
+
+                // if (_selectedIndex == 0) {
+                //   return _buildRatingsList(state);
+                // } else {
+                //   return _buildExpensesList();
+                // }
+              },
+              child: Expanded(
+                child: _selectedIndex == 1
+                    ? _buildRatingsList(_latestState)
+                    : _buildExpensesList(),
               ),
+            ),
           ],
         ),
       ),
