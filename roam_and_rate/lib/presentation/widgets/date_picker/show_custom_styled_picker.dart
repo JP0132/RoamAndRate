@@ -73,4 +73,73 @@ class ShowPicker {
       setDate(date);
     }
   }
+
+  static Future<void> showEnhancedRangeDatePicker(
+    BuildContext context,
+    DateTimeRange? selectedRange,
+    Function onRangeSelected,
+  ) async {
+    FocusScope.of(context).unfocus();
+
+    final range = await showDialog<DateTimeRange>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return FocusScope(
+          canRequestFocus: false,
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: CustomDatePicker(
+              config: DatePickerConfig(
+                isRangePicker: true,
+                primaryColor: CustomColours.darkPrimary,
+                backgroundColor: CustomColours.darkSurface,
+                textColor: CustomColours.darkPrimaryText,
+                selectedTextColor: Colors.black,
+                disabledTextColor: CustomColours.darkPrimary,
+                borderColor: CustomColours.darkBackground,
+                todayColor: CustomColours.darkError,
+                hoverColor: CustomColours.darkSecondarySurface,
+                borderRadius: 20.0,
+                headerTextStyle: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: CustomColours.darkPrimary,
+                ),
+                dayTextStyle: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                monthTextStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                yearTextStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                enableManualEdit: true,
+                rangeColor: CustomColours.darkPrimaryVariant,
+              ),
+              initialRange: selectedRange,
+              onRangeSelected: (range) {
+                Navigator.of(context).pop(range);
+              },
+
+            ),
+          ),
+        );
+      },
+    );
+
+    // Delay a frame to ensure Flutter doesn't restore previous focus
+    await Future.delayed(Duration.zero);
+    FocusScope.of(context).unfocus();
+
+    if (range != null) {
+      onRangeSelected(range);
+    }
+  }
 }

@@ -15,6 +15,7 @@ import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
+import 'package:roam_and_rate/presentation/widgets/date_picker/show_custom_styled_picker.dart';
 
 class AddTripPage extends StatefulWidget {
   const AddTripPage({super.key});
@@ -71,6 +72,9 @@ class _AddTripPageState extends State<AddTripPage> {
     formValid["currency"] =
         selectedCurrency != null && selectedCurrency!.isNotEmpty;
   }
+
+  void setRange(DateTimeRange range) async => setState(() => selectedRange = range);
+
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +203,7 @@ class _AddTripPageState extends State<AddTripPage> {
                 ),
               ),
               InkWell(
-                onTap: () => _showEnhancedRangeDatePicker(),
+                onTap: () => ShowPicker.showEnhancedRangeDatePicker(context, selectedRange, setRange),
                 child: Container(
                   decoration: BoxDecoration(
                     color: CustomColours.darkSurface,
@@ -347,70 +351,7 @@ class _AddTripPageState extends State<AddTripPage> {
     );
   }
 
-  Future<void> _showCustomStyledPicker(DateTime? selectedDate) async {
-    final date = await CustomDatePicker.showSingleDatePicker(
-      context: context,
-      config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
-        selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
-        borderRadius: 20.0,
-        headerTextStyle: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
-        ),
-        dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        yearTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        enableManualEdit: true,
-      ),
-      initialDate: selectedDate,
-    );
+  
 
-    if (date != null) {
-      setState(() {
-        selectedDate = date;
-      });
-    }
-  }
-
-  Future<void> _showEnhancedRangeDatePicker() async {
-    final range = await CustomDatePicker.showRangeDatePicker(
-      context: context,
-      config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
-        selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
-        borderRadius: 20.0,
-        headerTextStyle: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
-        ),
-        dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        yearTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        enableManualEdit: true,
-        rangeColor: CustomColours.darkPrimaryVariant,
-      ),
-      initialRange: selectedRange,
-    );
-
-    if (range != null) {
-      setState(() {
-        selectedRange = range;
-      });
-    }
-  }
+  
 }
