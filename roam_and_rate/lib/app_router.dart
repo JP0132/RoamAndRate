@@ -13,6 +13,7 @@ import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart
 import 'package:roam_and_rate/presentation/ratings/pages/add_rating.dart';
 import 'package:roam_and_rate/presentation/ratings/pages/edit_rating.dart';
 import 'package:roam_and_rate/presentation/settings/pages/participant_page.dart';
+import 'package:roam_and_rate/presentation/settings/pages/sync_settings.dart';
 import 'package:roam_and_rate/presentation/settings/pages/user_details_page.dart';
 import 'package:roam_and_rate/presentation/splash/splash_page.dart';
 import 'package:roam_and_rate/presentation/trips/pages/add_trip_page.dart';
@@ -74,6 +75,7 @@ class AppRouter {
   static const String editRating = '/editRating';
   static const String userDetails = '/userDetails';
   static const String connectToDB = "/connectToDB";
+  static const String syncSettings = "/syncSettings";
 
   static Route<dynamic> generateRoute(RouteSettings selectedRoute) {
     switch (selectedRoute.name) {
@@ -129,6 +131,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => ParticipantPage());
       case userDetails:
         return MaterialPageRoute(builder: (_) => UserDetailsPage());
+      case syncSettings:
+        return MaterialPageRoute(builder: (_) => SyncSettings());
 
       default:
         // Handle unknown routes

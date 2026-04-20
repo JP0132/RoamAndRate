@@ -34,6 +34,17 @@ class SessionManager {
     await prefs.setString("serverData", serverDataEncode);
   }
 
+  Future<bool> hasServerData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final serverDataEncoded = prefs.getString("serverData");
+
+    if (serverDataEncoded == null) {
+      return false;
+    }
+
+    return true;
+  }
+
   Future<Map<String, String>?> getServerData() async {
     final prefs = await SharedPreferences.getInstance();
     final serverDataEncoded = prefs.getString("serverData");

@@ -13,6 +13,7 @@ import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/models/user_model.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
+import 'package:roam_and_rate/presentation/settings/settings_page.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 
 class RestoreDbBackup extends StatefulWidget {
@@ -208,7 +209,14 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
                 ),
                 TextButton(
                   onPressed: () =>
-                      SmoothTransitionPage(context, EnterUserDetails()),
+                  {
+                    if(_sessionManager.userId != null || _sessionManager.userId != ""){
+                      Navigator.popUntil(context, (Route<dynamic> route) => route.isFirst)
+                    } else{
+                      SmoothTransitionPage(context, EnterUserDetails())
+                    }
+                  }
+                      ,
                   child: const Text('Start New'),
                 ),
               ],

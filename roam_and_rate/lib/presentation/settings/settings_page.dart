@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -11,12 +12,22 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  final _sessionManager = SessionManager();
   void handleParticipantBtn() {
      Navigator.pushNamed(context, AppRouter.participantSettings);
   }
 
   void handleUserDetailsBtn() {
     Navigator.pushNamed(context, AppRouter.userDetails);
+  }
+
+  Future<void> handleSyncBtn() async {
+    
+    if(await _sessionManager.hasServerData()){ 
+      Navigator.pushNamed(context, AppRouter.syncSettings);
+    } else{
+        Navigator.pushNamed(context, AppRouter.connectToDB);
+    }
   }
 
   @override
@@ -34,6 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             SizedBox(height: 10),
             SettingsBtn(btnText: "User's Details", btnIcon: FontAwesomeIcons.user, onTap: handleUserDetailsBtn),
+            SettingsBtn(btnIcon: FontAwesomeIcons.arrowsRotate, btnText: "Sync", onTap: handleSyncBtn),
           ],
         ),
       ),

@@ -75,6 +75,7 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
               children: [
                 SizedBox(height: 40),
                 DropdownWithInput(
+                  controller: _serverAddressController,
                   items: protocols,
                   preSelected: selectedProtocol,
                   onChanged: _onServerAddressChanged,

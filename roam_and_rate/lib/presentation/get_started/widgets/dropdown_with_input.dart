@@ -6,12 +6,14 @@ class DropdownWithInput extends StatefulWidget {
   final String preSelected;
   final Function(String) onChanged;
   final String? Function(String?)? validator;
+  final TextEditingController controller;
 
   const DropdownWithInput({
     super.key,
     required this.items,
     required this.preSelected,
     required this.onChanged,
+    required this.controller,
     this.validator,
   });
 
@@ -20,17 +22,47 @@ class DropdownWithInput extends StatefulWidget {
 }
 
 class _DropdownWithInputState extends State<DropdownWithInput> {
-  final TextEditingController _controller = TextEditingController();
   late String selectedItem;
+  FormFieldState<String?>? _formFieldState;
+  VoidCallback? _controllerListener;
 
   @override
   void initState() {
     super.initState();
     selectedItem = widget.preSelected;
+    _addControllerListener();
   }
 
-  void _notifyParent() {
-    widget.onChanged('$selectedItem${_controller.text}');
+  @override
+  void didUpdateWidget(covariant DropdownWithInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.preSelected != widget.preSelected) {
+      setState(() {
+        selectedItem = widget.preSelected;
+      });
+      _updateValue();
+    }
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_controllerListener!);
+      _addControllerListener();
+    }
+  }
+
+  void _addControllerListener() {
+    _controllerListener = () => _updateValue();
+    widget.controller.addListener(_controllerListener!);
+  }
+
+  void _updateValue() {
+    final combinedValue = '$selectedItem${widget.controller.text}';
+    _formFieldState?.didChange(combinedValue);
+    widget.onChanged(combinedValue);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_controllerListener!);
+    super.dispose();
   }
 
   @override
@@ -38,6 +70,15 @@ class _DropdownWithInputState extends State<DropdownWithInput> {
     return FormField<String>(
       validator: widget.validator,
       builder: (state) {
+        // Storing the form field state for later updates
+        if (_formFieldState != state) {
+          _formFieldState = state;
+          // Setting the initial value after state is available
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _updateValue();
+          });
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,15 +104,13 @@ class _DropdownWithInputState extends State<DropdownWithInput> {
                         setState(() {
                           selectedItem = value!;
                         });
-                        _notifyParent();
-                        // tell form field that value changed
-                        state.didChange('$selectedItem${_controller.text}');
+                        _updateValue();
                       },
                     ),
                   ),
                   Expanded(
                     child: TextFormField(
-                      controller: _controller,
+                      controller: widget.controller,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(
@@ -79,10 +118,7 @@ class _DropdownWithInputState extends State<DropdownWithInput> {
                           vertical: 10,
                         ),
                       ),
-                      onChanged: (value) {
-                        _notifyParent();
-                        state.didChange('$selectedItem$value');
-                      },
+                      onChanged: (_) => _updateValue(),
                     ),
                   ),
                 ],
