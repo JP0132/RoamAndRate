@@ -7,6 +7,7 @@ class RatingMadeBase(BaseModel):
     rating: Optional[str] = None
     expectedRating: Optional[str] = None
     lastUpdated: datetime
+    participantId: str
 
 class RatingMadeCreate(RatingMadeBase):
     ratingDetailId: str
