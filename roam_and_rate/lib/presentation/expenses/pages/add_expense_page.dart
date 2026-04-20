@@ -412,7 +412,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  "Is this expense part of the budget?",
+                  "Do you want to include it in your budget?",
                   style: TextStyle(
                     fontSize: 14,
                     color: CustomColours.darkPrimary,

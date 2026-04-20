@@ -161,13 +161,20 @@ class _ViewTripState extends State<ViewTrip> {
     }
   }
 
+  double _totalPaidSpent = 0.0;
+
   // Calculate total spent including conversions
-  double get _totalSpent {
+  double get _totalBudgetSpent {
     double total = 0.0;
 
     if (_filteredExpenses.isEmpty) return 0.0;
 
+
     for (final expense in _filteredExpenses) {
+      calulateTotalSpent(expense);
+      if (expense.isNotBudget) {
+        continue;
+      }
       // If currencies match, use original paid amount
       if (widget.tripDetails.currency == expense.currency) {
         total += expense.paid;
@@ -189,6 +196,25 @@ class _ViewTripState extends State<ViewTrip> {
 
     print("FINAL TOTAL: $total");
     return total;
+  }
+
+  void calulateTotalSpent(ExpenseModel expense) {
+    if (widget.tripDetails.currency == expense.currency) {
+      _totalPaidSpent += expense.paid;
+      print("Same currency: ${expense.name} = ${expense.paid}");
+    }
+    // If we have a converted value, use it
+    else if (_convertedCosts.containsKey(expense.expenseId)) {
+      _totalPaidSpent += _convertedCosts[expense.expenseId]!;
+      print(
+        "Converted: ${expense.name} = ${_convertedCosts[expense.expenseId]}",
+      );
+    }
+    // Fallback: use original amount (conversion might be in progress)
+    else {
+      _totalPaidSpent += expense.paid;
+      print("Waiting conversion: ${expense.name} = ${expense.paid}");
+    }
   }
 
   // Initialize converted costs for expenses with matching currencies
@@ -294,12 +320,13 @@ class _ViewTripState extends State<ViewTrip> {
           children: [
             TripOverviewCard(
               tripModel: widget.tripDetails,
-              totalSpent: _totalSpent,
+              totalSpent: _totalBudgetSpent,
             ),
             //TripCards(tripModel: widget.tripDetails),
             const SizedBox(height: 20),
 
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
                   padding: EdgeInsets.all(15),
@@ -319,7 +346,63 @@ class _ViewTripState extends State<ViewTrip> {
                         ),
                       ),
                       Text(
-                        "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalSpent.toStringAsFixed(2)}",
+                        "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalPaidSpent.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          color: CustomColours.darkPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: CustomColours.darkSurface,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: CustomColours.darkPrimary),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Expenses",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: CustomColours.darkPrimary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        "${_filteredExpenses.length}",
+                        style: TextStyle(
+                          color: CustomColours.darkPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: CustomColours.darkSurface,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: CustomColours.darkPrimary),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Ratings",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: CustomColours.darkPrimary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        "${_filteredRatings.length}",
                         style: TextStyle(
                           color: CustomColours.darkPrimary,
                           fontSize: 16,
@@ -332,17 +415,7 @@ class _ViewTripState extends State<ViewTrip> {
               ],
             ),
 
-            // Total spent - uses the getter that calculates on-the-fly
-            Text(
-              "Total spent: ${_totalSpent.toStringAsFixed(2)} ${widget.tripDetails.currency}",
-              style: TextStyle(
-                color: CustomColours.darkPrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
             // Search bar
             Container(
@@ -626,7 +699,7 @@ class _ViewTripState extends State<ViewTrip> {
                 context,
                 AppRouter.addExpense,
                 arguments: AddExpenseArguments(
-                  tripId: widget.tripDetails.tripId!,
+                  tripDetails: widget.tripDetails,
                 ),
               ),
               child: const Text("Add Expense"),

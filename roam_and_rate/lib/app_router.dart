@@ -3,7 +3,7 @@ import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
-import 'package:roam_and_rate/presentation/expenses/pages/add_expense_page.dart';
+import 'package:roam_and_rate/presentation/expenses/pages/new_add_expense_page.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/edit_expense_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/connect_to_database_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
@@ -32,9 +32,9 @@ class EditTripArguments {
 }
 
 class AddExpenseArguments {
-  final String tripId;
+  final TripModel tripDetails;
 
-  AddExpenseArguments({required this.tripId});
+  AddExpenseArguments({required this.tripDetails});
 }
 
 class EditExpenseArugments {
@@ -115,7 +115,7 @@ class AppRouter {
       case addExpense:
         final args = selectedRoute.arguments as AddExpenseArguments;
         return MaterialPageRoute(
-          builder: (_) => AddExpensePage(tripId: args.tripId),
+          builder: (_) => AddExpensePage(tripDetails: args.tripDetails),
         );
       case editExpense:
         final args = selectedRoute.arguments as EditExpenseArugments;
