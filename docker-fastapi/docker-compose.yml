@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  fastapi_sync:
+    build: .
+    container_name: roamandrate_fastapi
+    restart: always
+    ports:
+      - "8003:8003"
+    environment:
+      DB_ENGINE: postgres
+      POSTGRES_USER: roamandrate            # same as user created in your Postgres
+      POSTGRES_PASSWORD: roamandrate_pwd    # same password
+      POSTGRES_SERVER: postgres       # name of your Postgres container
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: roamandrate          # existing DB name
+    networks:
+      - dbnet                            # shared Docker network with Postgres
+
+networks:
+  dbnet:
+    external: true                       # must already exist
