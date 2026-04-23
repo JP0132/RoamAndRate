@@ -8,14 +8,15 @@ import axios from 'axios'
 
 function App() {
 
+
   const [userData, setUserData] = useState(null);
 
+  const server_url = import.meta.env.VITE_SERVER_URL;
+
+  console.log("Server URL:", server_url);
 
 
   useEffect(() => {
-
-    const server_url = "";
-
 
     axios.get(server_url + "/getUsersData").then((response) => {
       setUserData(response.data);
@@ -28,7 +29,12 @@ function App() {
     // }
   }, [])
 
+  const getUserName = () => {
+    const usernames = JSON.stringify(userData["users"].map((user: any) => user["username"]));
+    return usernames;
+  }
 
+  
 
   return (
     <>
@@ -36,7 +42,8 @@ function App() {
         <h1>Roam&Rate</h1>
       </div>
       <div>
-        <p>{userData["users"]}</p>
+        
+        <p>{userData != null ? getUserName() : "Loading..."}</p>
 
       </div>
     </>
