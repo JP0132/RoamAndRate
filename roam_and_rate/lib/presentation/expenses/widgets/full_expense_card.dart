@@ -75,38 +75,6 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
     }
   }
 
-  IconData? getCatIcon(String category) {
-    for (CategoryModel c in Categories.expenseCategories) {
-      if (c.name == category) {
-        return c.icon;
-      }
-    }
-    return FontAwesomeIcons.question;
-  }
-
-  // Future<String?> fetchRate(String base, String target, double value) async {
-  //   final rate = await getExchangeRate(
-  //     base.toUpperCase(),
-  //     target.toUpperCase(),
-  //   );
-
-  //   if (rate != null) {
-  //     final converted = convertAmount(value, rate);
-  //     return "${converted.toStringAsFixed(2)}";
-  //   }
-  //   return null;
-  // }
-
-  // double convertAmount(double amount, CurrencyRate rate) {
-  //   return amount * rate.mid;
-  // }
-
-  // @override
-  // void initState() {
-  //   if (widget.tripDetails.currency != widget.expenseDetails.currency) {
-  //   }
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +209,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       color: CustomColours.darkPrimary,
                     ),
                     child: Icon(
-                      getCatIcon(widget.expenseDetails.category),
+                      Helperfunctions.getCatIcon(widget.expenseDetails.category),
                       color: CustomColours.darkBackground,
                     ),
                   ),

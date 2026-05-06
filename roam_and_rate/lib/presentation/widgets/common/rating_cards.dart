@@ -30,14 +30,7 @@ class RatingCards extends StatefulWidget {
 }
 
 class _RatingCardsState extends State<RatingCards> {
-  IconData? getCatIcon(String category) {
-    for (CategoryModel c in Categories.expenseCategories) {
-      if (c.name == category) {
-        return c.icon;
-      }
-    }
-    return FontAwesomeIcons.question;
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +51,7 @@ class _RatingCardsState extends State<RatingCards> {
               color: CustomColours.darkPrimary,
             ),
             child: Icon(
-              getCatIcon(widget.category),
+              Helperfunctions.getCatIcon(widget.category),
               color: CustomColours.darkSurface,
             ),
           ),

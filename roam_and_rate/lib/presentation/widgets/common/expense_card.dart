@@ -26,14 +26,7 @@ class ExpenseCard extends StatefulWidget {
 }
 
 class _ExpenseCardState extends State<ExpenseCard> {
-  IconData? getCatIcon(String category) {
-    for (CategoryModel c in Categories.expenseCategories) {
-      if (c.name == category) {
-        return c.icon;
-      }
-    }
-    return FontAwesomeIcons.question;
-  }
+ 
   
   @override
   Widget build(BuildContext context) {
@@ -53,7 +46,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
               shape: BoxShape.circle,
               color: CustomColours.darkPrimary,
             ),
-            child: Icon(getCatIcon(widget.category), color: CustomColours.darkSurface),
+            child: Icon(Helperfunctions.getCatIcon(widget.category), color: CustomColours.darkSurface),
           ),
 
           SizedBox(width: 16),

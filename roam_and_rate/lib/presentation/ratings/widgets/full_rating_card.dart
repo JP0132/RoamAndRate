@@ -42,14 +42,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
     return total / widget.participantRatings.length;
   }
 
-  IconData? getCatIcon(String category) {
-    for (CategoryModel c in Categories.expenseCategories) {
-      if (c.name == category) {
-        return c.icon;
-      }
-    }
-    return FontAwesomeIcons.question;
-  }
+ 
 
   final List<String> defaultRatingDescriptions = [
     'Stellar',
@@ -176,7 +169,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                     color: CustomColours.darkPrimary,
                   ),
                   child: Icon(
-                    getCatIcon(widget.ratingDetails.category),
+                    Helperfunctions.getCatIcon(widget.ratingDetails.category),
                     color: CustomColours.darkBackground,
                   ),
                 ),

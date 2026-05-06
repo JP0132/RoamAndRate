@@ -12,7 +12,7 @@ class Categories {
     CategoryModel(name: "Home Holiday", icon: FontAwesomeIcons.house),
   ];
 
-  static final List<CategoryModel> expenseCategories = [
+  static final List<CategoryModel> categories = [
     CategoryModel(name: "Food & Drink", icon: FontAwesomeIcons.bowlFood),
     CategoryModel(
       name: "Tourist Attraction",

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:roam_and_rate/core/utils/constants/categories.dart';
+import 'package:roam_and_rate/domain/models/category_model.dart';
 
 const Map<int, String> ratingDescriptions = {
   10: 'Stellar',
@@ -55,5 +58,14 @@ class Helperfunctions {
 
   static String getRatingDescription(int rating) {
     return ratingDescriptions[rating] ?? 'Unrated';
+  }
+
+  static IconData? getCatIcon(String category) {
+    for (CategoryModel c in Categories.categories) {
+      if (c.name == category) {
+        return c.icon;
+      }
+    }
+    return FontAwesomeIcons.question;
   }
 }
