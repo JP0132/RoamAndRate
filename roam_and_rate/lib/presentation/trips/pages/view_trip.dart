@@ -24,6 +24,7 @@ import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/full_rating_card.dart';
+import 'package:roam_and_rate/presentation/trips/widgets/add_btn.dart';
 import 'package:roam_and_rate/presentation/trips/widgets/trip_overview_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
 import 'package:super_tooltip/super_tooltip.dart';
@@ -162,38 +163,30 @@ class _ViewTripState extends State<ViewTrip> {
     }
   }
 
-
-  Map<String, double> _calculateTotals(){
+  Map<String, double> _calculateTotals() {
     double budgetTotal = 0.0;
     double paidTotal = 0.0;
 
-    for(final expense in _filteredExpenses){
+    for (final expense in _filteredExpenses) {
       final double amount = _getConvertedOrPaid(expense);
 
       // All expenses
       paidTotal += amount;
-      if(!expense.isNotBudget){
-
+      if (!expense.isNotBudget) {
         // Only budget expenses
         budgetTotal += amount;
       }
     }
 
-    return {
-      "budgetTotal": budgetTotal,
-      "paidTotal": paidTotal,
-    };
+    return {"budgetTotal": budgetTotal, "paidTotal": paidTotal};
   }
 
-  double _getConvertedOrPaid(ExpenseModel expense){
-    if(widget.tripDetails.currency == expense.currency) return expense.paid;
-    if(_convertedCosts.containsKey(expense.expenseId)) return _convertedCosts[expense.expenseId]!;
+  double _getConvertedOrPaid(ExpenseModel expense) {
+    if (widget.tripDetails.currency == expense.currency) return expense.paid;
+    if (_convertedCosts.containsKey(expense.expenseId))
+      return _convertedCosts[expense.expenseId]!;
     return expense.paid;
   }
-
-
-
- 
 
   // Initialize converted costs for expenses with matching currencies
   void _initializeConvertedCosts() {
@@ -290,11 +283,9 @@ class _ViewTripState extends State<ViewTrip> {
 
   @override
   Widget build(BuildContext context) {
-
     final totals = _calculateTotals();
     final _totalBudgetSpent = totals["budgetTotal"];
     final _totalPaidSpent = totals["paidTotal"];
-
 
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text("Trip Overview")),
@@ -664,32 +655,27 @@ class _ViewTripState extends State<ViewTrip> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(
-                context,
-                AppRouter.addRating,
-                arguments: AddRatingArguments(
-                  tripId: widget.tripDetails.tripId!,
-                ),
-              ),
-              child: const Text("Add Rating"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: CustomColours.darkSurface,
-              ),
-            ),
-            const SizedBox(width: 10),
-            ElevatedButton(
+            
+            AddBtn(
+              tripDetails: widget.tripDetails,
+              btnText: "Add Expense",
               onPressed: () => Navigator.pushNamed(
                 context,
                 AppRouter.addExpense,
-                arguments: AddExpenseArguments(
-                  tripDetails: widget.tripDetails,
+                arguments: AddExpenseArguments(tripDetails: widget.tripDetails),
+              ),
+            ),
+            const SizedBox(width: 12),
+            AddBtn(
+              tripDetails: widget.tripDetails,
+              btnText: "Add Rating",
+              onPressed: () => Navigator.pushNamed(
+                  context,
+                  AppRouter.addRating,
+                  arguments: AddRatingArguments(
+                    tripId: widget.tripDetails.tripId!,
+                  ),
                 ),
-              ),
-              child: const Text("Add Expense"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: CustomColours.darkSurface,
-              ),
             ),
           ],
         ),
