@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -161,61 +162,38 @@ class _ViewTripState extends State<ViewTrip> {
     }
   }
 
-  double _totalPaidSpent = 0.0;
 
-  // Calculate total spent including conversions
-  double get _totalBudgetSpent {
-    double total = 0.0;
+  Map<String, double> _calculateTotals(){
+    double budgetTotal = 0.0;
+    double paidTotal = 0.0;
 
-    if (_filteredExpenses.isEmpty) return 0.0;
+    for(final expense in _filteredExpenses){
+      final double amount = _getConvertedOrPaid(expense);
 
+      // All expenses
+      paidTotal += amount;
+      if(!expense.isNotBudget){
 
-    for (final expense in _filteredExpenses) {
-      calulateTotalSpent(expense);
-      if (expense.isNotBudget) {
-        continue;
-      }
-      // If currencies match, use original paid amount
-      if (widget.tripDetails.currency == expense.currency) {
-        total += expense.paid;
-        print("Same currency: ${expense.name} = ${expense.paid}");
-      }
-      // If we have a converted value, use it
-      else if (_convertedCosts.containsKey(expense.expenseId)) {
-        total += _convertedCosts[expense.expenseId]!;
-        print(
-          "Converted: ${expense.name} = ${_convertedCosts[expense.expenseId]}",
-        );
-      }
-      // Fallback: use original amount (conversion might be in progress)
-      else {
-        total += expense.paid;
-        print("Waiting conversion: ${expense.name} = ${expense.paid}");
+        // Only budget expenses
+        budgetTotal += amount;
       }
     }
 
-    print("FINAL TOTAL: $total");
-    return total;
+    return {
+      "budgetTotal": budgetTotal,
+      "paidTotal": paidTotal,
+    };
   }
 
-  void calulateTotalSpent(ExpenseModel expense) {
-    if (widget.tripDetails.currency == expense.currency) {
-      _totalPaidSpent += expense.paid;
-      print("Same currency: ${expense.name} = ${expense.paid}");
-    }
-    // If we have a converted value, use it
-    else if (_convertedCosts.containsKey(expense.expenseId)) {
-      _totalPaidSpent += _convertedCosts[expense.expenseId]!;
-      print(
-        "Converted: ${expense.name} = ${_convertedCosts[expense.expenseId]}",
-      );
-    }
-    // Fallback: use original amount (conversion might be in progress)
-    else {
-      _totalPaidSpent += expense.paid;
-      print("Waiting conversion: ${expense.name} = ${expense.paid}");
-    }
+  double _getConvertedOrPaid(ExpenseModel expense){
+    if(widget.tripDetails.currency == expense.currency) return expense.paid;
+    if(_convertedCosts.containsKey(expense.expenseId)) return _convertedCosts[expense.expenseId]!;
+    return expense.paid;
   }
+
+
+
+ 
 
   // Initialize converted costs for expenses with matching currencies
   void _initializeConvertedCosts() {
@@ -312,6 +290,12 @@ class _ViewTripState extends State<ViewTrip> {
 
   @override
   Widget build(BuildContext context) {
+
+    final totals = _calculateTotals();
+    final _totalBudgetSpent = totals["budgetTotal"];
+    final _totalPaidSpent = totals["paidTotal"];
+
+
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text("Trip Overview")),
       body: Padding(
@@ -320,7 +304,7 @@ class _ViewTripState extends State<ViewTrip> {
           children: [
             TripOverviewCard(
               tripModel: widget.tripDetails,
-              totalSpent: _totalBudgetSpent,
+              totalSpent: _totalBudgetSpent!,
             ),
             //TripCards(tripModel: widget.tripDetails),
             const SizedBox(height: 20),
@@ -346,7 +330,7 @@ class _ViewTripState extends State<ViewTrip> {
                         ),
                       ),
                       Text(
-                        "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalPaidSpent.toStringAsFixed(2)}",
+                        "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalPaidSpent!.toStringAsFixed(2)}",
                         style: TextStyle(
                           color: CustomColours.darkPrimary,
                           fontSize: 16,
