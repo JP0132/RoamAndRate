@@ -1,0 +1,109 @@
+import 'package:flutter/material.dart';
+import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/presentation/trips/classes/tabitem.dart';
+
+class SegmentedSwitcher extends StatefulWidget {
+  final List<TabItem> items;
+  final void Function(int index) onTabSelected;
+  final int selectedIndex;
+
+  const SegmentedSwitcher({super.key, required this.items, required this.onTabSelected, required this.selectedIndex});
+
+  @override
+  State<SegmentedSwitcher> createState() => _SegmentedSwitcherState();
+}
+
+class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
+  int selectedIndex = 0;
+  
+  @override
+  void initState() {
+    selectedIndex = widget.selectedIndex;
+    super.initState();
+  }
+
+ 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 340,
+      height: 54,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: CustomColours.darkSurface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: CustomColours.darkPrimary.withValues(alpha: 0.5),
+        ),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final itemWidth = constraints.maxWidth / widget.items.length;
+
+          return Stack(
+            children: [
+              // Animated moving background
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 280),
+                curve: Curves.easeInOut,
+                left: selectedIndex * itemWidth,
+                top: 0,
+                child: Container(
+                  width: itemWidth,
+                  height: constraints.maxHeight,
+                  decoration: BoxDecoration(
+                    color: CustomColours.darkPrimary,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: CustomColours.darkPrimary.withValues(alpha: 0.4),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Buttons
+              Row(
+                children: List.generate(widget.items.length, (index) {
+                  final item = widget.items[index];
+                  final isSelected = selectedIndex == index;
+
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = index;
+                          widget.onTabSelected(index);
+                        });
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: Center(
+                        child: Text(
+                          item.title,
+                          style: TextStyle(
+                            color: isSelected
+                                ? CustomColours.darkBackground
+                                : CustomColours.darkPrimaryText.withValues(alpha: 0.35),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
