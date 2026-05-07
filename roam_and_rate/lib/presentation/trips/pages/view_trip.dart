@@ -306,96 +306,7 @@ class _ViewTripState extends State<ViewTrip> {
             //TripCards(tripModel: widget.tripDetails),
             const SizedBox(height: 20),
 
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //   children: [
-            //     Container(
-            //       padding: EdgeInsets.all(15),
-            //       decoration: BoxDecoration(
-            //         color: CustomColours.darkSurface,
-            //         borderRadius: BorderRadius.all(Radius.circular(10)),
-            //         border: Border.all(color: CustomColours.darkPrimary),
-            //       ),
-            //       child: Column(
-            //         children: [
-            //           Text(
-            //             "Spent",
-            //             textAlign: TextAlign.left,
-            //             style: TextStyle(
-            //               color: CustomColours.darkPrimary,
-            //               fontSize: 12,
-            //             ),
-            //           ),
-            //           Text(
-            //             "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalPaidSpent!.toStringAsFixed(2)}",
-            //             style: TextStyle(
-            //               color: CustomColours.darkPrimary,
-            //               fontSize: 16,
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //     Container(
-            //       padding: EdgeInsets.all(15),
-            //       decoration: BoxDecoration(
-            //         color: CustomColours.darkSurface,
-            //         borderRadius: BorderRadius.all(Radius.circular(10)),
-            //         border: Border.all(color: CustomColours.darkPrimary),
-            //       ),
-            //       child: Column(
-            //         children: [
-            //           Text(
-            //             "Expenses",
-            //             textAlign: TextAlign.left,
-            //             style: TextStyle(
-            //               color: CustomColours.darkPrimary,
-            //               fontSize: 12,
-            //             ),
-            //           ),
-            //           Text(
-            //             "${_filteredExpenses.length}",
-            //             style: TextStyle(
-            //               color: CustomColours.darkPrimary,
-            //               fontSize: 16,
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //     Container(
-            //       padding: EdgeInsets.all(15),
-            //       decoration: BoxDecoration(
-            //         color: CustomColours.darkSurface,
-            //         borderRadius: BorderRadius.all(Radius.circular(10)),
-            //         border: Border.all(color: CustomColours.darkPrimary),
-            //       ),
-            //       child: Column(
-            //         children: [
-            //           Text(
-            //             "Ratings",
-            //             textAlign: TextAlign.left,
-            //             style: TextStyle(
-            //               color: CustomColours.darkPrimary,
-            //               fontSize: 12,
-            //             ),
-            //           ),
-            //           Text(
-            //             "${_filteredRatings.length}",
-            //             style: TextStyle(
-            //               color: CustomColours.darkPrimary,
-            //               fontSize: 16,
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ],
-            // ),
-
+            
             const SizedBox(height: 10),
 
             // Search bar
@@ -472,11 +383,11 @@ class _ViewTripState extends State<ViewTrip> {
               items: [
                 TabItem(title: "Expenses", count: 4),
                 TabItem(title: "Ratings", count: 5),
-              ], onTabSelected: _onSelectIndex,
+              ],
+              onTabSelected: _onSelectIndex,
               selectedIndex: _selectedIndex,
             ),
 
-           
             const SizedBox(height: 12),
 
             // Content
@@ -540,9 +451,20 @@ class _ViewTripState extends State<ViewTrip> {
             .where((rm) => rm.ratingDetailsId == rating.id)
             .toList();
 
-        return FullRatingCard(
-          ratingDetails: rating,
-          participantRatings: ratingsMade,
+        return BlocBuilder<ParticipantBloc, ParticipantState>(
+          builder: (context, participantState) {
+            if (participantState is ParticipantLoading) {
+              return const CircularProgressIndicator();
+            }
+            if (participantState is ParticipantLoaded) {
+              return FullRatingCard(
+                ratingDetails: rating,
+                participantRatings: ratingsMade,
+                participants: participantState.participants,
+              );
+            }
+            return const CircularProgressIndicator();
+          },
         );
       },
     );
