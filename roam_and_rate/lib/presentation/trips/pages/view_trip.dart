@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/participant/participant_bloc.dart';
+import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_event.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
@@ -617,32 +619,49 @@ class _ViewTripState extends State<ViewTrip> {
               e.datePaid.day == date.day,
         );
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              child: Text(
-                DateFormat('EEEE, dd MMM yyyy').format(date),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            ...expensesForDate.map(
-              (expense) => Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: FullExpenseCard(
-                  expenseDetails: expense,
-                  tripDetails: widget.tripDetails,
-                  onCostConverted: _onCostConverted,
-                  convertedCosts: _convertedCosts,
-                ),
-              ),
-            ),
-          ],
+        return BlocBuilder<ParticipantBloc, ParticipantState>(
+          builder: (context, participantState) {
+            if (participantState is ParticipantLoading) {
+              return const CircularProgressIndicator();
+            }
+
+            if (participantState is ParticipantLoaded) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 12,
+                    ),
+                    child: Text(
+                      DateFormat('EEEE, dd MMM yyyy').format(date),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  ...expensesForDate.map(
+                    (expense) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: FullExpenseCard(
+                        expenseDetails: expense,
+                        tripDetails: widget.tripDetails,
+                        onCostConverted: _onCostConverted,
+                        convertedCosts: _convertedCosts,
+                        participantName: participantState.participants
+                            .firstWhere((p) => p.id == expense.participantId).particpantName,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return Container();
+          },
         );
       },
     );
@@ -655,7 +674,6 @@ class _ViewTripState extends State<ViewTrip> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            
             AddBtn(
               tripDetails: widget.tripDetails,
               btnText: "Add Expense",
@@ -670,12 +688,12 @@ class _ViewTripState extends State<ViewTrip> {
               tripDetails: widget.tripDetails,
               btnText: "Add Rating",
               onPressed: () => Navigator.pushNamed(
-                  context,
-                  AppRouter.addRating,
-                  arguments: AddRatingArguments(
-                    tripId: widget.tripDetails.tripId!,
-                  ),
+                context,
+                AppRouter.addRating,
+                arguments: AddRatingArguments(
+                  tripId: widget.tripDetails.tripId!,
                 ),
+              ),
             ),
           ],
         ),

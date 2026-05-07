@@ -28,12 +28,14 @@ class FullExpenseCard extends StatefulWidget {
   final TripModel tripDetails;
   final Function(String, double) onCostConverted;
   final Map<String, double> convertedCosts;
+  final String participantName;
   const FullExpenseCard({
     super.key,
     required this.expenseDetails,
     required this.tripDetails,
     required this.onCostConverted,
     required this.convertedCosts,
+    required this.participantName,
   });
 
   @override
@@ -43,9 +45,6 @@ class FullExpenseCard extends StatefulWidget {
 class _FullExpenseCardState extends State<FullExpenseCard> {
   bool _expanded = false;
   late Future<String?> _conversionFuture; // Store the future
-  
-  
-
 
   @override
   void initState() {
@@ -75,10 +74,8 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     final id = widget.expenseDetails.expenseId!;
     final converted = widget.convertedCosts[id];
 
@@ -88,7 +85,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
         motion: const ScrollMotion(),
         children: [
           Builder(
-            builder: (con) {
+            builder: (context) {
               return ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(
@@ -113,7 +110,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
             },
           ),
           Builder(
-            builder: (con) {
+            builder: (context) {
               return ElevatedButton(
                 onPressed: () {
                   showDialog(
@@ -153,7 +150,6 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       ],
                     ),
                   );
-                  // Call the callback when returning from SplitDetailPage
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
@@ -197,19 +193,24 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Row(
                 children: [
                   // Left - Circle Avatar
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      shape: BoxShape.rectangle,
                       color: CustomColours.darkPrimary,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
                     child: Icon(
-                      Helperfunctions.getCatIcon(widget.expenseDetails.category),
+                      Helperfunctions.getCatIcon(
+                        widget.expenseDetails.category,
+                      ),
                       color: CustomColours.darkBackground,
                     ),
                   ),
@@ -225,45 +226,54 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                           widget.expenseDetails.name,
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w700,
                             color: Colors.white,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         SizedBox(height: 4),
-                        Text(
-                          widget.expenseDetails.type,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: CustomColours.darkSecondaryText,
-                          ),
-                        ),
-                        BlocBuilder<ParticipantBloc, ParticipantState>(
-                          builder: (context, state) {
-                            if (state is ParticipantLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else if (state is ParticipantLoaded) {
-                              if (state.participants.isEmpty) {
-                                return Text("SOMETHING WENT WRONG");
-                              }
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                color: CustomColours.darkPrimaryText,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            SizedBox(width: 4),
 
-                              return Text(
-                                "Payee: ${state.participants.firstWhere((p) => p.id == widget.expenseDetails.participantId).particpantName}",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: CustomColours.darkSecondaryText,
-                                ),
-                              );
-                            } else if (state is ParticipantError) {
-                              return Text("Error: ${state.message}");
-                            } else {
-                              return const Text("Something went wrong!");
-                            }
-                          },
+                            widget.tripDetails.currency ==
+                                    widget.expenseDetails.currency
+                                ? SizedBox() // no need to convert
+                                : converted == null
+                                ? const Text(
+                                    "Converting...",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  )
+                                : Container(
+                                    padding: EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: CustomColours.darkBackground,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${converted.toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                        color: CustomColours.darkPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                          ],
                         ),
                       ],
                     ),
@@ -271,47 +281,9 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
 
                   // Right - Date, Cost and Paid
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+              
                     children: [
-                      Text(
-                        "Paid: ${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toString()}",
-                        style: TextStyle(
-                          color: const Color.fromARGB(255, 69, 219, 156),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      widget.tripDetails.currency ==
-                              widget.expenseDetails.currency
-                          ? SizedBox() // no need to convert
-                          : converted == null ?
-                               const Text(
-                                    "Converting...",
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 16,
-                                    ),
-                                  )
-                                : Text(
-                                    "Paid: ${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${converted.toStringAsFixed(2)}",
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 69, 219, 156),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                
-                             
-                      Text(
-                        "Cost: ${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toString()}",
-                        style: TextStyle(
-                          color: CustomColours.darkPrimary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                      SizedBox(height: 5),
                       Text(
                         DateFormat(
                           'EE, dd MMM yyyy',
@@ -325,54 +297,143 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                   ),
                 ],
               ),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final visibleTags = _expanded
-                      ? widget.expenseDetails.tags
-                      : widget.expenseDetails.tags.take(3).toList();
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: CustomColours.darkSecondaryText,
+                      width: 1,
+                    ),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IntrinsicHeight(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: [
-                          ...visibleTags.map((tag) => TagWidget(label: tag)),
-                          if (widget.expenseDetails.tags.length > 3)
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _expanded = !_expanded;
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: CustomColours.darkPrimary,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Icon(
-                                  _expanded
-                                      ? Icons.keyboard_arrow_up
-                                      : Icons.keyboard_arrow_down,
-                                  color: Colors.white,
-                                ),
+                      _buildCostDetails(
+                        "payee",
+                        widget.participantName,
+                      ),
+
+                      _buildCostDetails(
+                        "cost",
+                        "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toStringAsFixed(2)}",
+                      ),
+
+                      _buildCostDetails("type", widget.expenseDetails.type),
+
+                      SizedBox(width: 1),
+                    ],
+                  ),
+                ),
+              ),
+
+              widget.expenseDetails.tags.isEmpty
+                  ? const SizedBox.shrink()
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        final visibleTags = _expanded
+                            ? widget.expenseDetails.tags
+                            : widget.expenseDetails.tags.take(3).toList();
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Divider(
+                              color: CustomColours.darkSecondaryText,
+                              thickness: 1,
+                              height: 1,
+                            ),
+                            SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Wrap(
+                                alignment: WrapAlignment.start,
+                                spacing: 8.0,
+                                runSpacing: 8.0,
+                                children: [
+                                  ...visibleTags.map(
+                                    (tag) => TagWidget(label: tag),
+                                  ),
+                                  if (widget.expenseDetails.tags.length > 3)
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _expanded = !_expanded;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: CustomColours.darkPrimary,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          _expanded
+                                              ? Icons.keyboard_arrow_up
+                                              : Icons.keyboard_arrow_down,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              ),
+                          ],
+                        );
+                      },
+                    ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCostDetails(String label, String detail) {
+    return Row(
+      children: [
+        VerticalDivider(
+          color: CustomColours.darkSecondaryText,
+          thickness: 1,
+          width: 1,
+        ),
+        SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label.toUpperCase(),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: CustomColours.darkSecondaryText,
+              ),
+            ),
+
+            Text(
+              detail,
+              style: TextStyle(
+                color: CustomColours.darkPrimaryText,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
