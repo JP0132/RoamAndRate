@@ -14,16 +14,19 @@ import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/tag_widget.dart';
 
 class FullRatingCard extends StatefulWidget {
   final RatingDetailsModel ratingDetails;
   final List<RatingsMadeData> participantRatings;
+  final List<ParticipantModel> participants;
   const FullRatingCard({
     super.key,
     required this.ratingDetails,
     required this.participantRatings,
+    required this.participants,
   });
 
   @override
@@ -37,12 +40,14 @@ class _FullRatingCardState extends State<FullRatingCard> {
     if (widget.participantRatings.isEmpty) return 0.0;
     final total = widget.participantRatings.fold<double>(
       0.0,
-      (sum, r) => sum + (widget.ratingDetails.status == "Plan to Visit" ? r.expectedRating ?? 0.0: r.rating ?? 0.0),
+      (sum, r) =>
+          sum +
+          (widget.ratingDetails.status == "Plan to Visit"
+              ? r.expectedRating ?? 0.0
+              : r.rating ?? 0.0),
     );
     return total / widget.participantRatings.length;
   }
-
- 
 
   final List<String> defaultRatingDescriptions = [
     'Stellar',
@@ -76,7 +81,10 @@ class _FullRatingCardState extends State<FullRatingCard> {
                       rating: widget.ratingDetails,
                       participantRatings: {
                         for (var r in widget.participantRatings)
-                          r.participantId: {"expectedRating": r.expectedRating ?? 0.0, "rating": r.rating ?? 0.0}
+                          r.participantId: {
+                            "expectedRating": r.expectedRating ?? 0.0,
+                            "rating": r.rating ?? 0.0,
+                          },
                       },
                     ),
                   );
@@ -162,17 +170,19 @@ class _FullRatingCardState extends State<FullRatingCard> {
               children: [
                 // Left - Icon
                 Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
                     color: CustomColours.darkPrimary,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: Icon(
                     Helperfunctions.getCatIcon(widget.ratingDetails.category),
                     color: CustomColours.darkBackground,
                   ),
                 ),
+
                 const SizedBox(width: 16),
 
                 // Place Name + Date
@@ -190,18 +200,27 @@ class _FullRatingCardState extends State<FullRatingCard> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        widget.ratingDetails.status == "Plan to Visit" ? DateFormat(
-                                'EE, dd MMM yyyy',
-                              ).format(widget.ratingDetails.datePlanned!) :
-                        widget.ratingDetails.dateVisited != null
-                            ? DateFormat(
-                                'EE, dd MMM yyyy',
-                              ).format(widget.ratingDetails.dateVisited!)
-                            : "No date provided",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: CustomColours.darkSecondaryText,
+
+                      Container(
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: CustomColours.darkSecondarySurface,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        child: Text(
+                          widget.ratingDetails.status == "Plan to Visit"
+                              ? DateFormat(
+                                  'EE, dd MMM yyyy',
+                                ).format(widget.ratingDetails.datePlanned!)
+                              : widget.ratingDetails.dateVisited != null
+                              ? DateFormat(
+                                  'EE, dd MMM yyyy',
+                                ).format(widget.ratingDetails.dateVisited!)
+                              : "No date provided",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: CustomColours.darkSecondaryText,
+                          ),
                         ),
                       ),
                     ],
@@ -212,9 +231,9 @@ class _FullRatingCardState extends State<FullRatingCard> {
                 Column(
                   children: [
                     Text(
-                      avgRating.toStringAsFixed(1),
+                      (avgRating * 2).toStringAsFixed(1),
                       style: const TextStyle(
-                        color: Color.fromARGB(255, 69, 219, 156),
+                        color: CustomColours.darkSecondary,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
@@ -235,134 +254,102 @@ class _FullRatingCardState extends State<FullRatingCard> {
 
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: Center(child: Text(widget.ratingDetails.status == "Plan to Visit" ? "Your Expected Ratings" : "Your Ratings")),
+              child: Center(
+                child: Text(
+                  widget.ratingDetails.status == "Plan to Visit"
+                      ? "Your Expected Ratings"
+                      : "Your Ratings",
+                ),
+              ),
             ),
 
             // Participant Ratings
             if (widget.participantRatings.isNotEmpty)
-              BlocBuilder<ParticipantBloc, ParticipantState>(
-                builder: (context, state) {
-                  if (state is ParticipantLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is ParticipantLoaded) {
-                    if (state.participants.isEmpty) {
-                      return Text("SOMETHING WENT WRONG");
-                    }
-
-                    final _participants = state.participants;
-                    // selectedParticipant = _participants
-                    //     .where((p) => p.isAdmin)
-                    //     .first
-                    //     .particpantName;
-
-                    return Column(
-                      children: widget.participantRatings.asMap().entries.map((
-                        entry,
-                      ) {
-                        final index = entry.key;
-                        final pRating = entry.value;
-                        final _participantName = _participants.firstWhere(
-                          (pn) => pn.id == pRating.participantId,
-                        );
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            bottom:
-                                index == widget.participantRatings.length - 1
-                                ? 0
-                                : 4,
-                          ),
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: CustomColours.darkSecondarySurface,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Text("${_participantName.particpantName}"),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: List.generate(5, (starIdx) {
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 2.0,
-                                          ),
-                                          child: _buildStar(
-                                            starIdx,
-                                            widget.ratingDetails.status == "Plan to Visit" ? pRating.expectedRating ?? 0.0 : pRating.rating ?? 0.0,
-                                          ),
-                                        );
-                                      }),
+              Column(
+                children: widget.participantRatings.asMap().entries.map((
+                  entry,
+                ) {
+                  final index = entry.key;
+                  final pRating = entry.value;
+                  final participantName = widget.participants.firstWhere(
+                    (pn) => pn.id == pRating.participantId,
+                  );
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      bottom: index == widget.participantRatings.length - 1
+                          ? 0
+                          : 4,
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: CustomColours.darkSecondarySurface,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Text("${participantName.particpantName}"),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: List.generate(5, (starIdx) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 2.0,
                                     ),
-                                    SizedBox(width: 10),
-                                    widget.ratingDetails.status == "Plan to Visit" ? Text(
+                                    child: _buildStar(
+                                      starIdx,
+                                      widget.ratingDetails.status ==
+                                              "Plan to Visit"
+                                          ? pRating.expectedRating ?? 0.0
+                                          : pRating.rating ?? 0.0,
+                                    ),
+                                  );
+                                }),
+                              ),
+                              SizedBox(width: 10),
+                              widget.ratingDetails.status == "Plan to Visit"
+                                  ? Text(
                                       "${(pRating.expectedRating! * 2).truncate()} / 10",
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: CustomColours.darkPrimaryText,
                                       ),
-                                    ) : Text(
+                                    )
+                                  : Text(
                                       "${(pRating.rating! * 2).truncate()} / 10",
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: CustomColours.darkPrimaryText,
                                       ),
                                     ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      widget.ratingDetails.status == "Plan to Visit" ?
-                                      Helperfunctions.getRatingDescription(
-                                        (pRating.expectedRating! * 2).truncate(),
-                                      ) : Helperfunctions.getRatingDescription(
+                              SizedBox(width: 10),
+                              Text(
+                                widget.ratingDetails.status == "Plan to Visit"
+                                    ? Helperfunctions.getRatingDescription(
+                                        (pRating.expectedRating! * 2)
+                                            .truncate(),
+                                      )
+                                    : Helperfunctions.getRatingDescription(
                                         (pRating.rating! * 2).truncate(),
                                       ),
-                                      style: TextStyle(
-                                        color: CustomColours.darkPrimary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
+                                style: TextStyle(
+                                  color: CustomColours.darkPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        );
-                      }).toList(),
-                    );
-
-                    // Wrap(
-                    //   spacing: 12,
-                    //   children: widget.participantRatings.map((p) {
-                    //     final _participantName = _participants.firstWhere(
-                    //       (pn) => pn.id == p.participantId,
-                    //     );
-                    //     return Chip(
-                    //       backgroundColor: CustomColours.darkPrimary,
-                    //       label: Text(
-                    //         "${_participantName.particpantName}: ${p.rating}",
-                    //         style: const TextStyle(
-                    //           color: CustomColours.darkBackground,
-                    //           fontSize: 12,
-                    //         ),
-                    //       ),
-                    //     );
-                    //   }).toList(),
-                    // );
-                  } else if (state is ParticipantError) {
-                    return Text("Error: ${state.message}");
-                  } else {
-                    return const Text("Something went wrong!");
-                  }
-                },
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
 
             const SizedBox(height: 8),

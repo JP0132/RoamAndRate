@@ -280,28 +280,22 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                   ),
 
                   // Right - Date
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-              
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: CustomColours.darkSecondarySurface,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          
-                        ),
-                        child: Text(
-                          DateFormat(
-                            'EE, dd MMM yyyy',
-                          ).format(widget.expenseDetails.datePaid),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: CustomColours.darkSecondaryText,
-                          ),
-                        ),
+                  Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: CustomColours.darkSecondarySurface,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      
+                    ),
+                    child: Text(
+                      DateFormat(
+                        'EE, dd MMM yyyy',
+                      ).format(widget.expenseDetails.datePaid),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: CustomColours.darkSecondaryText,
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),

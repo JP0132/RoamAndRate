@@ -75,6 +75,8 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
   }
 
   void removeWidget() {
+    if (widgetIndexes.length <= 1) return;
+    
     setState(() {
       widgetIndexes.removeLast();
       selectedParticipants = selectedParticipants.sublist(
@@ -83,6 +85,8 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
       );
       ratings = ratings.sublist(0, ratings.length - 1);
     });
+
+    _sendUpdate();
   }
 
   void _updateRating(int index, double newRating) {
@@ -103,7 +107,7 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
     });
   }
 
-  // In rating_container.dart, modify the _sendUpdate method:
+
   void _sendUpdate() {
     // Create a map of participant-rating pairs only when both are set
     final Map<String, double> result = {};
@@ -121,7 +125,6 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
     widget.onRatingsUpdate(result);
   }
 
-  // In rating_container.dart, update the _sendUpdate method:
 
   @override
   Widget build(BuildContext context) {
