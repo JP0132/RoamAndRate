@@ -26,6 +26,8 @@ import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/full_rating_card.dart';
+import 'package:roam_and_rate/presentation/trips/classes/tabitem.dart';
+import 'package:roam_and_rate/presentation/trips/pages/segmented_switcher.dart';
 import 'package:roam_and_rate/presentation/trips/widgets/add_btn.dart';
 import 'package:roam_and_rate/presentation/trips/widgets/trip_overview_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
@@ -283,6 +285,8 @@ class _ViewTripState extends State<ViewTrip> {
     super.dispose();
   }
 
+  void _onSelectIndex(int index) => setState(() => _selectedIndex = index);
+
   @override
   Widget build(BuildContext context) {
     final totals = _calculateTotals();
@@ -302,95 +306,95 @@ class _ViewTripState extends State<ViewTrip> {
             //TripCards(tripModel: widget.tripDetails),
             const SizedBox(height: 20),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: CustomColours.darkSurface,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: CustomColours.darkPrimary),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Spent",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: CustomColours.darkPrimary,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalPaidSpent!.toStringAsFixed(2)}",
-                        style: TextStyle(
-                          color: CustomColours.darkPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: CustomColours.darkSurface,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: CustomColours.darkPrimary),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Expenses",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: CustomColours.darkPrimary,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        "${_filteredExpenses.length}",
-                        style: TextStyle(
-                          color: CustomColours.darkPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: CustomColours.darkSurface,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: CustomColours.darkPrimary),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Ratings",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: CustomColours.darkPrimary,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        "${_filteredRatings.length}",
-                        style: TextStyle(
-                          color: CustomColours.darkPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: [
+            //     Container(
+            //       padding: EdgeInsets.all(15),
+            //       decoration: BoxDecoration(
+            //         color: CustomColours.darkSurface,
+            //         borderRadius: BorderRadius.all(Radius.circular(10)),
+            //         border: Border.all(color: CustomColours.darkPrimary),
+            //       ),
+            //       child: Column(
+            //         children: [
+            //           Text(
+            //             "Spent",
+            //             textAlign: TextAlign.left,
+            //             style: TextStyle(
+            //               color: CustomColours.darkPrimary,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //           Text(
+            //             "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)} ${_totalPaidSpent!.toStringAsFixed(2)}",
+            //             style: TextStyle(
+            //               color: CustomColours.darkPrimary,
+            //               fontSize: 16,
+            //               fontWeight: FontWeight.bold,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     Container(
+            //       padding: EdgeInsets.all(15),
+            //       decoration: BoxDecoration(
+            //         color: CustomColours.darkSurface,
+            //         borderRadius: BorderRadius.all(Radius.circular(10)),
+            //         border: Border.all(color: CustomColours.darkPrimary),
+            //       ),
+            //       child: Column(
+            //         children: [
+            //           Text(
+            //             "Expenses",
+            //             textAlign: TextAlign.left,
+            //             style: TextStyle(
+            //               color: CustomColours.darkPrimary,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //           Text(
+            //             "${_filteredExpenses.length}",
+            //             style: TextStyle(
+            //               color: CustomColours.darkPrimary,
+            //               fontSize: 16,
+            //               fontWeight: FontWeight.bold,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     Container(
+            //       padding: EdgeInsets.all(15),
+            //       decoration: BoxDecoration(
+            //         color: CustomColours.darkSurface,
+            //         borderRadius: BorderRadius.all(Radius.circular(10)),
+            //         border: Border.all(color: CustomColours.darkPrimary),
+            //       ),
+            //       child: Column(
+            //         children: [
+            //           Text(
+            //             "Ratings",
+            //             textAlign: TextAlign.left,
+            //             style: TextStyle(
+            //               color: CustomColours.darkPrimary,
+            //               fontSize: 12,
+            //             ),
+            //           ),
+            //           Text(
+            //             "${_filteredRatings.length}",
+            //             style: TextStyle(
+            //               color: CustomColours.darkPrimary,
+            //               fontSize: 16,
+            //               fontWeight: FontWeight.bold,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ],
+            // ),
 
             const SizedBox(height: 10),
 
@@ -464,60 +468,15 @@ class _ViewTripState extends State<ViewTrip> {
             ),
             const SizedBox(height: 20),
 
-            // Toggle buttons
-            SizedBox(
-              height: 40,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedIndex = 0),
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 0
-                              ? CustomColours.darkPrimary
-                              : CustomColours.darkSurface,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          "Expenses",
-                          style: TextStyle(
-                            color: _selectedIndex == 0
-                                ? CustomColours.darkSurface
-                                : CustomColours.darkPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedIndex = 1),
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 1
-                              ? CustomColours.darkPrimary
-                              : CustomColours.darkSurface,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          "Ratings",
-                          style: TextStyle(
-                            color: _selectedIndex == 1
-                                ? CustomColours.darkSurface
-                                : CustomColours.darkPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            SegmentedSwitcher(
+              items: [
+                TabItem(title: "Expenses", count: 4),
+                TabItem(title: "Ratings", count: 5),
+              ], onTabSelected: _onSelectIndex,
+              selectedIndex: _selectedIndex,
             ),
+
+           
             const SizedBox(height: 12),
 
             // Content
@@ -629,20 +588,6 @@ class _ViewTripState extends State<ViewTrip> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 12,
-                    ),
-                    child: Text(
-                      DateFormat('EEEE, dd MMM yyyy').format(date),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
                   ...expensesForDate.map(
                     (expense) => Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
@@ -652,7 +597,8 @@ class _ViewTripState extends State<ViewTrip> {
                         onCostConverted: _onCostConverted,
                         convertedCosts: _convertedCosts,
                         participantName: participantState.participants
-                            .firstWhere((p) => p.id == expense.participantId).particpantName,
+                            .firstWhere((p) => p.id == expense.participantId)
+                            .particpantName,
                       ),
                     ),
                   ),
