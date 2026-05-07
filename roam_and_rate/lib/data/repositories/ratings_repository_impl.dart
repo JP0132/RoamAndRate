@@ -177,6 +177,7 @@ class RatingsRepositoryImpl implements RatingsRepository {
 
       for (final rating in existingRatings) {
         if (!participantRatings.containsKey(rating.participantId)) {
+          print("👹👹👹👹👹👹👹👹 deleteing here ${rating.participantId}");
           // If a participant is no longer in the updated list, delete their rating
           await deleteRatingsMade(rating.id);
         }
@@ -193,13 +194,13 @@ class RatingsRepositoryImpl implements RatingsRepository {
           RatingsMadeData updatedRating;
 
           if (!expected) {
-            print(entry.value);
+            print("👹👹👹👹👹👹👹👹 ${entry.value}");
             updatedRating = existingRating.copyWith(
               rating: Value(entry.value),
               participantId: existingRating.participantId,
             );
           } else{
-            print(entry.value);
+            print("👹👹👹👹👹👹👹👹 ${entry.value}");
             updatedRating = existingRating.copyWith(
               expectedRating: Value(entry.value),
               participantId: existingRating.participantId,
@@ -213,7 +214,7 @@ class RatingsRepositoryImpl implements RatingsRepository {
           final newRating = RatingsMadeModel(
             particpantId: entry.key,
             ratingDetailsId: ratingDetailsId,
-            rating: !expected ? 0.0 : entry.value,
+            rating: !expected ? entry.value : 0.0,
             expectedRating: expected ? entry.value : 0.0,
             createdAt: DateTime.now(),
           );

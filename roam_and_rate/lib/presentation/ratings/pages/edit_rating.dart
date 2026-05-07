@@ -173,17 +173,20 @@ class _EditRatingPageState extends State<EditRatingPage> {
   }
 
   void handleRatingsUpdate(Map<String, double> ratings) {
-    String ratingToUpdate = selectedStatus == "Plan to Visit"
+    String ratingKey = selectedStatus == "Plan to Visit"
         ? "expectedRating"
         : "rating";
 
     setState(() {
-      for (var r in ratings.entries) {
-        if (selectedParticipants[r.key] == null) {
-          selectedParticipants[r.key] = {};
-        }
-        selectedParticipants[r.key]![ratingToUpdate] = r.value;
-      }
+     final updatedParticipants = <String, Map<String, double>>{};
+
+    for (final entry in ratings.entries) {
+      updatedParticipants[entry.key] = {
+        ratingKey: entry.value,
+      };
+    }
+
+    selectedParticipants = updatedParticipants;
     });
 
     // print("Received ratings update:");
