@@ -173,9 +173,10 @@ class _ViewTripState extends State<ViewTrip> {
 
     for (final expense in _filteredExpenses) {
       final double amount = _getConvertedOrPaid(expense);
-
+      print("Expense: ${expense.name} = $amount");
       // All expenses
       paidTotal += amount;
+      print("Paid total: $paidTotal");
       if (!expense.isNotBudget) {
         // Only budget expenses
         budgetTotal += amount;
@@ -293,6 +294,9 @@ class _ViewTripState extends State<ViewTrip> {
     final _totalBudgetSpent = totals["budgetTotal"];
     final _totalPaidSpent = totals["paidTotal"];
 
+    print("Total budget spent: $_totalBudgetSpent");
+    print("Total paid spent: $_totalPaidSpent");
+
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text("Trip Overview")),
       body: Padding(
@@ -301,7 +305,7 @@ class _ViewTripState extends State<ViewTrip> {
           children: [
             TripOverviewCard(
               tripModel: widget.tripDetails,
-              totalSpent: _totalBudgetSpent!,
+              totalSpent: _totalPaidSpent!, totalBudgetSpent: _totalBudgetSpent!,
             ),
             //TripCards(tripModel: widget.tripDetails),
             const SizedBox(height: 20),

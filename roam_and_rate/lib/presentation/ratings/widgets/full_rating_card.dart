@@ -259,7 +259,13 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   widget.ratingDetails.status == "Plan to Visit"
                       ? "Your Expected Ratings"
                       : "Your Ratings",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
+                
               ),
             ),
 
@@ -280,23 +286,18 @@ class _FullRatingCardState extends State<FullRatingCard> {
                           ? 0
                           : 4,
                     ),
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: CustomColours.darkSecondarySurface,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Column(
-                        children: [
-                          Text("${participantName.particpantName}"),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: List.generate(5, (starIdx) {
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 60, child: Text(participantName.particpantName)),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ...List.generate(5, (starIdx) {
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 2.0,
@@ -310,43 +311,48 @@ class _FullRatingCardState extends State<FullRatingCard> {
                                     ),
                                   );
                                 }),
-                              ),
-                              SizedBox(width: 10),
-                              widget.ratingDetails.status == "Plan to Visit"
-                                  ? Text(
-                                      "${(pRating.expectedRating! * 2).truncate()} / 10",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: CustomColours.darkPrimaryText,
-                                      ),
-                                    )
-                                  : Text(
-                                      "${(pRating.rating! * 2).truncate()} / 10",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: CustomColours.darkPrimaryText,
-                                      ),
-                                    ),
-                              SizedBox(width: 10),
-                              Text(
+                                SizedBox(width: 10),
                                 widget.ratingDetails.status == "Plan to Visit"
-                                    ? Helperfunctions.getRatingDescription(
-                                        (pRating.expectedRating! * 2)
-                                            .truncate(),
+                                    ? Text(
+                                        "${(pRating.expectedRating! * 2).truncate()} / 10",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: CustomColours.darkPrimaryText,
+                                        ),
                                       )
-                                    : Helperfunctions.getRatingDescription(
-                                        (pRating.rating! * 2).truncate(),
+                                    : Text(
+                                        "${(pRating.rating! * 2).truncate()} / 10",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: CustomColours.darkPrimaryText,
+                                        ),
                                       ),
-                                style: TextStyle(
-                                  color: CustomColours.darkPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                              ],
+                            ),
+
+                            const Spacer(),
+                            Text(
+                              widget.ratingDetails.status == "Plan to Visit"
+                                  ? Helperfunctions.getRatingDescription(
+                                      (pRating.expectedRating! * 2).truncate(),
+                                    )
+                                  : Helperfunctions.getRatingDescription(
+                                      (pRating.rating! * 2).truncate(),
+                                    ),
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                color: CustomColours.darkPrimary,
+                                fontSize: 16,
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: CustomColours.darkPrimary,
+                          thickness: 1,
+                          height: 1,
+                        ),
+                      ],
                     ),
                   );
                 }).toList(),

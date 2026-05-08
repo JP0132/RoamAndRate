@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
@@ -6,8 +7,9 @@ import 'package:roam_and_rate/domain/models/trip_model.dart';
 
 class TripOverviewCard extends StatefulWidget {
   final TripModel tripModel;
+  final double totalBudgetSpent;
   final double totalSpent;
-  const TripOverviewCard({super.key, required this.tripModel, required this.totalSpent});
+  const TripOverviewCard({super.key, required this.tripModel, required this.totalSpent, required this.totalBudgetSpent});
 
   @override
   State<TripOverviewCard> createState() => _TripOverviewCardState();
@@ -32,7 +34,7 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
     }
 
     Color getBudgetColor(){
-      double progress = (widget.totalSpent / widget.tripModel.budget).clamp(0.0, 1.0);
+      double progress = (widget.totalBudgetSpent / widget.tripModel.budget).clamp(0.0, 1.0);
 
       if(progress >= 0.9) return CustomColours.darkError;
       if(progress >= 0.6) return Colors.amber.shade400;
@@ -98,6 +100,8 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
             Row(
               //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                Flexible(child: FaIcon(FontAwesomeIcons.calendar, color: CustomColours.darkSecondaryText, size: 10,)),
+                SizedBox(width: 5,),
                 Flexible(
                   child: Text(
                     "${DateFormat('dd MMM yyyy').format(widget.tripModel.startDate)} - ",
@@ -173,7 +177,7 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                       ),
                     ),
                     Text(
-                      "${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${(widget.tripModel.budget - widget.totalSpent).toStringAsFixed(2)}",
+                      "${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${(widget.tripModel.budget - widget.totalBudgetSpent).toStringAsFixed(2)}",
                       style:  TextStyle(
                         color: getBudgetColor(),
                         fontWeight: FontWeight.bold,
@@ -184,16 +188,28 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
               ],
             ),
             const SizedBox(height: 4),
-            BudgetBar(budget: widget.tripModel.budget, spent: widget.totalSpent),
+            BudgetBar(budget: widget.tripModel.budget, spent: widget.totalBudgetSpent),
             const SizedBox(height: 4),
              Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Total Spent: ${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${widget.totalSpent.toString()}",
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Total Budget Spent: ${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${widget.totalBudgetSpent.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        color: CustomColours.darkSecondaryText,
+                      ),
+                    ),
+                    Text(
+                  "Total Spent: ${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${widget.totalSpent.toStringAsFixed(2)}",
                   style: const TextStyle(
                     color: CustomColours.darkSecondaryText,
                   ),
+                ),
+                  ],
                 ),
                 Text(
                   getDays(),
