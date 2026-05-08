@@ -12,7 +12,7 @@ import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_event.dart';
 import 'package:roam_and_rate/application/rating/ratings_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
@@ -39,10 +39,10 @@ class _AddRatingPageState extends State<AddRatingPage> {
   bool _participantsLoaded = false;
   late final StreamSubscription _participantSubscription;
 
-/// Initializes the state of the widget.
-/// Requests the participants of the trip and listens for the
-/// loaded state exactly once. When the state is loaded, it
-/// sets the participants and cancels the subscription.
+  /// Initializes the state of the widget.
+  /// Requests the participants of the trip and listens for the
+  /// loaded state exactly once. When the state is loaded, it
+  /// sets the participants and cancels the subscription.
   @override
   void initState() {
     super.initState();
@@ -221,16 +221,16 @@ class _AddRatingPageState extends State<AddRatingPage> {
 
   void _setDate(DateTime date) async => setState(() => selectedDate = date);
 
-
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Add Rating")),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () => _showPickOptionsDialog(context),
-        backgroundColor: CustomColours.darkPrimary,
-        foregroundColor: CustomColours.darkBackground,
+        backgroundColor: custom.primary,
+        foregroundColor: custom.background,
         child: FaIcon(FontAwesomeIcons.camera, size: 35),
       ),
       body: GestureDetector(
@@ -247,10 +247,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                 // Input field to enter the name of the place
                 Text(
                   "Place Name *",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 CustomInputField(
                   inputText: "Place Name",
@@ -262,10 +259,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                 // Input field to enter the location/address of the place
                 Text(
                   "Location *",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 CustomInputField(
                   inputText: "Location",
@@ -287,21 +281,20 @@ class _AddRatingPageState extends State<AddRatingPage> {
                             "Category *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomisableDropdown<String>(
                             items: categories,
                             hint: "Select which category?",
                             value: selectedCategory,
-                            backgroundColour: CustomColours.darkSurface,
+                            backgroundColour: custom.surface,
                             borderColour: Colors.transparent,
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
-                            selectedItemColour: CustomColours.darkPrimary,
-                            selectedItemTextColour:
-                                CustomColours.darkBackground,
+                            selectedItemColour: custom.primary,
+                            selectedItemTextColour: custom.background,
                             unselectedItemTextColour: Colors.grey[300],
                             //selectedItemTextSize: selectedCategory == "Accommodation" ? 12 : 16,
                             selectedItemBuilder: (value) => Text(
@@ -336,21 +329,20 @@ class _AddRatingPageState extends State<AddRatingPage> {
                             "Status *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomisableDropdown<String>(
                             items: statuses,
                             hint: "Select the Status?",
                             value: selectedStatus,
-                            backgroundColour: CustomColours.darkSurface,
+                            backgroundColour: custom.surface,
                             borderColour: Colors.transparent,
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
-                            selectedItemColour: CustomColours.darkPrimary,
-                            selectedItemTextColour:
-                                CustomColours.darkBackground,
+                            selectedItemColour: custom.primary,
+                            selectedItemTextColour: custom.background,
                             unselectedItemTextColour: Colors.grey[300],
 
                             onChanged: (value) {
@@ -373,18 +365,14 @@ class _AddRatingPageState extends State<AddRatingPage> {
                     selectedStatus == "Plan to Visit"
                         ? "Expected Rating"
                         : "Rating",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: CustomColours.darkPrimary,
-                    ),
+                    style: TextStyle(fontSize: 14, color: custom.primary),
                   ),
 
                   RatingContainer(
-                      selectedParticipants: updateParticipantRatings,
-                      participants: _participants,
-                      onRatingsUpdate: handleRatingsUpdate
-                    ),
-                  
+                    selectedParticipants: updateParticipantRatings,
+                    participants: _participants,
+                    onRatingsUpdate: handleRatingsUpdate,
+                  ),
 
                   // RatingInput(
                   //   initalRating: 0,
@@ -407,15 +395,19 @@ class _AddRatingPageState extends State<AddRatingPage> {
                               getStatusLabel(selectedStatus),
                               style: TextStyle(
                                 fontSize: 14,
-                                color: CustomColours.darkPrimary,
+                                color: custom.primary,
                               ),
                             ),
                             InkWell(
-                              onTap: () => ShowPicker.showCustomStyledPicker(context, selectedDate, _setDate),
+                              onTap: () => ShowPicker.showCustomStyledPicker(
+                                context,
+                                selectedDate,
+                                _setDate,
+                              ),
 
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: CustomColours.darkSurface,
+                                  color: custom.surface,
 
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(20),
@@ -436,7 +428,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
 
                                         child: Icon(
                                           Icons.calendar_today,
-                                          color: CustomColours.darkPrimary,
+                                          color: custom.primary,
                                         ),
                                       ),
                                     ),
@@ -473,21 +465,20 @@ class _AddRatingPageState extends State<AddRatingPage> {
                               "Value",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: CustomColours.darkPrimary,
+                                color: custom.primary,
                               ),
                             ),
                             CustomisableDropdown<String>(
                               items: value,
                               hint: "How well priced was it?",
                               value: selectedValue,
-                              backgroundColour: CustomColours.darkSurface,
+                              backgroundColour: custom.surface,
                               borderColour: Colors.transparent,
                               padding: EdgeInsets.all(20),
                               borderRadius: 20,
                               menuMaxHeight: 200,
-                              selectedItemColour: CustomColours.darkPrimary,
-                              selectedItemTextColour:
-                                CustomColours.darkBackground,
+                              selectedItemColour: custom.primary,
+                              selectedItemTextColour: custom.background,
                               unselectedItemTextColour: Colors.grey[300],
                               onChanged: (value) {
                                 setState(() {
@@ -507,10 +498,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                 // Select the rating of the place
                 Text(
                   "Tags",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 WTagField(
                   onTagsChanged: handleTagsChanged,
@@ -519,10 +507,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
                 SizedBox(height: 20),
                 Text(
                   "Notes",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 WLargeTextfield(
                   hintText: "Notes",
@@ -563,18 +548,18 @@ class _AddRatingPageState extends State<AddRatingPage> {
                   listener: (context, state) {
                     if (state is RatingDetailsAdded) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text("Rating created!"),
-                          backgroundColor: CustomColours.darkSuccess,
+                          backgroundColor: custom.success,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
                       Navigator.pop(context);
                     } else if (state is RatingWithParticipantsAdded) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text("Rating created!"),
-                          backgroundColor: CustomColours.darkSuccess,
+                          backgroundColor: custom.success,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -653,8 +638,8 @@ class _AddRatingPageState extends State<AddRatingPage> {
                         if (formValid.values.every((v) => v)) {}
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColours.darkPrimary,
-                        foregroundColor: CustomColours.darkBackground,
+                        backgroundColor: custom.primary,
+                        foregroundColor: custom.background,
                         padding: EdgeInsets.all(8.0),
                       ),
                       child: Text(
@@ -674,6 +659,4 @@ class _AddRatingPageState extends State<AddRatingPage> {
       ),
     );
   }
-
-  
 }

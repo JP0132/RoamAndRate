@@ -9,8 +9,8 @@ import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_event.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
@@ -64,6 +64,8 @@ class _FullRatingCardState extends State<FullRatingCard> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     final avgRating = _calculateAverageRating();
     return Slidable(
       key: Key(widget.ratingDetails.id!),
@@ -109,9 +111,9 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      backgroundColor: CustomColours.darkSurface,
+                      backgroundColor: custom.surface,
                       title: const Text("Delete Rating?"),
-                      content: const Text(
+                      content:  Text(
                         "Are you sure you want to delete this rating? This action is irreversible.",
                       ),
                       actions: [
@@ -125,16 +127,16 @@ class _FullRatingCardState extends State<FullRatingCard> {
                               DeleteRating(widget.ratingDetails.id!),
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                               SnackBar(
                                 content: Text('Rating deleted successfully!'),
-                                backgroundColor: CustomColours.darkSuccess,
+                                backgroundColor: custom.success,
                               ),
                             );
                             Navigator.pop(context);
                           },
-                          child: const Text(
+                          child:  Text(
                             "DELETE",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           ),
                         ),
                       ],
@@ -160,7 +162,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: CustomColours.darkSurface,
+          color: custom.surface,
           borderRadius: const BorderRadius.all(Radius.circular(20)),
         ),
         child: Column(
@@ -174,12 +176,12 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   height: 50,
                   decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: Icon(
                     Helperfunctions.getCatIcon(widget.ratingDetails.category),
-                    color: CustomColours.darkBackground,
+                    color: custom.background,
                   ),
                 ),
 
@@ -204,7 +206,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                       Container(
                         padding: EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: CustomColours.darkSecondarySurface,
+                          color: custom.secondarySurface,
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                         child: Text(
@@ -217,9 +219,9 @@ class _FullRatingCardState extends State<FullRatingCard> {
                                   'EE, dd MMM yyyy',
                                 ).format(widget.ratingDetails.dateVisited!)
                               : "No date provided",
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 12,
-                            color: CustomColours.darkSecondaryText,
+                            color: custom.secondaryText,
                           ),
                         ),
                       ),
@@ -232,17 +234,17 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   children: [
                     Text(
                       (avgRating * 2).toStringAsFixed(1),
-                      style: const TextStyle(
-                        color: CustomColours.darkSecondary,
+                      style:  TextStyle(
+                        color: custom.secondary,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
                     ),
-                    const Text(
+                     Text(
                       "Avg",
                       style: TextStyle(
                         fontSize: 12,
-                        color: CustomColours.darkSecondaryText,
+                        color: custom.secondaryText,
                       ),
                     ),
                   ],
@@ -259,7 +261,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   widget.ratingDetails.status == "Plan to Visit"
                       ? "Your Expected Ratings"
                       : "Your Ratings",
-                  style: const TextStyle(
+                  style:  TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
@@ -317,14 +319,14 @@ class _FullRatingCardState extends State<FullRatingCard> {
                                         "${(pRating.expectedRating! * 2).truncate()} / 10",
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: CustomColours.darkPrimaryText,
+                                          color: custom.primaryText,
                                         ),
                                       )
                                     : Text(
                                         "${(pRating.rating! * 2).truncate()} / 10",
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: CustomColours.darkPrimaryText,
+                                          color: custom.primaryText,
                                         ),
                                       ),
                               ],
@@ -341,14 +343,14 @@ class _FullRatingCardState extends State<FullRatingCard> {
                                     ),
                               textAlign: TextAlign.right,
                               style: TextStyle(
-                                color: CustomColours.darkPrimary,
+                                color: custom.primary,
                                 fontSize: 16,
                               ),
                             ),
                           ],
                         ),
                         Divider(
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                           thickness: 1,
                           height: 1,
                         ),
@@ -385,7 +387,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: CustomColours.darkPrimary,
+                            color: custom.primary,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Icon(
@@ -407,6 +409,8 @@ class _FullRatingCardState extends State<FullRatingCard> {
   }
 
   Widget _buildStar(int index, double currentRating) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     double starValue = index + 1.0;
 
     if (currentRating >= starValue) {
@@ -414,21 +418,21 @@ class _FullRatingCardState extends State<FullRatingCard> {
       return Icon(
         Icons.star,
         size: 25,
-        color: CustomColours.darkPrimaryVariant,
+        color: custom.primaryVariant,
       );
     } else if (currentRating >= starValue - 0.5) {
       // Half star
       return Icon(
         Icons.star_half,
         size: 25,
-        color: CustomColours.darkPrimaryVariant,
+        color: custom.primaryVariant,
       );
     } else {
       // Empty star
       return Icon(
         Icons.star_border,
         size: 25,
-        color: CustomColours.darkPrimaryVariant,
+        color: custom.primaryVariant,
       );
     }
   }

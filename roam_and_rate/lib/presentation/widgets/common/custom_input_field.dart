@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 
 class CustomInputField extends StatelessWidget {
   final String inputText;
@@ -24,9 +24,11 @@ class CustomInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Padding(
@@ -43,9 +45,9 @@ class CustomInputField extends StatelessWidget {
               : null,
           decoration: InputDecoration(
             hintText: inputText,
-            hintStyle: TextStyle(color: CustomColours.darkSecondaryText),
+            hintStyle: TextStyle(color: custom.secondaryText),
             icon: inputIcon,
-            iconColor: CustomColours.darkPrimary,
+            iconColor: custom.primary,
             filled: false,
             border: InputBorder.none,
             focusedBorder: InputBorder.none,

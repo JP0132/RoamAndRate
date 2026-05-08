@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 
 class ExpensePieChart extends StatefulWidget {
@@ -36,19 +37,21 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     // Map<String, double> dataMap = {};
     final dataMap = widget.categoryExpensesMap;
 
     return Container(
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       child: LayoutBuilder(builder: (context, constraints) {
         if (dataMap.isEmpty) {
           return Center(
-            child: Text('No expense data', style: TextStyle(color: CustomColours.darkPrimary)),
+            child: Text('No expense data', style: TextStyle(color: custom.primary)),
           );
         }
     
@@ -99,7 +102,7 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
                       color: categoryColors[label] ?? Colors.grey,
                       text: label,
                       isSquare: true,
-                      textColor: CustomColours.darkSecondaryText,
+                      textColor: custom.secondaryText,
                     ),
                   ),
                 );
@@ -115,7 +118,7 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
                 padding: const EdgeInsets.symmetric(vertical: 6.0),
                 child: Text(
                   'Expense Distribution',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: CustomColours.darkPrimary),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: custom.primary),
                 ),
               ),
             ),
@@ -158,6 +161,9 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
       final radius = isTouched ? 60.0 : 50.0;
       const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
 
+      final custom = Theme.of(context).extension<CustomColours>()!;
+
+
       return PieChartSectionData(
         color: colorList[data.key] ?? Colors.grey,
         value: data.value,
@@ -166,7 +172,7 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
+          color: custom.primary,
           shadows: shadows,
         ),
       );
@@ -187,7 +193,7 @@ class Indicator extends StatelessWidget {
     required this.text,
     this.isSquare = true,
     this.size = 16,
-    this.textColor = CustomColours.darkSecondaryText,
+    this.textColor = Colors.white,
   });
 
   @override

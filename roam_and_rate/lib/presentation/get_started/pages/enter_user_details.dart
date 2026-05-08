@@ -7,7 +7,7 @@ import 'package:roam_and_rate/application/participant/participant_event.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_event.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
@@ -84,6 +84,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -122,10 +123,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                 SizedBox(height: 50),
                 Text(
                   "Full Name",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 SizedBox(height: 10),
                 CustomInputField(
@@ -140,17 +138,14 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                       formValid["name"] == true
                           ? ""
                           : "Name cannot be blank or be less than 2 characters!",
-                      style: TextStyle(color: CustomColours.darkError),
+                      style: TextStyle(color: custom.error),
                     );
                   },
                 ),
                 SizedBox(height: 10),
                 Text(
                   "Username",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 SizedBox(height: 10),
                 CustomInputField(
@@ -165,24 +160,21 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                       formValid["username"] == true
                           ? ""
                           : "Username cannot be blank or be less than 2 characters!",
-                      style: TextStyle(color: CustomColours.darkError),
+                      style: TextStyle(color: custom.error),
                     );
                   },
                 ),
                 SizedBox(height: 30),
                 Text(
                   "Date of Birth",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 SizedBox(height: 10),
                 InkWell(
                   onTap: () => _showCustomStyledPicker(),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: CustomColours.darkSurface,
+                      color: custom.surface,
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
                     child: Padding(
@@ -194,7 +186,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                             padding: const EdgeInsets.only(right: 20),
                             child: Icon(
                               Icons.calendar_today,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                         ),
@@ -216,41 +208,38 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                   formValid["date"] == true
                       ? ""
                       : "DOB cannot be blank or must be 12 or over!",
-                  style: TextStyle(color: CustomColours.darkError),
+                  style: TextStyle(color: custom.error),
                 ),
                 SizedBox(height: 30),
                 Text(
                   "Gender",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: CustomColours.darkPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: custom.primary),
                 ),
                 SizedBox(height: 10),
-                 Padding(
-                   padding: const EdgeInsets.only(bottom: 8),
-                   child: CustomisableDropdown<String>(
-                                   items: genderOptions,
-                                   hint: "What is your gender?",
-                                   value: selectedGender,
-                                   backgroundColour: CustomColours.darkSurface,
-                                   selectedItemTextColour: CustomColours.darkBackground,
-                                   selectedItemColour: CustomColours.darkPrimary,
-                                   borderColour: Colors.transparent,
-                                   padding: EdgeInsets.all(20),
-                                   borderRadius: 20,
-                                   menuMaxHeight: 120,
-                                   onChanged: (value) {
-                    setState(() {
-                      selectedGender = value;
-                    });
-                                   },
-                                   itemBuilder: (currency) => Text(currency),
-                                 ),
-                 ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: CustomisableDropdown<String>(
+                    items: genderOptions,
+                    hint: "What is your gender?",
+                    value: selectedGender,
+                    backgroundColour: custom.surface,
+                    selectedItemTextColour: custom.background,
+                    selectedItemColour: custom.primary,
+                    borderColour: Colors.transparent,
+                    padding: EdgeInsets.all(20),
+                    borderRadius: 20,
+                    menuMaxHeight: 120,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedGender = value;
+                      });
+                    },
+                    itemBuilder: (currency) => Text(currency),
+                  ),
+                ),
                 Text(
                   formValid["gender"] == true ? "" : "Gender cannot be blank!",
-                  style: TextStyle(color: CustomColours.darkError),
+                  style: TextStyle(color: custom.error),
                 ),
                 SizedBox(height: 50),
 
@@ -265,9 +254,9 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
 
                         SessionManager().setUserId(newUser.userId!);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text("User created!"),
-                            backgroundColor: CustomColours.darkSuccess,
+                            backgroundColor: custom.success,
                           ),
                         );
                         SmoothTransitionPage(context, CustomBottomNavbar());
@@ -280,7 +269,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                           content: Text(
                             "Failed to create user: ${state.message}",
                           ),
-                          backgroundColor: CustomColours.darkError,
+                          backgroundColor: custom.error,
                         ),
                       );
                     }
@@ -308,8 +297,8 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColours.darkPrimary,
-                        foregroundColor: CustomColours.darkBackground,
+                        backgroundColor: custom.primary,
+                        foregroundColor: custom.background,
                         padding: EdgeInsets.all(8.0),
                       ),
                       child: Text(
@@ -355,22 +344,23 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
   }
 
   Future<void> _showCustomStyledPicker() async {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     final date = await CustomDatePicker.showSingleDatePicker(
       context: context,
       config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
+        primaryColor: custom.primary,
+        backgroundColor: custom.surface,
+        textColor: custom.primaryText,
         selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
+        disabledTextColor: custom.primary,
+        borderColor: custom.background,
+        todayColor: custom.error,
+        hoverColor: custom.secondarySurface,
         borderRadius: 20.0,
         headerTextStyle: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
+          color: custom.primary,
         ),
         dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),

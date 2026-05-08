@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/restore_db_backup.dart';
 import 'package:roam_and_rate/presentation/get_started/widgets/dropdown_with_input.dart';
@@ -34,6 +34,8 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+    
     List<String> protocols = ["http://", "https://"];
     String selectedProtocol = "http://";
 
@@ -118,7 +120,7 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              backgroundColor: CustomColours.darkSurface,
+                              backgroundColor: custom.surface,
                               title: const Text("Connection Failed"),
                               content: Text(
                                 "Unable to connect to the provided server address.\nEnsure you have entered the correct server address and Roam&Rate docker is running.",
@@ -136,8 +138,8 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: CustomColours.darkPrimary,
-                      foregroundColor: CustomColours.darkBackground,
+                      backgroundColor: custom.primary,
+                      foregroundColor: custom.background,
                       padding: EdgeInsets.all(8.0),
                     ),
                     child: Text(
@@ -166,8 +168,8 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
                         : null,
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: CustomColours.darkPrimary,
-                      foregroundColor: CustomColours.darkBackground,
+                      backgroundColor: custom.primary,
+                      foregroundColor: custom.background,
                       padding: EdgeInsets.all(8.0),
                       disabledBackgroundColor: Colors.grey.shade400,
                       disabledForegroundColor: Colors.white,

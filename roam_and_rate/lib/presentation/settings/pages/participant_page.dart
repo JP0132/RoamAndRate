@@ -6,7 +6,7 @@ import 'package:roam_and_rate/application/navigation/navigation_state.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_event.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 
@@ -23,6 +23,8 @@ class _ParticipantPageState extends State<ParticipantPage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Scaffold(
       appBar: AppBar(title: const Text("Participants"), centerTitle: true),
       body: Column(
@@ -67,15 +69,15 @@ class _ParticipantPageState extends State<ParticipantPage> {
                                       context: context,
                                       builder: (context) => AlertDialog(
                                         backgroundColor:
-                                            CustomColours.darkSurface,
+                                            custom.surface,
                                         title: const Text("Edit Participant"),
                                         content: Column(
                                           children: [
                                             Container(
                                               padding: EdgeInsets.all(5),
                                               decoration: BoxDecoration(
-                                                color: CustomColours
-                                                    .darkBackground,
+                                                color: custom
+                                                    .background,
                                                 borderRadius: BorderRadius.all(
                                                   Radius.circular(20),
                                                 ),
@@ -86,13 +88,13 @@ class _ParticipantPageState extends State<ParticipantPage> {
                                                   hintText:
                                                       'Edit a participant',
                                                   hintStyle: TextStyle(
-                                                    color: CustomColours
-                                                        .darkSecondaryText,
+                                                    color: custom
+                                                        .secondaryText,
                                                   ),
                                                   icon: Icon(
                                                     Icons.tag,
-                                                    color: CustomColours
-                                                        .darkPrimary,
+                                                    color: custom
+                                                        .primary,
                                                   ),
                                                   border: InputBorder.none,
                                                 ),
@@ -148,12 +150,15 @@ class _ParticipantPageState extends State<ParticipantPage> {
                             Builder(
                               builder: (con) {
                                 return ElevatedButton(
+                                  
                                   onPressed: () {
+                                    
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
+                                        
                                         backgroundColor:
-                                            CustomColours.darkSurface,
+                                            custom.surface,
                                         title: const Text("Delete Expense?"),
                                         content: const Text(
                                           "Are you sure you want to delete this participant, this action is irreversible",
@@ -177,20 +182,20 @@ class _ParticipantPageState extends State<ParticipantPage> {
                                               ScaffoldMessenger.of(
                                                 context,
                                               ).showSnackBar(
-                                                const SnackBar(
+                                                 SnackBar(
                                                   content: Text(
                                                     'Participant deleted successfully!',
                                                   ),
                                                   backgroundColor:
-                                                      CustomColours.darkSuccess,
+                                                      custom.success,
                                                 ),
                                               );
                                               Navigator.pop(context);
                                             },
-                                            child: const Text(
+                                            child:  Text(
                                               "DELETE",
                                               style: TextStyle(
-                                                color: CustomColours.darkError,
+                                                color: custom.error,
                                               ),
                                             ),
                                           ),
@@ -218,7 +223,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           height: 50,
                           decoration: BoxDecoration(
-                            color: CustomColours.darkSurface,
+                            color: custom.surface,
                             borderRadius: const BorderRadius.all(
                               Radius.circular(10),
                             ),
@@ -244,12 +249,16 @@ class _ParticipantPageState extends State<ParticipantPage> {
 
           // Input at bottom
           BlocConsumer<ParticipantBloc, ParticipantState>(
+            
             listener: (context, state) {
+              final custom = Theme.of(context).extension<CustomColours>()!;
+
               if (state is ParticipantAdded) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                   SnackBar(
+                    
                     content: Text("Participant created!"),
-                    backgroundColor: CustomColours.darkSuccess,
+                    backgroundColor: custom.success,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -260,7 +269,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
                     content: Text(
                       "Failed to create participant: ${state.message}",
                     ),
-                    backgroundColor: CustomColours.darkError,
+                    backgroundColor: custom.error,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -272,7 +281,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
                   margin: const EdgeInsets.all(12),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: CustomColours.darkSurface,
+                    color: custom.surface,
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
                   ),
                   child: TextField(
@@ -280,9 +289,9 @@ class _ParticipantPageState extends State<ParticipantPage> {
                     decoration: InputDecoration(
                       hintText: 'Add a participant',
                       hintStyle: TextStyle(
-                        color: CustomColours.darkSecondaryText,
+                        color: custom.secondaryText,
                       ),
-                      icon: Icon(Icons.tag, color: CustomColours.darkPrimary),
+                      icon: Icon(Icons.tag, color: custom.primary),
                       border: InputBorder.none,
                     ),
                     onSubmitted: (value) {

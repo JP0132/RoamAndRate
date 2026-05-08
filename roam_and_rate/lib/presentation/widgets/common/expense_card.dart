@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
 
@@ -30,10 +30,12 @@ class _ExpenseCardState extends State<ExpenseCard> {
   
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Row(
@@ -44,9 +46,9 @@ class _ExpenseCardState extends State<ExpenseCard> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: CustomColours.darkPrimary,
+              color: custom.primary,
             ),
-            child: Icon(Helperfunctions.getCatIcon(widget.category), color: CustomColours.darkSurface),
+            child: Icon(Helperfunctions.getCatIcon(widget.category), color: custom.surface),
           ),
 
           SizedBox(width: 16),
@@ -71,7 +73,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: CustomColours.darkSecondaryText,
+                    color: custom.secondaryText,
                   ),
                 ),
               ],
@@ -86,7 +88,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
               Text(
                 widget.paid.toString(),
                 style: TextStyle(
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -96,7 +98,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                 DateFormat('EE, dd MMM yyyy').format(widget.datePaid),
                 style: TextStyle(
                   fontSize: 12,
-                  color: CustomColours.darkSecondaryText,
+                  color: custom.secondaryText,
                 ),
               ),
             ],

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:roam_and_rate/app_router.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
+import 'package:roam_and_rate/presentation/settings/widget/theme_picker_widget.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -32,6 +33,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Scaffold(
       appBar: AppBar(title: Text("Settings"), centerTitle: true),
       body: SingleChildScrollView(
@@ -46,6 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(height: 10),
             SettingsBtn(btnText: "User's Details", btnIcon: FontAwesomeIcons.user, onTap: handleUserDetailsBtn),
             SettingsBtn(btnIcon: FontAwesomeIcons.arrowsRotate, btnText: "Sync", onTap: handleSyncBtn),
+            ThemePickerWidget(),
           ],
         ),
       ),
@@ -66,15 +70,17 @@ class SettingsBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return InkWell(
       onTap: () => onTap(),
-      splashColor: CustomColours.darkPrimary,
+      splashColor: custom.primary,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           height: 50,
           decoration: BoxDecoration(
-            color: CustomColours.darkSurface,
+            color: custom.surface,
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           child: Padding(
@@ -86,18 +92,18 @@ class SettingsBtn extends StatelessWidget {
                   height: 30,
                   width: 30,
                   decoration: BoxDecoration(
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
-                    child: FaIcon(btnIcon, color: CustomColours.darkSurface),
+                    child: FaIcon(btnIcon, color: custom.surface),
                   ),
                 ),
 
                 Text(btnText, style: TextStyle(fontSize: 20)),
                 FaIcon(
                   FontAwesomeIcons.arrowRight,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ],
             ),

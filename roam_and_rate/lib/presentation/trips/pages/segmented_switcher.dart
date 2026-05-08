@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/presentation/trips/classes/tabitem.dart';
 
 class SegmentedSwitcher extends StatefulWidget {
@@ -25,15 +25,17 @@ class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
  
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       width: 340,
       height: 54,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: CustomColours.darkPrimary.withValues(alpha: 0.5),
+          color: custom.primary.withValues(alpha: 0.5),
         ),
       ),
       child: LayoutBuilder(
@@ -52,14 +54,14 @@ class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
                   width: itemWidth,
                   height: constraints.maxHeight,
                   decoration: BoxDecoration(
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.08),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: CustomColours.darkPrimary.withValues(alpha: 0.4),
+                        color: custom.primary.withValues(alpha: 0.4),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -88,8 +90,8 @@ class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
                           item.title,
                           style: TextStyle(
                             color: isSelected
-                                ? CustomColours.darkBackground
-                                : CustomColours.darkPrimaryText.withValues(alpha: 0.35),
+                                ? custom.background
+                                : custom.primaryText.withValues(alpha: 0.35),
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),

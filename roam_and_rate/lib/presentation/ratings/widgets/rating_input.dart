@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:super_tooltip/super_tooltip.dart';
@@ -67,10 +67,12 @@ class _RatingInputState extends State<RatingInput> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: CustomColours.darkSecondarySurface,
+        color: custom.secondarySurface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Row(
@@ -95,7 +97,7 @@ class _RatingInputState extends State<RatingInput> {
                 "${(_currentRating * 2).truncate()} / 10",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimaryText,
+                  color: custom.primaryText,
                 ),
               ),
               Text(
@@ -103,7 +105,7 @@ class _RatingInputState extends State<RatingInput> {
                   (_currentRating * 2).truncate(),
                 ),
                 style: TextStyle(
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -130,14 +132,14 @@ class _RatingInputState extends State<RatingInput> {
                       children: [
                         Icon(
                           Icons.star_half,
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                           size: 20,
                         ),
                         Text(" = 1 point"),
                         SizedBox(width: 15),
                         Icon(
                           Icons.star,
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                           size: 20,
                         ),
                         Text(" = 2 points"),
@@ -194,7 +196,7 @@ class _RatingInputState extends State<RatingInput> {
               ),
               child: Icon(
                 Icons.info_outline,
-                color: CustomColours.darkPrimary,
+                color: custom.primary,
                 size: 24,
               ),
             ),
@@ -205,6 +207,8 @@ class _RatingInputState extends State<RatingInput> {
   }
 
   Widget _buildStar(int index) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     double starValue = index + 1.0;
 
     if (_currentRating >= starValue) {
@@ -212,39 +216,40 @@ class _RatingInputState extends State<RatingInput> {
       return Icon(
         Icons.star,
         size: 40,
-        color: CustomColours.darkPrimaryVariant,
+        color: custom.primaryVariant,
       );
     } else if (_currentRating >= starValue - 0.5) {
       // Half star
       return Icon(
         Icons.star_half,
         size: 40,
-        color: CustomColours.darkPrimaryVariant,
+        color: custom.primaryVariant,
       );
     } else {
       // Empty star
       return Icon(
         Icons.star_border,
         size: 40,
-        color: CustomColours.darkPrimaryVariant,
+        color: custom.primaryVariant,
       );
     }
   }
 }
 
-Widget emptyStars() {
-  return Row(
-    mainAxisSize: MainAxisSize.min,
-    children: List.generate(
-      5,
-      (index) => InkWell(
-        onTap: () => {if (index > 0) {}},
-        child: Icon(
-          Icons.star_border,
-          color: CustomColours.darkPrimaryVariant,
-          size: 40,
-        ),
-      ),
-    ),
-  );
-}
+// Widget emptyStars(Color colour) {
+
+//   return Row(
+//     mainAxisSize: MainAxisSize.min,
+//     children: List.generate(
+//       5,
+//       (index) => InkWell(
+//         onTap: () => {if (index > 0) {}},
+//         child: Icon(
+//           Icons.star_border,
+//           color: custom.primaryVariant,
+//           size: 40,
+//         ),
+//       ),
+//     ),
+//   );
+// }

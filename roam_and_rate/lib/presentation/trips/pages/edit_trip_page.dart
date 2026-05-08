@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_event.dart';
 import 'package:roam_and_rate/application/trips/trip_state.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
@@ -91,6 +91,8 @@ class _EditTripPageState extends State<EditTripPage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Edit Trip")),
       body: GestureDetector(
@@ -104,7 +106,7 @@ class _EditTripPageState extends State<EditTripPage> {
                 "Trip Name *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomInputField(
@@ -124,7 +126,7 @@ class _EditTripPageState extends State<EditTripPage> {
                 "Location *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomInputField(
@@ -139,7 +141,7 @@ class _EditTripPageState extends State<EditTripPage> {
                     formValid["location"] == true
                         ? ""
                         : "Location cannot be blank!",
-                    style: TextStyle(color: CustomColours.darkError),
+                    style: TextStyle(color: custom.error),
                   );
                 },
               ),
@@ -149,7 +151,7 @@ class _EditTripPageState extends State<EditTripPage> {
                 "Currency *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomisableDropdown<String>(
@@ -158,9 +160,9 @@ class _EditTripPageState extends State<EditTripPage> {
                 value: selectedCurrency != null
                     ? CurrencyData.getNameFromCode(selectedCurrency!)
                     : null,
-                backgroundColour: CustomColours.darkSurface,
-                selectedItemTextColour: CustomColours.darkBackground,
-                selectedItemColour: CustomColours.darkPrimary,
+                backgroundColour: custom.surface,
+                selectedItemTextColour: custom.background,
+                selectedItemColour: custom.primary,
                 borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
                 borderRadius: 20,
@@ -177,7 +179,7 @@ class _EditTripPageState extends State<EditTripPage> {
                 formValid["currency"] == true
                     ? ""
                     : "Currency cannot be blank!",
-                style: TextStyle(color: CustomColours.darkError),
+                style: TextStyle(color: custom.error),
               ),
               SizedBox(height: 20),
               // Budget Input Field
@@ -185,7 +187,7 @@ class _EditTripPageState extends State<EditTripPage> {
                 "Budget",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               ValueListenableBuilder<TextEditingValue>(
@@ -195,7 +197,7 @@ class _EditTripPageState extends State<EditTripPage> {
                     formValid["budget"] == true
                         ? ""
                         : "Budget can only contain numbers!",
-                    style: TextStyle(color: CustomColours.darkError),
+                    style: TextStyle(color: custom.error),
                   );
                 },
               ),
@@ -212,14 +214,14 @@ class _EditTripPageState extends State<EditTripPage> {
                 "Select trip dates *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               InkWell(
                 onTap: () => _showEnhancedRangeDatePicker(),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: CustomColours.darkSurface,
+                    color: custom.surface,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
                   child: Padding(
@@ -231,7 +233,7 @@ class _EditTripPageState extends State<EditTripPage> {
                           padding: const EdgeInsets.only(right: 20),
                           child: Icon(
                             Icons.date_range,
-                            color: CustomColours.darkPrimary,
+                            color: custom.primary,
                           ),
                         ),
                       ),
@@ -246,7 +248,7 @@ class _EditTripPageState extends State<EditTripPage> {
                             fontSize: 16,
                             color: selectedRange != null
                                 ? Colors.white
-                                : CustomColours.darkSecondaryText,
+                                : custom.secondaryText,
                           ),
                         ),
                       ),
@@ -258,14 +260,14 @@ class _EditTripPageState extends State<EditTripPage> {
                 formValid["selectedRange"] == true
                     ? ""
                     : "Date cannot be blank!",
-                style: TextStyle(color: CustomColours.darkError),
+                style: TextStyle(color: custom.error),
               ),
               SizedBox(height: 20),
               Text(
                 "Category *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomisableDropdown<String>(
@@ -274,11 +276,11 @@ class _EditTripPageState extends State<EditTripPage> {
                     .toList(),
                 hint: "Type of trip",
                 value: selectedCategory,
-                backgroundColour: CustomColours.darkSurface,
+                backgroundColour: custom.surface,
                 borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
-                selectedItemColour: CustomColours.darkPrimary,
-                selectedItemTextColour: CustomColours.darkBackground,
+                selectedItemColour: custom.primary,
+                selectedItemTextColour: custom.background,
                 borderRadius: 20,
                 menuMaxHeight: 100,
                 onChanged: (value) {
@@ -292,16 +294,17 @@ class _EditTripPageState extends State<EditTripPage> {
                 formValid["category"] == true
                     ? ""
                     : "Category cannot be blank!",
-                style: TextStyle(color: CustomColours.darkError),
+                style: TextStyle(color: custom.error),
               ),
               SizedBox(height: 50),
               BlocConsumer<TripBloc, TripState>(
                 listener: (context, state) {
+                  final custom = Theme.of(context).extension<CustomColours>()!;
                   if (state is TripEdited) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text("Trip Edited!"),
-                        backgroundColor: CustomColours.darkSuccess,
+                        backgroundColor: custom.success,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -312,7 +315,7 @@ class _EditTripPageState extends State<EditTripPage> {
                         content: Text(
                           "Failed to create trip: ${state.message}",
                         ),
-                        backgroundColor: CustomColours.darkError,
+                        backgroundColor: custom.error,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -343,8 +346,8 @@ class _EditTripPageState extends State<EditTripPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: CustomColours.darkPrimary,
-                      foregroundColor: CustomColours.darkBackground,
+                      backgroundColor: custom.primary,
+                      foregroundColor: custom.background,
                       padding: EdgeInsets.all(8.0),
                     ),
                     child: Text(
@@ -365,28 +368,30 @@ class _EditTripPageState extends State<EditTripPage> {
   }
 
   Future<void> _showEnhancedRangeDatePicker() async {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     final range = await CustomDatePicker.showRangeDatePicker(
       context: context,
       config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
+        primaryColor: custom.primary,
+        backgroundColor: custom.surface,
+        textColor: custom.primaryText,
         selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
+        disabledTextColor: custom.primary,
+        borderColor: custom.background,
+        todayColor: custom.error,
+        hoverColor: custom.secondarySurface,
         borderRadius: 20.0,
         headerTextStyle: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
+          color: custom.primary,
         ),
         dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         yearTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         enableManualEdit: true,
-        rangeColor: CustomColours.darkPrimaryVariant,
+        rangeColor: custom.primaryVariant,
       ),
       initialRange: selectedRange,
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:roam_and_rate/core/themes/app_theme_mode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManager {
@@ -20,6 +21,16 @@ class SessionManager {
     userId = prefs.getString('userId');
     lastSyncTime = prefs.getString('lastSyncTime');
     backupToDB = prefs.getBool("backupToDB");
+  }
+
+  Future<void> setTheme(AppThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('theme', mode.name);
+  }
+
+  Future<String> getTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('theme') ?? AppThemeMode.darkGrayGreen.name;
   }
 
   Future<void> setServerData(String serverAddress, String portNo) async {

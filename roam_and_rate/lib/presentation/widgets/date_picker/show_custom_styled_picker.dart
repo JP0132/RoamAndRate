@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customised_date_picker.dart';
 
@@ -9,6 +9,8 @@ class ShowPicker {
     DateTime? selectedDate,
     Function setDate,
   ) async {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     // Unfocus anything currently focused
     FocusScope.of(context).unfocus();
 
@@ -26,19 +28,19 @@ class ShowPicker {
             ),
             child: CustomDatePicker(
               config: DatePickerConfig(
-                primaryColor: CustomColours.darkPrimary,
-                backgroundColor: CustomColours.darkSurface,
-                textColor: CustomColours.darkPrimaryText,
+                primaryColor: custom.primary,
+                backgroundColor: custom.surface,
+                textColor: custom.primaryText,
                 selectedTextColor: Colors.black,
-                disabledTextColor: CustomColours.darkPrimary,
-                borderColor: CustomColours.darkBackground,
-                todayColor: CustomColours.darkError,
-                hoverColor: CustomColours.darkSecondarySurface,
+                disabledTextColor: custom.primary,
+                borderColor: custom.background,
+                todayColor: custom.error,
+                hoverColor: custom.secondarySurface,
                 borderRadius: 20.0,
                 headerTextStyle: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
                 dayTextStyle: TextStyle(
                   fontSize: 12,
@@ -79,6 +81,8 @@ class ShowPicker {
     DateTimeRange? selectedRange,
     Function onRangeSelected,
   ) async {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     FocusScope.of(context).unfocus();
 
     final range = await showDialog<DateTimeRange>(
@@ -94,19 +98,19 @@ class ShowPicker {
             child: CustomDatePicker(
               config: DatePickerConfig(
                 isRangePicker: true,
-                primaryColor: CustomColours.darkPrimary,
-                backgroundColor: CustomColours.darkSurface,
-                textColor: CustomColours.darkPrimaryText,
+                primaryColor: custom.primary,
+                backgroundColor: custom.surface,
+                textColor: custom.primaryText,
                 selectedTextColor: Colors.black,
-                disabledTextColor: CustomColours.darkPrimary,
-                borderColor: CustomColours.darkBackground,
-                todayColor: CustomColours.darkError,
-                hoverColor: CustomColours.darkSecondarySurface,
+                disabledTextColor: custom.primary,
+                borderColor: custom.background,
+                todayColor: custom.error,
+                hoverColor: custom.secondarySurface,
                 borderRadius: 20.0,
                 headerTextStyle: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
                 dayTextStyle: TextStyle(
                   fontSize: 12,
@@ -121,7 +125,7 @@ class ShowPicker {
                   fontWeight: FontWeight.bold,
                 ),
                 enableManualEdit: true,
-                rangeColor: CustomColours.darkPrimaryVariant,
+                rangeColor: custom.primaryVariant,
               ),
               initialRange: selectedRange,
               onRangeSelected: (range) {

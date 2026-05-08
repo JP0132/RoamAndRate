@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/presentation/get_started/widgets/dropdown_with_input.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
@@ -85,6 +85,8 @@ class _SyncSettingsState extends State<SyncSettings> {
   @override
   Widget build(BuildContext context) {
     List<String> protocols = ["http://", "https://"];
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
 
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Current Sync Settings")),
@@ -144,7 +146,7 @@ class _SyncSettingsState extends State<SyncSettings> {
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  backgroundColor: CustomColours.darkSurface,
+                                  backgroundColor: custom.surface,
                                   title: const Text("Connection Failed"),
                                   content: Text(
                                     "Unable to connect to the provided server address.\nEnsure you have entered the correct server address and Roam&Rate docker is running.",
@@ -162,8 +164,8 @@ class _SyncSettingsState extends State<SyncSettings> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: CustomColours.darkPrimary,
-                          foregroundColor: CustomColours.darkBackground,
+                          backgroundColor: custom.primary,
+                          foregroundColor: custom.background,
                           padding: EdgeInsets.all(8.0),
                         ),
                         child: Text(
@@ -192,8 +194,8 @@ class _SyncSettingsState extends State<SyncSettings> {
                             : null,
             
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: CustomColours.darkPrimary,
-                          foregroundColor: CustomColours.darkBackground,
+                          backgroundColor: custom.primary,
+                          foregroundColor: custom.background,
                           padding: EdgeInsets.all(8.0),
                           disabledBackgroundColor: Colors.grey.shade400,
                           disabledForegroundColor: Colors.white,

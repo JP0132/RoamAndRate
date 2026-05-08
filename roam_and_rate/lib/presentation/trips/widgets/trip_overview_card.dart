@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 
@@ -16,8 +16,11 @@ class TripOverviewCard extends StatefulWidget {
 }
 
 class _TripOverviewCardState extends State<TripOverviewCard> {
+
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     Duration diff = widget.tripModel.endDate.difference(
       widget.tripModel.startDate,
     );
@@ -36,9 +39,9 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
     Color getBudgetColor(){
       double progress = (widget.totalBudgetSpent / widget.tripModel.budget).clamp(0.0, 1.0);
 
-      if(progress >= 0.9) return CustomColours.darkError;
+      if(progress >= 0.9) return custom.error;
       if(progress >= 0.6) return Colors.amber.shade400;
-      return CustomColours.darkSuccess;
+      return custom.success;
     }
 
     
@@ -47,8 +50,8 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
         color: widget.tripModel.backgroundColor == "red"
-            ? CustomColours.darkError
-            : CustomColours.darkSurface,
+            ? custom.error
+            : custom.surface,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -72,12 +75,12 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                     Container(
                       padding: EdgeInsets.all(4.0),
                       decoration: BoxDecoration(
-                        color: CustomColours.darkPrimary.withValues(
+                        color: custom.primary.withValues(
                           alpha: (0.3),
                         ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                           width: 2,
                         ),
                       ),
@@ -86,7 +89,7 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                         children: [
                           Icon(
                             Icons.location_on_outlined,
-                            color: CustomColours.darkPrimary,
+                            color: custom.primary,
                           ),
                           Text(widget.tripModel.location),
                         ],
@@ -100,13 +103,13 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
             Row(
               //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Flexible(child: FaIcon(FontAwesomeIcons.calendar, color: CustomColours.darkSecondaryText, size: 10,)),
+                Flexible(child: FaIcon(FontAwesomeIcons.calendar, color: custom.secondaryText, size: 10,)),
                 SizedBox(width: 5,),
                 Flexible(
                   child: Text(
                     "${DateFormat('dd MMM yyyy').format(widget.tripModel.startDate)} - ",
-                    style: const TextStyle(
-                      color: CustomColours.darkSecondaryText,
+                    style: TextStyle(
+                      color: custom.secondaryText,
                       fontSize: 10,
                     ),
                   ),
@@ -114,8 +117,8 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                 Flexible(
                   child: Text(
                     "${DateFormat('dd MMM yyyy').format(widget.tripModel.endDate)}",
-                    style: const TextStyle(
-                      color: CustomColours.darkSecondaryText,
+                    style:  TextStyle(
+                      color: custom.secondaryText,
                       fontSize: 10,
                     ),
                   ),
@@ -123,8 +126,8 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                 Flexible(
                   child: Text(
                     " | ${days} days",
-                    style: const TextStyle(
-                      color: CustomColours.darkSecondaryText,
+                    style:  TextStyle(
+                      color: custom.secondaryText,
                       fontSize: 10,
                     ),
                   ),
@@ -136,7 +139,7 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: CustomColours.darkSecondaryText,
+                    color: custom.secondaryText,
                     width: 1,
                   ),
                 ),
@@ -151,15 +154,15 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                   children: [
                     Text(
                       "TOTAL BUDGET",
-                      style: const TextStyle(
-                        color: CustomColours.darkSecondaryText,
+                      style:  TextStyle(
+                        color: custom.secondaryText,
                         fontSize: 10,
                       ),
                     ),
                     Text(
                       "${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${widget.tripModel.budget.toString()}",
-                      style: const TextStyle(
-                        color: CustomColours.darkPrimaryText,
+                      style:  TextStyle(
+                        color: custom.primaryText,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -170,8 +173,8 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                   children: [
                     Text(
                       "REMAINING",
-                      style: const TextStyle(
-                        color: CustomColours.darkSecondaryText,
+                      style:  TextStyle(
+                        color: custom.secondaryText,
                         fontSize: 10,
                         
                       ),
@@ -199,14 +202,14 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                   children: [
                     Text(
                       "Total Budget Spent: ${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${widget.totalBudgetSpent.toStringAsFixed(2)}",
-                      style: const TextStyle(
-                        color: CustomColours.darkSecondaryText,
+                      style:  TextStyle(
+                        color: custom.secondaryText,
                       ),
                     ),
                     Text(
                   "Total Spent: ${CurrencyData.currencySymbolFromCode(widget.tripModel.currency)} ${widget.totalSpent.toStringAsFixed(2)}",
-                  style: const TextStyle(
-                    color: CustomColours.darkSecondaryText,
+                  style:  TextStyle(
+                    color: custom.secondaryText,
                   ),
                 ),
                   ],
@@ -234,14 +237,16 @@ class BudgetBar extends StatelessWidget{
   const BudgetBar({super.key, required this.budget, required this.spent});
   
   @override
-  Widget build(Object context) {
+  Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     double progress = (spent / budget).clamp(0.0, 1.0);
 
     return LinearProgressIndicator(
       value: progress,
       minHeight: 5,
-      backgroundColor: CustomColours.darkSecondarySurface,
-      valueColor: AlwaysStoppedAnimation<Color>(progress >= 0.9 ? CustomColours.darkError : progress >= 0.6 ? Colors.amber.shade400 : CustomColours.darkPrimary),
+      backgroundColor: custom.secondarySurface,
+      valueColor: AlwaysStoppedAnimation<Color>(progress >= 0.9 ? custom.error : progress >= 0.6 ? Colors.amber.shade400 : custom.primary),
       borderRadius: BorderRadius.circular(10),
     );
     

@@ -12,7 +12,7 @@ import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_event.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
@@ -290,6 +290,8 @@ class _ViewTripState extends State<ViewTrip> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     final totals = _calculateTotals();
     final _totalBudgetSpent = totals["budgetTotal"];
     final _totalPaidSpent = totals["paidTotal"];
@@ -317,7 +319,7 @@ class _ViewTripState extends State<ViewTrip> {
             Container(
               height: 40.0,
               decoration: BoxDecoration(
-                color: CustomColours.darkSurface,
+                color: custom.surface,
                 borderRadius: BorderRadius.circular(20.0),
               ),
               child: Padding(
@@ -372,7 +374,7 @@ class _ViewTripState extends State<ViewTrip> {
                         ),
                         child: Icon(
                           Icons.info_outline,
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                           size: 24,
                         ),
                       ),
@@ -415,18 +417,13 @@ class _ViewTripState extends State<ViewTrip> {
                     _expenses = newExpenses;
                     _filterTripData();
 
-                    // Initialize converted costs for matching currencies
-                    //_initializeConvertedCosts();
+                    
                   });
 
                   _convertAllExpenses();
                 }
 
-                // if (_selectedIndex == 0) {
-                //   return _buildRatingsList(state);
-                // } else {
-                //   return _buildExpensesList();
-                // }
+                
               },
               child: Expanded(
                 child: _selectedIndex == 1

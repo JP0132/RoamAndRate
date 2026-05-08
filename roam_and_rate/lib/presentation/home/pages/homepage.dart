@@ -10,7 +10,7 @@ import 'package:roam_and_rate/application/trips/trip_state.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_event.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/data/remote/sync_service.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
@@ -87,6 +87,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
       appBar: AppBar(title: Text("Home"), centerTitle: true,),
       body: SingleChildScrollView(
@@ -174,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                               Text(
                                 "Expenses",
                                 style: TextStyle(
-                                  color: CustomColours.darkPrimary,
+                                  color: custom.primary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16.0,
                                 ),
@@ -193,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                             "Expenses",
-                            style: TextStyle(color: CustomColours.darkPrimary),
+                            style: TextStyle(color: custom.primary),
                           ),
                           Text(
                             state.expenses.isEmpty || state.expenses.length <= 3
@@ -255,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                                 "Ratings",
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: CustomColours.darkPrimary,
+                                  color: custom.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -276,7 +277,7 @@ class _HomePageState extends State<HomePage> {
                             Text(
                               "Ratings",
                               style: TextStyle(
-                                color: CustomColours.darkPrimary,
+                                color: custom.primary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16.0,
                               ),
@@ -295,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                                     ? "View Less"
                                     : "View All",
                                 style: TextStyle(
-                                  color: CustomColours.darkPrimary,
+                                  color: custom.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

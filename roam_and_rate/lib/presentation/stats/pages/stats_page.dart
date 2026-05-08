@@ -6,6 +6,7 @@ import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_state.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_state.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
@@ -70,12 +71,14 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
   }
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Stats'),
         centerTitle: true,
         elevation: 1,
-        backgroundColor: CustomColours.darkSurface,
+        backgroundColor: custom.surface,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -85,7 +88,7 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
             // Page Heading
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text('Overview', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: CustomColours.darkPrimary)),
+              child: Text('Overview', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: custom.primary)),
             ),
 
             // Trip selector
@@ -107,12 +110,12 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
                           items: ["All", ..._trips.map((e) => e.tripId!)],
                           hint: "Filter by trip",
                           value: selectedTrip,
-                          backgroundColour: CustomColours.darkSurface,
+                          backgroundColour: custom.surface,
                           borderColour: Colors.transparent,
                           padding: const EdgeInsets.all(14),
                           borderRadius: 12,
                           menuMaxHeight: 200,
-                          selectedItemTextColour: CustomColours.darkPrimary,
+                          selectedItemTextColour: custom.primary,
                           onChanged: (value) {
                             setState(() {
                               selectedTrip = value!;
@@ -137,7 +140,7 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
             const SizedBox(height: 18),
 
             // Expenses Section
-            Text('Expenses', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: CustomColours.darkPrimary)),
+            Text('Expenses', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: custom.primary)),
             const SizedBox(height: 12),
             BlocBuilder<ExpenseBloc, ExpenseState>(
               builder: (context, state) {
@@ -205,7 +208,7 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Spending by category', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20, color: CustomColours.darkPrimary)),
+                          Text('Spending by category', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20, color: custom.primary)),
                           const SizedBox(height: 12),
                           ExpensePieChart(categoryExpensesMap: categoryExpensesMap),
                         ],
@@ -222,7 +225,7 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
             const SizedBox(height: 20),
 
             // Ratings Section
-            Text('Ratings', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: CustomColours.darkPrimary)),
+            Text('Ratings', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: custom.primary)),
             const SizedBox(height: 12),
             BlocBuilder<RatingsBloc, RatingsState>(
               builder: (context, state) {

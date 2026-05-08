@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 
 class DropdownWithInput extends StatefulWidget {
   final List<String> items;
@@ -22,6 +22,7 @@ class DropdownWithInput extends StatefulWidget {
 }
 
 class _DropdownWithInputState extends State<DropdownWithInput> {
+  
   late String selectedItem;
   FormFieldState<String?>? _formFieldState;
   VoidCallback? _controllerListener;
@@ -67,6 +68,7 @@ class _DropdownWithInputState extends State<DropdownWithInput> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return FormField<String>(
       validator: widget.validator,
       builder: (state) {
@@ -85,7 +87,7 @@ class _DropdownWithInputState extends State<DropdownWithInput> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: CustomColours.darkSurface,
+                color: custom.surface,
                 borderRadius: BorderRadius.circular(12.0),
                 border: Border.all(
                   color: state.hasError ? Colors.red : Colors.transparent,

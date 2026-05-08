@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_event.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 
@@ -43,6 +43,8 @@ class TripCards extends StatefulWidget {
 class _TripCardsState extends State<TripCards> {
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Slidable(
       key: Key(widget.tripModel.tripId ?? ''),
       endActionPane: ActionPane(
@@ -125,8 +127,8 @@ class _TripCardsState extends State<TripCards> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20)),
           color: widget.tripModel.backgroundColor == "red"
-              ? CustomColours.darkError
-              : CustomColours.darkSurface,
+              ? custom.error
+              : custom.surface,
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -151,7 +153,7 @@ class _TripCardsState extends State<TripCards> {
                     width: 30,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: CustomColours.darkPrimary,
+                      color: custom.primary,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),

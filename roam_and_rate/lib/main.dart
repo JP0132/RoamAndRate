@@ -12,7 +12,6 @@ import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/core/themes/app_theme_mode.dart';
 import 'package:roam_and_rate/core/themes/app_themes.dart';
-import 'package:roam_and_rate/core/themes/theme.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
 import 'package:roam_and_rate/data/local/daos/participant_dao.dart';

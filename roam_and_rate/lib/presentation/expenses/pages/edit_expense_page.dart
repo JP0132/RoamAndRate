@@ -10,7 +10,7 @@ import 'package:roam_and_rate/application/expenses/expense_event.dart';
 import 'package:roam_and_rate/application/expenses/expense_state.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
 import 'package:roam_and_rate/data/local/database.dart';
@@ -170,6 +170,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -179,8 +180,8 @@ class _EditExpensePageState extends State<EditExpensePage> {
         floatingActionButton: FloatingActionButton(
           shape: const CircleBorder(),
           onPressed: () => _showPickOptionsDialog(context),
-          backgroundColor: CustomColours.darkPrimary,
-          foregroundColor: CustomColours.darkBackground,
+          backgroundColor: custom.primary,
+          foregroundColor: custom.background,
           child: FaIcon(FontAwesomeIcons.camera, size: 35),
         ),
         body: Padding(
@@ -195,7 +196,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   "Expense Name *",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 CustomInputField(
@@ -207,7 +208,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   formValid["expenseName"] == true
                       ? ""
                       : "Name cannot be blank!",
-                  style: TextStyle(color: CustomColours.darkError),
+                  style: TextStyle(color: custom.error),
                 ),
                 SizedBox(height: 20),
 
@@ -222,7 +223,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             "Paid *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomInputField(
@@ -236,7 +237,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             formValid["paid"] == true
                                 ? ""
                                 : "Paid cannot be blank!",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           ),
                         ],
                       ),
@@ -252,7 +253,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             "Cost *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomInputField(
@@ -266,7 +267,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             formValid["cost"] == true
                                 ? ""
                                 : "Cost cannot be blank!",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           ),
                         ],
                       ),
@@ -279,14 +280,14 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   "Currency *",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 CustomisableDropdown<String>(
                   items: CurrencyData.fiatCurrenciesNames,
                   hint: "What currency did you use",
                   value: selectedCurrency,
-                  backgroundColour: CustomColours.darkSurface,
+                  backgroundColour: custom.surface,
                   borderColour: Colors.transparent,
                   padding: EdgeInsets.all(20),
                   borderRadius: 20,
@@ -302,7 +303,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   formValid["currency"] == true
                       ? ""
                       : "Currency cannot be blank!",
-                  style: TextStyle(color: CustomColours.darkError),
+                  style: TextStyle(color: custom.error),
                 ),
 
                 Row(
@@ -317,19 +318,19 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             "Category *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomisableDropdown<String>(
                             items: categories,
                             hint: "Select which category?",
                             value: selectedCategory,
-                            backgroundColour: CustomColours.darkSurface,
+                            backgroundColour: custom.surface,
                             borderColour: Colors.transparent,
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
-                            selectedItemTextColour: CustomColours.darkPrimary,
+                            selectedItemTextColour: custom.primary,
                             unselectedItemTextColour: Colors.grey[300],
 
                             onChanged: (category) {
@@ -343,7 +344,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             formValid["category"] == true
                                 ? ""
                                 : "Category cannot be blank!",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           ),
                         ],
                       ),
@@ -360,19 +361,19 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             "Payment Type *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomisableDropdown<String>(
                             items: types,
                             hint: "Select payment type",
                             value: selectedType,
-                            backgroundColour: CustomColours.darkSurface,
+                            backgroundColour: custom.surface,
                             borderColour: Colors.transparent,
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
-                            selectedItemTextColour: CustomColours.darkPrimary,
+                            selectedItemTextColour: custom.primary,
                             unselectedItemTextColour: Colors.grey[300],
 
                             onChanged: (type) {
@@ -386,7 +387,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             formValid["type"] == true
                                 ? ""
                                 : "Type cannot be blank!",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           ),
                         ],
                       ),
@@ -399,7 +400,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   "Will this expense be splitted?",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 Switch(
@@ -415,7 +416,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   "Who paid for it? *",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
 
@@ -433,9 +434,9 @@ class _EditExpensePageState extends State<EditExpensePage> {
                         items: _participants.map((p) => p.id!).toList(),
                         hint: "Who paid for it?",
                         value: selectedParticipant,
-                        backgroundColour: CustomColours.darkSurface,
+                        backgroundColour: custom.surface,
                         borderColour: Colors.transparent,
-                        selectedItemTextColour: CustomColours.darkPrimary,
+                        selectedItemTextColour: custom.primary,
                         padding: EdgeInsets.all(20),
                         borderRadius: 20,
                         menuMaxHeight: 200,
@@ -464,7 +465,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   "Date Paid *",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 InkWell(
@@ -472,7 +473,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
 
                   child: Container(
                     decoration: BoxDecoration(
-                      color: CustomColours.darkSurface,
+                      color: custom.surface,
 
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
@@ -489,7 +490,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
 
                             child: Icon(
                               Icons.calendar_today,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                         ),
@@ -513,7 +514,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   formValid["datePaid"] == true
                       ? ""
                       : "Date Paid cannot be blank!",
-                  style: TextStyle(color: CustomColours.darkError),
+                  style: TextStyle(color: custom.error),
                 ),
 
                 SizedBox(height: 20),
@@ -522,7 +523,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   "Tags",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 WTagField(
@@ -534,7 +535,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   "Notes",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 WLargeTextfield(
@@ -548,9 +549,9 @@ class _EditExpensePageState extends State<EditExpensePage> {
                   listener: (context, state) {
                     if (state is ExpenseEdited) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text("Expense edited!"),
-                          backgroundColor: CustomColours.darkSuccess,
+                          backgroundColor: custom.success,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -561,7 +562,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                           content: Text(
                             "Failed to edit expense: ${state.message}",
                           ),
-                          backgroundColor: CustomColours.darkError,
+                          backgroundColor: custom.error,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -601,8 +602,8 @@ class _EditExpensePageState extends State<EditExpensePage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColours.darkPrimary,
-                        foregroundColor: CustomColours.darkBackground,
+                        backgroundColor: custom.primary,
+                        foregroundColor: custom.background,
                         padding: EdgeInsets.all(8.0),
                       ),
                       child: Text(
@@ -624,22 +625,23 @@ class _EditExpensePageState extends State<EditExpensePage> {
   }
 
   Future<void> _showCustomStyledPicker() async {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     final date = await CustomDatePicker.showSingleDatePicker(
       context: context,
       config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
+        primaryColor: custom.primary,
+        backgroundColor: custom.surface,
+        textColor: custom.primaryText,
         selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
+        disabledTextColor: custom.primary,
+        borderColor: custom.background,
+        todayColor: custom.error,
+        hoverColor: custom.secondarySurface,
         borderRadius: 20.0,
         headerTextStyle: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
+          color: custom.primary,
         ),
         dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),

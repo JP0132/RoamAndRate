@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 
 // numeric keypad that updates a TextEditingController.
 class Numpad extends StatelessWidget {
   final TextEditingController controller;
+
+  
 
   /// Maximum number of decimal places allowed will be 2.
   final int decimalPlaces;
@@ -64,49 +66,50 @@ class Numpad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Container(
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildButtonRow(['1', '2', '3']),
+          _buildButtonRow(['1', '2', '3'], custom),
           const SizedBox(height: 8),
-          _buildButtonRow(['4', '5', '6']),
+          _buildButtonRow(['4', '5', '6'], custom),
           const SizedBox(height: 8),
-          _buildButtonRow(['7', '8', '9']),
+          _buildButtonRow(['7', '8', '9'], custom),
           const SizedBox(height: 8),
-          _buildButtonRow(['.', '0', '⌫']),
+          _buildButtonRow(['.', '0', '⌫'], custom),
         ],
       ),
     );
   }
 
-  Widget _buildButtonRow(List<String> labels) {
+  Widget _buildButtonRow(List<String> labels, CustomColours custom) {
     return Row(
       children: labels.map((label) {
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: label == '⌫'
-                ? _buildActionButton(label, _deleteLast)
-                : _buildDigitButton(label),
+                ? _buildActionButton(label, _deleteLast, custom)
+                : _buildDigitButton(label, custom),
           ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildDigitButton(String digit) {
+  Widget _buildDigitButton(String digit, CustomColours custom) {
     return ElevatedButton(
       onPressed: () => _appendDigit(digit),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: CustomColours.darkSecondarySurface,
-        foregroundColor: CustomColours.darkPrimary,
+        backgroundColor: custom.secondarySurface,
+        foregroundColor: custom.primary,
         elevation: 1,
       ),
       child: Text(
@@ -116,14 +119,14 @@ class Numpad extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(String label, VoidCallback onPressed) {
+  Widget _buildActionButton(String label, VoidCallback onPressed, CustomColours custom) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: CustomColours.darkPrimary,
-        foregroundColor: CustomColours.darkBackground,
+        backgroundColor: custom.primary,
+        foregroundColor: custom.background,
         elevation: 1,
       ),
       child: Text(

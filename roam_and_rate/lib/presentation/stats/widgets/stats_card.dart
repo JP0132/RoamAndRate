@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 
 /// A polished, reusable stats card used across the stats page.
 class StatsCard extends StatelessWidget {
@@ -23,8 +23,10 @@ class StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     final colors = gradientColors ??
-        [CustomColours.darkPrimary.withValues(alpha: 0.95), CustomColours.darkPrimary.withValues(alpha: 0.7)];
+        [custom.primary.withValues(alpha: 0.95), custom.primary.withValues(alpha: 0.7)];
 
     return Container(
       width: double.infinity,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/app_router.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 
@@ -14,6 +14,7 @@ class GetStarted extends StatefulWidget {
 class _GetStartedState extends State<GetStarted> {
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -102,16 +103,17 @@ class StartingOptionBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return ElevatedButton(
       onPressed: onPress,
       style: ElevatedButton.styleFrom(
-        backgroundColor: CustomColours.darkPrimary,
+        backgroundColor: custom.primary,
         elevation: 2,
       ),
       child: Text(
         btnText,
         style: TextStyle(
-          color: CustomColours.darkBackground,
+          color: custom.background,
           fontWeight: FontWeight.w700,
           fontSize: 20,
         ),

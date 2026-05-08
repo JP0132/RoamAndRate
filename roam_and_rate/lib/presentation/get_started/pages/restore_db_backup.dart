@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
@@ -82,6 +83,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
   }
 
   void _showBackupDialog(List<dynamic> users) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -91,7 +93,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: CustomColours.darkSurface,
+              backgroundColor: custom.surface,
               title: const Text("Backup(s) Found"),
               content: SizedBox(
                 width: double.maxFinite,
@@ -119,12 +121,12 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? CustomColours.darkPrimary.withValues(alpha: 0.3)
-                              : CustomColours.darkBackground,
+                              ? custom.primary.withValues(alpha: 0.3)
+                              : custom.background,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: isSelected
-                                ? CustomColours.darkPrimary.withValues(
+                                ? custom.primary.withValues(
                                     alpha: 0.3,
                                   )
                                 : Colors.transparent,
@@ -138,7 +140,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
                                   ? Icons.radio_button_checked
                                   : Icons.radio_button_off,
                               color: isSelected
-                                  ? CustomColours.darkPrimary.withValues(
+                                  ? custom.primary.withValues(
                                       alpha: 0.3,
                                     )
                                   : Colors.grey,
@@ -179,6 +181,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
   }
 
   void _showCancelDialog() {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -188,7 +191,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: CustomColours.darkSurface,
+              backgroundColor: custom.surface,
               title: const Text("Do you want to start fresh?"),
               content: SizedBox(
                 width: double.maxFinite,
@@ -383,6 +386,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
       body: Center(
         child: _isChecking
@@ -411,8 +415,8 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
                       onPressed: () =>
                           SmoothTransitionPage(context, EnterUserDetails()),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColours.darkPrimary,
-                        foregroundColor: CustomColours.darkBackground,
+                        backgroundColor: custom.primary,
+                        foregroundColor: custom.background,
                         padding: EdgeInsets.all(8.0),
                       ),
                       child: Text(

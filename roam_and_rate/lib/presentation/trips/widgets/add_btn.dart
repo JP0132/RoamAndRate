@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:roam_and_rate/app_router.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 
 class AddBtn extends StatelessWidget {
@@ -17,11 +17,13 @@ class AddBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Expanded(
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: CustomColours.darkSurface,
+          backgroundColor: custom.surface,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

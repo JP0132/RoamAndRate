@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/helper/my_logo.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
 import 'package:roam_and_rate/presentation/onboarding/pages/onboarding_page.dart';
@@ -87,6 +87,8 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -96,8 +98,8 @@ class _SplashPageState extends State<SplashPage>
               end: Alignment.bottomRight,
               stops: [0.7, 0.3],
               colors: [
-                CustomColours.darkBackground,
-                CustomColours.darkGraidentBackground,
+                custom.background,
+                custom.secondarySurface,
               ],
             ),
           ),

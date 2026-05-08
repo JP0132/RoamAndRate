@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_input.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
@@ -128,10 +128,12 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Column(
@@ -143,19 +145,19 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
                 onPressed: widgetIndexes.length != 1 ? removeWidget : null,
 
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: CustomColours.darkBackground,
+                  backgroundColor: custom.background,
                   disabledBackgroundColor: const Color.fromARGB(
                     255,
                     162,
                     166,
                     182,
                   ),
-                  disabledForegroundColor: CustomColours.darkSecondaryText,
+                  disabledForegroundColor: custom.secondaryText,
                 ),
 
                 child: Text(
                   "Remove",
-                  style: TextStyle(color: CustomColours.darkError),
+                  style: TextStyle(color: custom.error),
                 ),
               ),
 
@@ -164,11 +166,11 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
                     ? addWidget
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: CustomColours.darkBackground,
+                  backgroundColor: custom.background,
                 ),
                 child: Text(
                   "Add",
-                  style: TextStyle(color: CustomColours.darkSuccess),
+                  style: TextStyle(color: custom.success),
                 ),
               ),
             ],
@@ -184,13 +186,16 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
   }
 
   Widget _buildNewRating(int index) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Column(
+
       children: [
         Text(
           "Rating ${index + 1}",
           textAlign: TextAlign.left,
           style: TextStyle(
-            color: CustomColours.darkPrimary,
+            color: custom.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -204,13 +209,13 @@ void didUpdateWidget(covariant RatingContainer oldWidget) {
           items: widget.participants.map((p) => p.particpantName).toList(),
           hint: "Whose rating?",
           value: selectedParticipants[index]?.particpantName,
-          backgroundColour: CustomColours.darkSecondarySurface,
+          backgroundColour: custom.secondarySurface,
           borderColour: Colors.transparent,
           padding: EdgeInsets.all(20),
           borderRadius: 20,
           menuMaxHeight: 200,
-          selectedItemColour: CustomColours.darkPrimary,
-          selectedItemTextColour: CustomColours.darkBackground,
+          selectedItemColour: custom.primary,
+          selectedItemTextColour: custom.background,
           unselectedItemTextColour: Colors.grey[300],
 
           onChanged: (participantName) {

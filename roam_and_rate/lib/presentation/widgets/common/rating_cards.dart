@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/data/local/tables/ratings_made.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
@@ -34,10 +34,12 @@ class _RatingCardsState extends State<RatingCards> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Row(
@@ -48,11 +50,11 @@ class _RatingCardsState extends State<RatingCards> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: CustomColours.darkPrimary,
+              color: custom.primary,
             ),
             child: Icon(
               Helperfunctions.getCatIcon(widget.category),
-              color: CustomColours.darkSurface,
+              color: custom.surface,
             ),
           ),
 
@@ -83,7 +85,7 @@ class _RatingCardsState extends State<RatingCards> {
                             ).format(widget.dateRated!),
                       style: TextStyle(
                         fontSize: 12,
-                        color: CustomColours.darkSecondaryText,
+                        color: custom.secondaryText,
                       ),
                     ),
                   ],
@@ -95,7 +97,7 @@ class _RatingCardsState extends State<RatingCards> {
                         'No rating available',
                         style: TextStyle(
                           fontSize: 12,
-                          color: CustomColours.darkSecondaryText,
+                          color: custom.secondaryText,
                         ),
                       )
                     : Column(
@@ -107,7 +109,7 @@ class _RatingCardsState extends State<RatingCards> {
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: CustomColours.darkSecondaryText,
+                                      color: custom.secondaryText,
                                       width: 1,
                                     ),
                                   ),
@@ -122,7 +124,7 @@ class _RatingCardsState extends State<RatingCards> {
                                         (rm.rating * 2).toInt(),
                                       ),
                                       style: TextStyle(
-                                        color: CustomColours.darkPrimary,
+                                        color: custom.primary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                       ),

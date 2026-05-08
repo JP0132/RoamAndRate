@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
 import 'package:roam_and_rate/application/user/user_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
@@ -65,6 +65,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Scaffold(
       appBar: AppBar(title: Text("User's Details"), centerTitle: true),
       body: GestureDetector(
@@ -106,7 +108,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         "Full Name",
                         style: TextStyle(
                           fontSize: 14,
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                         ),
                       ),
                       SizedBox(height: 10),
@@ -122,7 +124,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                             formValid["name"] == true
                                 ? ""
                                 : "Name cannot be blank or be less than 2 characters!",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           );
                         },
                       ),
@@ -131,7 +133,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         "Username",
                         style: TextStyle(
                           fontSize: 14,
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                         ),
                       ),
                       SizedBox(height: 10),
@@ -147,7 +149,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                             formValid["username"] == true
                                 ? ""
                                 : "Username cannot be blank or be less than 2 characters!",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           );
                         },
                       ),
@@ -156,7 +158,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         "Date of Birth",
                         style: TextStyle(
                           fontSize: 14,
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                         ),
                       ),
                       SizedBox(height: 10),
@@ -164,7 +166,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         onTap: () => _showCustomStyledPicker(),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: CustomColours.darkSurface,
+                            color: custom.surface,
                             borderRadius: BorderRadius.all(Radius.circular(20)),
                           ),
                           child: Padding(
@@ -176,7 +178,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                   padding: const EdgeInsets.only(right: 20),
                                   child: Icon(
                                     Icons.calendar_today,
-                                    color: CustomColours.darkPrimary,
+                                    color: custom.primary,
                                   ),
                                 ),
                               ),
@@ -198,21 +200,21 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         formValid["date"] == true
                             ? ""
                             : "DOB cannot be blank or must be 12 or over!",
-                        style: TextStyle(color: CustomColours.darkError),
+                        style: TextStyle(color: custom.error),
                       ),
                       SizedBox(height: 30),
                       Text(
                         "Gender",
                         style: TextStyle(
                           fontSize: 14,
-                          color: CustomColours.darkPrimary,
+                          color: custom.primary,
                         ),
                       ),
                       SizedBox(height: 10),
                       CustomisableDropdown<String>(
                         items: genderOptions,
                         value: selectedGender,
-                        backgroundColour: CustomColours.darkSurface,
+                        backgroundColour: custom.surface,
                         borderColour: Colors.transparent,
                         padding: EdgeInsets.all(20),
                         borderRadius: 20,
@@ -229,7 +231,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         formValid["gender"] == true
                             ? ""
                             : "Gender cannot be blank!",
-                        style: TextStyle(color: CustomColours.darkError),
+                        style: TextStyle(color: custom.error),
                       ),
                     ],
                   );
@@ -248,22 +250,24 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     );
   }
   Future<void> _showCustomStyledPicker() async {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     final date = await CustomDatePicker.showSingleDatePicker(
       context: context,
       config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
+        primaryColor: custom.primary,
+        backgroundColor: custom.surface,
+        textColor: custom.primaryText,
         selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
+        disabledTextColor: custom.primary,
+        borderColor: custom.background,
+        todayColor: custom.error,
+        hoverColor: custom.secondarySurface,
         borderRadius: 20.0,
         headerTextStyle: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
+          color: custom.primary,
         ),
         dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),

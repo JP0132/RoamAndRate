@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 
 class WTagField extends StatefulWidget {
   final Function(List<String>) onTagsChanged;
@@ -46,10 +46,12 @@ class _WTagFieldState extends State<WTagField> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: CustomColours.darkSurface,
+        color: custom.surface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Column(
@@ -62,10 +64,10 @@ class _WTagFieldState extends State<WTagField> {
                 _tags
                     .map(
                       (tag) => Chip(
-                        backgroundColor: CustomColours.darkBackground,
+                        backgroundColor: custom.background,
                         label: Text(
                           tag,
-                          style: TextStyle(color: CustomColours.darkPrimary),
+                          style: TextStyle(color: custom.primary),
                         ),
                         deleteIcon: Icon(Icons.clear),
                         onDeleted: () => _removeTag(tag),
@@ -76,7 +78,7 @@ class _WTagFieldState extends State<WTagField> {
           const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: CustomColours.darkBackground,
+              color: custom.background,
               borderRadius: BorderRadius.all(Radius.circular(20)),
             ),
             child: Padding(
@@ -86,8 +88,8 @@ class _WTagFieldState extends State<WTagField> {
                 decoration: InputDecoration(
                   hintText: 'Add a tag',
                   icon: Icon(Icons.tag),
-                  hintStyle: TextStyle(color: CustomColours.darkSecondaryText),
-                  iconColor: CustomColours.darkPrimary,
+                  hintStyle: TextStyle(color: custom.secondaryText),
+                  iconColor: custom.primary,
                   filled: false,
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,

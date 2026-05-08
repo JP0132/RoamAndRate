@@ -10,7 +10,7 @@ import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_event.dart';
 import 'package:roam_and_rate/application/rating/ratings_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
@@ -218,13 +218,14 @@ class _EditRatingPageState extends State<EditRatingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Add Rating")),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () => _showPickOptionsDialog(context),
-        backgroundColor: CustomColours.darkPrimary,
-        foregroundColor: CustomColours.darkBackground,
+        backgroundColor: custom.primary,
+        foregroundColor: custom.background,
         child: FaIcon(FontAwesomeIcons.camera, size: 35),
       ),
       body: GestureDetector(
@@ -243,7 +244,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   "Place Name *",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 CustomInputField(
@@ -258,7 +259,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   "Location *",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 CustomInputField(
@@ -281,14 +282,14 @@ class _EditRatingPageState extends State<EditRatingPage> {
                             "Category *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomisableDropdown<String>(
                             items: categories,
                             hint: "Select which category?",
                             value: selectedCategory,
-                            backgroundColour: CustomColours.darkSurface,
+                            backgroundColour: custom.surface,
                             borderColour: Colors.transparent,
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
@@ -303,9 +304,9 @@ class _EditRatingPageState extends State<EditRatingPage> {
                                     : 16,
                               ),
                             ),
-                            selectedItemColour: CustomColours.darkPrimary,
+                            selectedItemColour: custom.primary,
                             selectedItemTextColour:
-                                CustomColours.darkBackground,
+                                custom.background,
                             unselectedItemTextColour: Colors.grey[300],
 
                             onChanged: (category) {
@@ -330,21 +331,21 @@ class _EditRatingPageState extends State<EditRatingPage> {
                             "Status *",
                             style: TextStyle(
                               fontSize: 14,
-                              color: CustomColours.darkPrimary,
+                              color: custom.primary,
                             ),
                           ),
                           CustomisableDropdown<String>(
                             items: statuses,
                             hint: "Select which Status?",
                             value: selectedStatus,
-                            backgroundColour: CustomColours.darkSurface,
+                            backgroundColour: custom.surface,
                             borderColour: Colors.transparent,
                             padding: EdgeInsets.all(20),
                             borderRadius: 20,
                             menuMaxHeight: 200,
-                            selectedItemColour: CustomColours.darkPrimary,
+                            selectedItemColour: custom.primary,
                             selectedItemTextColour:
-                                CustomColours.darkBackground,
+                                custom.background,
                             unselectedItemTextColour: Colors.grey[300],
 
                             onChanged: (value) {
@@ -367,7 +368,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                     "Rating",
                     style: TextStyle(
                       fontSize: 14,
-                      color: CustomColours.darkPrimary,
+                      color: custom.primary,
                     ),
                   ),
 
@@ -441,7 +442,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                               getStatusLabel(selectedStatus),
                               style: TextStyle(
                                 fontSize: 14,
-                                color: CustomColours.darkPrimary,
+                                color: custom.primary,
                               ),
                             ),
                             InkWell(
@@ -449,7 +450,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
 
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: CustomColours.darkSurface,
+                                  color: custom.surface,
 
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(20),
@@ -470,7 +471,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
 
                                         child: Icon(
                                           Icons.calendar_today,
-                                          color: CustomColours.darkPrimary,
+                                          color: custom.primary,
                                         ),
                                       ),
                                     ),
@@ -507,14 +508,14 @@ class _EditRatingPageState extends State<EditRatingPage> {
                               "Value",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: CustomColours.darkPrimary,
+                                color: custom.primary,
                               ),
                             ),
                             CustomisableDropdown<String>(
                               items: value,
                               hint: "How well priced was it?",
                               value: selectedValue,
-                              backgroundColour: CustomColours.darkSurface,
+                              backgroundColour: custom.surface,
                               borderColour: Colors.transparent,
                               padding: EdgeInsets.all(20),
                               borderRadius: 20,
@@ -538,7 +539,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   "Tags",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 WTagField(
@@ -550,7 +551,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   "Notes",
                   style: TextStyle(
                     fontSize: 14,
-                    color: CustomColours.darkPrimary,
+                    color: custom.primary,
                   ),
                 ),
                 WLargeTextfield(
@@ -592,18 +593,18 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   listener: (context, state) {
                     if (state is RatingDetailsEdited) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                         SnackBar(
                           content: Text("Rating created!"),
-                          backgroundColor: CustomColours.darkSuccess,
+                          backgroundColor: custom.success,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
                       Navigator.pop(context);
                     } else if (state is RatingWithParticipantsEdited) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                         SnackBar(
                           content: Text("Rating created!"),
-                          backgroundColor: CustomColours.darkSuccess,
+                          backgroundColor: custom.success,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -681,8 +682,8 @@ class _EditRatingPageState extends State<EditRatingPage> {
                         if (formValid.values.every((v) => v)) {}
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColours.darkPrimary,
-                        foregroundColor: CustomColours.darkBackground,
+                        backgroundColor: custom.primary,
+                        foregroundColor: custom.background,
                         padding: EdgeInsets.all(8.0),
                       ),
                       child: Text(
@@ -704,22 +705,23 @@ class _EditRatingPageState extends State<EditRatingPage> {
   }
 
   Future<void> _showCustomStyledPicker() async {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     final date = await CustomDatePicker.showSingleDatePicker(
       context: context,
       config: DatePickerConfig(
-        primaryColor: CustomColours.darkPrimary,
-        backgroundColor: CustomColours.darkSurface,
-        textColor: CustomColours.darkPrimaryText,
+        primaryColor: custom.primary,
+        backgroundColor: custom.surface,
+        textColor: custom.primaryText,
         selectedTextColor: Colors.black,
-        disabledTextColor: CustomColours.darkPrimary,
-        borderColor: CustomColours.darkBackground,
-        todayColor: CustomColours.darkError,
-        hoverColor: CustomColours.darkSecondarySurface,
+        disabledTextColor: custom.primary,
+        borderColor: custom.background,
+        todayColor: custom.error,
+        hoverColor: custom.secondarySurface,
         borderRadius: 20.0,
         headerTextStyle: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: CustomColours.darkPrimary,
+          color: custom.primary,
         ),
         dayTextStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         monthTextStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),

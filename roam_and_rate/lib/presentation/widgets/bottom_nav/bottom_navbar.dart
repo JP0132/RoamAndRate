@@ -5,7 +5,7 @@ import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/navigation/navigation_bloc.dart';
 import 'package:roam_and_rate/application/navigation/navigation_event.dart';
 import 'package:roam_and_rate/application/navigation/navigation_state.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/presentation/home/pages/homepage.dart';
 import 'package:roam_and_rate/presentation/settings/settings_page.dart';
 import 'package:roam_and_rate/presentation/stats/pages/stats_page.dart';
@@ -16,6 +16,7 @@ class CustomBottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return BlocProvider(
       create: (_) => NavigationBloc(),
       child: Scaffold(
@@ -25,8 +26,8 @@ class CustomBottomNavbar extends StatelessWidget {
             Navigator.pushNamed(context, AppRouter.addTrip);
           },
           shape: const CircleBorder(),
-          backgroundColor: CustomColours.darkPrimary,
-          foregroundColor: Colors.black,
+          backgroundColor: custom.primary,
+          foregroundColor: custom.background,
           child: FaIcon(FontAwesomeIcons.plus, size: 30),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -34,7 +35,7 @@ class CustomBottomNavbar extends StatelessWidget {
           margin: const EdgeInsets.all(16),
           padding: EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: CustomColours.darkSecondarySurface,
+            color: custom.secondarySurface,
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           child: ClipRRect(
@@ -118,20 +119,22 @@ class CustomBottomNavbar extends StatelessWidget {
     required int selectedIndex,
     required VoidCallback onTap,
   }) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color:
             selectedIndex == index
-                ? CustomColours.darkPrimary
-                : CustomColours.darkSurface,
+                ? custom.primary
+                : custom.surface,
       ),
       child: IconButton(
         onPressed: onTap,
         icon: FaIcon(
           icon,
           size: 25,
-          color: selectedIndex == index ? Colors.black : Colors.white,
+          color: selectedIndex == index ? custom.background : custom.primaryText,
         ),
       ),
     );

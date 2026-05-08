@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_event.dart';
 import 'package:roam_and_rate/application/trips/trip_state.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
@@ -78,6 +78,8 @@ class _AddTripPageState extends State<AddTripPage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Add Trip")),
       body: GestureDetector(
@@ -91,7 +93,7 @@ class _AddTripPageState extends State<AddTripPage> {
                 "Trip Name *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomInputField(
@@ -111,7 +113,7 @@ class _AddTripPageState extends State<AddTripPage> {
                 "Location *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomInputField(
@@ -126,7 +128,7 @@ class _AddTripPageState extends State<AddTripPage> {
                     formValid["location"] == true
                         ? ""
                         : "Location cannot be blank!",
-                    style: TextStyle(color: CustomColours.darkError),
+                    style: TextStyle(color: custom.error),
                   );
                 },
               ),
@@ -136,7 +138,7 @@ class _AddTripPageState extends State<AddTripPage> {
                 "Currency *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomisableDropdown<String>(
@@ -145,9 +147,9 @@ class _AddTripPageState extends State<AddTripPage> {
                 value: selectedCurrency != null
                     ? CurrencyData.getNameFromCode(selectedCurrency!)
                     : null,
-                backgroundColour: CustomColours.darkSurface,
-                selectedItemTextColour: CustomColours.darkBackground,
-                selectedItemColour: CustomColours.darkPrimary,
+                backgroundColour: custom.surface,
+                selectedItemTextColour: custom.background,
+                selectedItemColour: custom.primary,
                 borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
                 borderRadius: 20,
@@ -164,7 +166,7 @@ class _AddTripPageState extends State<AddTripPage> {
                 formValid["currency"] == true
                     ? ""
                     : "Currency cannot be blank!",
-                style: TextStyle(color: CustomColours.darkError),
+                style: TextStyle(color: custom.error),
               ),
               SizedBox(height: 20),
               // Budget Input Field
@@ -172,7 +174,7 @@ class _AddTripPageState extends State<AddTripPage> {
                 "Budget",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               ValueListenableBuilder<TextEditingValue>(
@@ -182,7 +184,7 @@ class _AddTripPageState extends State<AddTripPage> {
                     formValid["budget"] == true
                         ? ""
                         : "Budget can only contain numbers!",
-                    style: TextStyle(color: CustomColours.darkError),
+                    style: TextStyle(color: custom.error),
                   );
                 },
               ),
@@ -199,14 +201,14 @@ class _AddTripPageState extends State<AddTripPage> {
                 "Select trip dates *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               InkWell(
                 onTap: () => ShowPicker.showEnhancedRangeDatePicker(context, selectedRange, setRange),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: CustomColours.darkSurface,
+                    color: custom.surface,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
                   child: Padding(
@@ -218,7 +220,7 @@ class _AddTripPageState extends State<AddTripPage> {
                           padding: const EdgeInsets.only(right: 20),
                           child: Icon(
                             Icons.date_range,
-                            color: CustomColours.darkPrimary,
+                            color: custom.primary,
                           ),
                         ),
                       ),
@@ -233,7 +235,7 @@ class _AddTripPageState extends State<AddTripPage> {
                             fontSize: 16,
                             color: selectedRange != null
                                 ? Colors.white
-                                : CustomColours.darkSecondaryText,
+                                : custom.secondaryText,
                           ),
                         ),
                       ),
@@ -245,14 +247,14 @@ class _AddTripPageState extends State<AddTripPage> {
                 formValid["selectedRange"] == true
                     ? ""
                     : "Date cannot be blank!",
-                style: TextStyle(color: CustomColours.darkError),
+                style: TextStyle(color: custom.error),
               ),
               SizedBox(height: 20),
               Text(
                 "Category *",
                 style: TextStyle(
                   fontSize: 14,
-                  color: CustomColours.darkPrimary,
+                  color: custom.primary,
                 ),
               ),
               CustomisableDropdown<String>(
@@ -261,11 +263,11 @@ class _AddTripPageState extends State<AddTripPage> {
                     .toList(),
                 hint: "Type of trip",
                 value: selectedCategory,
-                backgroundColour: CustomColours.darkSurface,
+                backgroundColour: custom.surface,
                 borderColour: Colors.transparent,
                 padding: EdgeInsets.all(20),
-                selectedItemColour: CustomColours.darkPrimary,
-                selectedItemTextColour: CustomColours.darkBackground,
+                selectedItemColour: custom.primary,
+                selectedItemTextColour: custom.background,
                 borderRadius: 20,
                 menuMaxHeight: 100,
                 onChanged: (value) {
@@ -279,16 +281,18 @@ class _AddTripPageState extends State<AddTripPage> {
                 formValid["category"] == true
                     ? ""
                     : "Category cannot be blank!",
-                style: TextStyle(color: CustomColours.darkError),
+                style: TextStyle(color: custom.error),
               ),
               SizedBox(height: 50),
               BlocConsumer<TripBloc, TripState>(
                 listener: (context, state) {
+                  final custom = Theme.of(context).extension<CustomColours>()!;
+
                   if (state is TripAdded) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                    SnackBar(
                         content: Text("Trip created!"),
-                        backgroundColor: CustomColours.darkSuccess,
+                        backgroundColor: custom.success,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -299,7 +303,7 @@ class _AddTripPageState extends State<AddTripPage> {
                         content: Text(
                           "Failed to create trip: ${state.message}",
                         ),
-                        backgroundColor: CustomColours.darkError,
+                        backgroundColor: custom.error,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -330,8 +334,8 @@ class _AddTripPageState extends State<AddTripPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: CustomColours.darkPrimary,
-                      foregroundColor: CustomColours.darkBackground,
+                      backgroundColor: custom.primary,
+                      foregroundColor: custom.background,
                       padding: EdgeInsets.all(8.0),
                     ),
                     child: Text(

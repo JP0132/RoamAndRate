@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 
 class StarRating extends StatelessWidget {
   final int rating; // e.g. 7 means 3 full + 1 half
@@ -9,27 +9,21 @@ class StarRating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     int fullStars = rating ~/ 2;
     bool hasHalfStar = rating % 2 == 1;
 
     return Row(
       children: List.generate(maxStars, (index) {
         if (index < fullStars) {
-          return const Icon(
-            Icons.star,
-            color: CustomColours.darkPrimaryVariant,
-            size: 20,
-          );
+          return Icon(Icons.star, color: custom.primaryVariant, size: 20);
         } else if (index == fullStars && hasHalfStar) {
-          return const Icon(
-            Icons.star_half,
-            color: CustomColours.darkPrimaryVariant,
-            size: 20,
-          );
+          return Icon(Icons.star_half, color: custom.primaryVariant, size: 20);
         } else {
-          return const Icon(
+          return Icon(
             Icons.star_border,
-            color: CustomColours.darkPrimaryVariant,
+            color: custom.primaryVariant,
             size: 20,
           );
         }

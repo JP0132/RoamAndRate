@@ -12,8 +12,8 @@ import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_event.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
-import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
 import 'package:roam_and_rate/core/utils/helper/currency_rate.dart';
@@ -76,6 +76,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     final id = widget.expenseDetails.expenseId!;
     final converted = widget.convertedCosts[id];
 
@@ -116,7 +117,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      backgroundColor: CustomColours.darkSurface,
+                      backgroundColor: custom.surface,
                       title: const Text("Delete Expense?"),
                       content: const Text(
                         "Are you sure you want to delete this expense, this action is irversiable",
@@ -135,16 +136,16 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                             //     DeleteExpenseRequested(
                             //         widget.expenseDetails));
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                               SnackBar(
                                 content: Text('Expense deleted successfully!'),
-                                backgroundColor: CustomColours.darkSuccess,
+                                backgroundColor: custom.success,
                               ),
                             );
                             Navigator.pop(context);
                           },
-                          child: const Text(
+                          child:  Text(
                             "DELETE",
-                            style: TextStyle(color: CustomColours.darkError),
+                            style: TextStyle(color: custom.error),
                           ),
                         ),
                       ],
@@ -189,7 +190,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
         child: Container(
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: CustomColours.darkSurface,
+            color: custom.surface,
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           child: Column(
@@ -204,14 +205,14 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                     height: 50,
                     decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
-                      color: CustomColours.darkPrimary,
+                      color: custom.primary,
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
                     child: Icon(
                       Helperfunctions.getCatIcon(
                         widget.expenseDetails.category,
                       ),
-                      color: CustomColours.darkBackground,
+                      color: custom.background,
                     ),
                   ),
 
@@ -238,7 +239,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                             Text(
                               "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toStringAsFixed(2)}",
                               style: TextStyle(
-                                color: CustomColours.darkPrimaryText,
+                                color: custom.primaryText,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
                               ),
@@ -259,7 +260,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                 : Container(
                                     padding: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: CustomColours.darkBackground,
+                                      color: custom.background,
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(10),
                                       ),
@@ -267,7 +268,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                     child: Text(
                                       "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${converted.toStringAsFixed(2)}",
                                       style: TextStyle(
-                                        color: CustomColours.darkPrimary,
+                                        color: custom.primary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12,
                                       ),
@@ -283,7 +284,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                   Container(
                     padding: EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: CustomColours.darkSecondarySurface,
+                      color: custom.secondarySurface,
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       
                     ),
@@ -293,7 +294,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       ).format(widget.expenseDetails.datePaid),
                       style: TextStyle(
                         fontSize: 12,
-                        color: CustomColours.darkSecondaryText,
+                        color: custom.secondaryText,
                       ),
                     ),
                   ),
@@ -305,7 +306,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: CustomColours.darkSecondaryText,
+                      color: custom.secondaryText,
                       width: 1,
                     ),
                   ),
@@ -349,7 +350,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Divider(
-                              color: CustomColours.darkSecondaryText,
+                              color: custom.secondaryText,
                               thickness: 1,
                               height: 1,
                             ),
@@ -377,7 +378,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: CustomColours.darkPrimary,
+                                          color: custom.primary,
                                           borderRadius: BorderRadius.circular(
                                             20,
                                           ),
@@ -405,10 +406,11 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
   }
 
   Widget _buildCostDetails(String label, String detail) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Row(
       children: [
         VerticalDivider(
-          color: CustomColours.darkSecondaryText,
+          color: custom.secondaryText,
           thickness: 1,
           width: 1,
         ),
@@ -421,14 +423,14 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: CustomColours.darkSecondaryText,
+                color: custom.secondaryText,
               ),
             ),
 
             Text(
               detail,
               style: TextStyle(
-                color: CustomColours.darkPrimaryText,
+                color: custom.primaryText,
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
