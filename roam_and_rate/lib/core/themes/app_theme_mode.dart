@@ -1,0 +1,5 @@
+enum AppThemeMode{
+  darkGrayGreen,
+
+  coffee,
+}

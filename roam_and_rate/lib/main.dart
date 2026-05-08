@@ -7,10 +7,11 @@ import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
 import 'package:roam_and_rate/application/theme/theme_cubit.dart';
-import 'package:roam_and_rate/application/theme/theme_state.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/user/user_bloc.dart';
+import 'package:roam_and_rate/core/themes/app_theme_mode.dart';
+import 'package:roam_and_rate/core/themes/app_themes.dart';
 import 'package:roam_and_rate/core/themes/theme.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/data/local/daos/expense_dao.dart';
@@ -48,6 +49,7 @@ Future<void> main() async {
     LifecycleWatcher(
       child: MultiBlocProvider(
         providers: [
+          BlocProvider(create: (_) => ThemeCubit()),
           BlocProvider(create: (_) => UserBloc(userRepository)),
           BlocProvider(create: (_) => TripBloc(tripRepository)),
           BlocProvider(create: (_) => ParticipantBloc(participantRepository)),
@@ -69,12 +71,12 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ThemeCubit(),
-      child: BlocBuilder<ThemeCubit, ThemeState>(
+      child: BlocBuilder<ThemeCubit, AppThemeMode>(
         builder: (context, state) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: CustomAppTheme.lightTheme,
-            darkTheme: CustomAppTheme.darkTheme,
+            theme: AppThemes.of(state),
+            
             initialRoute: AppRouter.splash,
             onGenerateRoute: AppRouter.generateRoute,
           );
