@@ -11,6 +11,7 @@ import 'package:roam_and_rate/application/rating/ratings_bloc.dart';
 import 'package:roam_and_rate/application/rating/ratings_event.dart';
 import 'package:roam_and_rate/application/rating/ratings_state.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
+import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
@@ -59,16 +60,6 @@ class _EditRatingPageState extends State<EditRatingPage> {
   final List<String> value = ["Cheap", "Just Right", "Expensive"];
   String? selectedValue = "";
 
-  final List<String> categories = [
-    "Food & Drink",
-    "Tourist Attraction",
-    "Accommodation",
-    "Shopping",
-    "Nature",
-    "Transport",
-    "Wellness",
-    "Other",
-  ];
 
   String? selectedCategory;
 
@@ -286,7 +277,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                             ),
                           ),
                           CustomisableDropdown<String>(
-                            items: categories,
+                            items: Categories.tripCategories.map((e) => e.name).toList(),
                             hint: "Select which category?",
                             value: selectedCategory,
                             backgroundColour: custom.surface,

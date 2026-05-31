@@ -11,6 +11,7 @@ import 'package:roam_and_rate/application/expenses/expense_state.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
+import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
 import 'package:roam_and_rate/data/local/database.dart';
@@ -46,16 +47,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
   List<ParticipantModel> _participants = [];
   String selectedParticipant = "";
 
-  final List<String> categories = [
-    "Food & Drink",
-    "Tourist Attraction",
-    "Accommodation",
-    "Shopping",
-    "Nature & Outdoors",
-    "Wellness",
-    "Transport",
-    "Other",
-  ];
+  
   String? selectedCategory;
   String? selectedType;
   String? selectedCurrency;
@@ -322,7 +314,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                             ),
                           ),
                           CustomisableDropdown<String>(
-                            items: categories,
+                            items: Categories.tripCategories.map((e) => e.name).toList(),
                             hint: "Select which category?",
                             value: selectedCategory,
                             backgroundColour: custom.surface,

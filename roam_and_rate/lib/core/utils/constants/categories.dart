@@ -15,7 +15,7 @@ class Categories {
   static final List<CategoryModel> categories = [
     CategoryModel(name: "Food", icon: FontAwesomeIcons.bowlFood),
     CategoryModel(
-      name: "Tourist",
+      name: "Tourism",
       icon: FontAwesomeIcons.mapLocationDot,
     ),
     CategoryModel(name: "Stay", icon: FontAwesomeIcons.hotel),
