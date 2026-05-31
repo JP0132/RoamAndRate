@@ -11,9 +11,13 @@ import 'package:roam_and_rate/application/expenses/expense_state.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
+import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/constants/values.dart';
+import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
+import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/data/local/database.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
@@ -39,6 +43,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _paidController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
+  final SessionManager _sessionManager = SessionManager();
+
+  String _convertedAmount = "0.00";
+  String _converstionRate = "";
 
   DateTime? selectedDate = DateTime.now();
   bool toBeSplit = false;
@@ -50,16 +58,16 @@ class _AddExpensePageState extends State<AddExpensePage> {
   List<ParticipantModel> _participants = [];
   String selectedParticipant = "";
 
-  final List<String> categories = [
-    "Food & Drink",
-    "Tourist Attraction",
-    "Accommodation",
-    "Shopping",
-    "Nature",
-    "Transport",
-    "Wellness",
-    "Other",
-  ];
+  // final List<String> categories = [
+  //   "Food",
+  //   "Tourist",
+  //   "Stay",
+  //   "Shopping",
+  //   "Nature",
+  //   "Transport",
+  //   "Wellness",
+  //   "Other",
+  // ];
   String? selectedCategory;
   String? selectedType;
   String? selectedCurrency;
@@ -73,6 +81,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
   void initState() {
     super.initState();
     selectedCurrency = widget.tripDetails.currency;
+    _paidController.addListener(() {
+      _updateConversion();
+    });
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -163,6 +174,29 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   double _amount = 0.0;
 
+  Future<void> _updateConversion() async {
+    final amount = double.tryParse(_paidController.text);
+
+    if (amount == null) {
+      setState(() {
+        _convertedAmount = "0.00";
+      });
+      return;
+    }
+
+    final result = await CurrencyHelper().getConvertedAmount(
+      base: selectedCurrency!.toUpperCase(),
+      target: widget.tripDetails.currency.toUpperCase(),
+      value: amount,
+    );
+
+    if (mounted) {
+      setState(() {
+        _convertedAmount = result ?? "0.00";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
@@ -187,7 +221,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
-                  height: 250,
+                  height: 200,
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: custom.surface,
@@ -197,28 +231,39 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     children: [
                       Row(
                         children: [
-                          Expanded(child: Text("Amount Paid", style: TextStyle(color: custom.primary, fontSize: 20, fontWeight: FontWeight.bold, ),)),
+                          Expanded(
+                            child: Text(
+                              "Amount Paid",
+                              style: TextStyle(
+                                color: custom.primary,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                           Expanded(
                             child: CustomisableDropdown<String>(
-                              items: CurrencyData.fiatCurrenciesNames,
+                              items: CurrencyData.fiatCurrenciesCodes,
                               hint: "What currency did you use?",
                               value: selectedCurrency,
                               backgroundColour: custom.surface,
-                              selectedItemTextColour: custom.secondaryText,
+                              selectedItemTextColour: custom.surface,
+                              unselectedItemTextColour: custom.primary,
                               selectedItemColour: custom.primary,
                               borderColour: custom.primary,
-                              padding: EdgeInsets.all(15),
+                              padding: EdgeInsets.all(5),
                               borderRadius: 20,
                               menuMaxHeight: 200,
                               onChanged: (value) {
                                 setState(() {
-                                  final code = CurrencyData.getCodeFromName(
-                                    value!,
-                                  );
+                                  // final code = CurrencyData.getCodeFromName(
+                                  //   value!,
+                                  // );
                                   selectedCurrency = value;
+                                  _updateConversion();
                                 });
                               },
-                              itemBuilder: (currency) => Text(currency, style: TextStyle(color: custom.primary),),
+                              itemBuilder: (currency) => Text(currency),
                             ),
                           ),
                         ],
@@ -243,7 +288,31 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       ),
 
                       Divider(color: custom.primary),
-                      Row(children: [Text("Converted to GBP", style: TextStyle(color: custom.primary, fontSize: 16, fontWeight: FontWeight.bold, ),)]),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                "Converted to  ${widget.tripDetails.currency}",
+                                style: TextStyle(
+                                  color: custom.secondaryText,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              Text(
+                                " ≈ $_convertedAmount",
+                                style: TextStyle(
+                                  color: custom.primary,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -333,87 +402,97 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
                 SizedBox(height: 20),
 
-                // Text(
-                //   "Currency *",
-                //   style: TextStyle(fontSize: 14, color: custom.primary),
-                // ),
-                // CustomisableDropdown<String>(
-                //   items: CurrencyData.fiatCurrenciesNames,
-                //   hint: "What currency did you use",
-                //   value: selectedCurrency,
-                //   backgroundColour: custom.surface,
-                //   selectedItemTextColour: custom.primary,
-                //   borderColour: Colors.transparent,
-                //   padding: EdgeInsets.all(20),
-                //   borderRadius: 20,
-                //   menuMaxHeight: 200,
-                //   onChanged: (value) {
-                //     setState(() {
-                //       final code = CurrencyData.getCodeFromName(value!);
-                //       selectedCurrency = code;
-                //     });
-                //   },
-                //   itemBuilder: (currency) => Text(currency),
-                // ),
-                // Text(
-                //   formValid["currency"] == true
-                //       ? ""
-                //       : "Currency cannot be blank!",
-                //   style: TextStyle(color: custom.error),
-                // ),
+                Text("CATEGORY", style: TextStyle(color: custom.secondaryText)),
+
+                GridView.count(
+                  primary: false,
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  shrinkWrap: true,
+                
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: Categories.tripCategories
+                      .map(
+                        (e) => Container(
+                          decoration: BoxDecoration(
+                            color: custom.surface,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                             Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: custom.primary,
+                                border: Border.all(color: custom.primary),
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                              ),
+                              child: FaIcon(e.icon, size: 30, color: custom.surface,)),
+                             Text(e.name),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
 
                 Row(
                   children: [
                     // Select the date you visted
                     // TODO: If status is marked as planned then disable the field
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Category *",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: custom.primary,
-                            ),
-                          ),
-                          CustomisableDropdown<String>(
-                            items: categories,
-                            hint: "Select which category?",
-                            value: selectedCategory,
-                            backgroundColour: custom.surface,
-                            borderColour: Colors.transparent,
-                            selectedItemBuilder: (value) => Text(
-                              value,
-                              style: TextStyle(
-                                fontSize:
-                                    selectedCategory == "Accommodation" ||
-                                        selectedCategory == "Tourist Attraction"
-                                    ? 12
-                                    : 16,
-                              ),
-                            ),
-                            padding: EdgeInsets.all(20),
-                            borderRadius: 20,
-                            menuMaxHeight: 200,
-                            selectedItemTextColour: custom.primary,
-                            unselectedItemTextColour: custom.primaryText,
-                            onChanged: (category) {
-                              setState(() {
-                                selectedCategory = category;
-                              });
-                            },
-                            itemBuilder: (value) => Text(value),
-                          ),
-                          Text(
-                            formValid["category"] == true
-                                ? ""
-                                : "Category cannot be blank!",
-                            style: TextStyle(color: custom.error),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       Text(
+                    //         "Category *",
+                    //         style: TextStyle(
+                    //           fontSize: 14,
+                    //           color: custom.primary,
+                    //         ),
+                    //       ),
+                    //       CustomisableDropdown<String>(
+                    //         items: categories,
+                    //         hint: "Select which category?",
+                    //         value: selectedCategory,
+                    //         backgroundColour: custom.surface,
+                    //         borderColour: Colors.transparent,
+                    //         selectedItemBuilder: (value) => Text(
+                    //           value,
+                    //           style: TextStyle(
+                    //             fontSize:
+                    //                 selectedCategory == "Accommodation" ||
+                    //                     selectedCategory == "Tourist Attraction"
+                    //                 ? 12
+                    //                 : 16,
+                    //           ),
+                    //         ),
+                    //         padding: EdgeInsets.all(20),
+                    //         borderRadius: 20,
+                    //         menuMaxHeight: 200,
+                    //         selectedItemTextColour: custom.primary,
+                    //         unselectedItemTextColour: custom.primaryText,
+                    //         onChanged: (category) {
+                    //           setState(() {
+                    //             selectedCategory = category;
+                    //           });
+
+                    //           _updateConversion();
+                    //         },
+                    //         itemBuilder: (value) => Text(value),
+                    //       ),
+                    //       Text(
+                    //         formValid["category"] == true
+                    //             ? ""
+                    //             : "Category cannot be blank!",
+                    //         style: TextStyle(color: custom.error),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
 
                     SizedBox(width: 10), // Space between containers
                     // Dropdown to select the value, if the cost was worth it

@@ -13,15 +13,15 @@ class Categories {
   ];
 
   static final List<CategoryModel> categories = [
-    CategoryModel(name: "Food & Drink", icon: FontAwesomeIcons.bowlFood),
+    CategoryModel(name: "Food", icon: FontAwesomeIcons.bowlFood),
     CategoryModel(
-      name: "Tourist Attraction",
+      name: "Tourist",
       icon: FontAwesomeIcons.mapLocationDot,
     ),
-    CategoryModel(name: "Accommodation", icon: FontAwesomeIcons.hotel),
+    CategoryModel(name: "Stay", icon: FontAwesomeIcons.hotel),
     CategoryModel(name: "Shopping", icon: FontAwesomeIcons.bagShopping),
     CategoryModel(name: "Nature", icon: FontAwesomeIcons.tree),
-    CategoryModel(name: "Wellness", icon: FontAwesomeIcons.spa),
+    CategoryModel(name: "Health", icon: FontAwesomeIcons.spa),
     CategoryModel(name: "Transport", icon: FontAwesomeIcons.taxi),
     CategoryModel(name: "Other", icon: FontAwesomeIcons.alignJustify),
   ];

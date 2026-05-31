@@ -79,13 +79,13 @@ class CurrencyHelper {
     }
   }
 
-  // Optional: Clear cache if needed (e.g., when currency rates might have changed)
+  // Clear cache if needed (e.g., when currency rates might have changed)
   void clearCache() {
     _resultCache.clear();
     _pendingRequests.clear();
   }
 
-  // Optional: Preload common conversions
+  // Preload common conversions
   Future<void> preloadCommonRates(List<String> bases, String target) async {
     for (final base in bases) {
       // This will cache the rates in SessionManager

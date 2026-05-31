@@ -117,47 +117,50 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
             child: Material(
               elevation: 4,
               borderRadius: BorderRadius.circular(widget.borderRadius),
-              child: Container(
-                width: buttonWidth,
-                constraints: BoxConstraints(
-                  maxHeight: widget.menuMaxHeight ?? 300,
-                ),
-                decoration: BoxDecoration(
-                  color:
-                      widget.backgroundColour ?? Theme.of(context).canvasColor,
-                  borderRadius: BorderRadius.circular(widget.borderRadius),
-                  border: Border.all(color: widget.borderColour ?? Colors.grey),
-                ),
-                child: ListView.builder(
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  itemCount: widget.items.length,
-                  itemBuilder: (context, index) {
-                    final item = widget.items[index];
-                    final isSelected = item == widget.value;
-
-                    return InkWell(
-                      onTap: () {
-                        widget.onChanged(item);
-                        _closeDropdown();
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                child: Container(
+                  width: buttonWidth,
+                  constraints: BoxConstraints(
+                    maxHeight: widget.menuMaxHeight ?? 300,
+                  ),
+                  decoration: BoxDecoration(
+                    color:
+                        widget.backgroundColour ?? Theme.of(context).canvasColor,
+                    borderRadius: BorderRadius.circular(widget.borderRadius),
+                    border: Border.all(color: widget.borderColour ?? Colors.grey),
+                  ),
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: widget.items.length,
+                    itemBuilder: (context, index) {
+                      final item = widget.items[index];
+                      final isSelected = item == widget.value;
+                
+                      return InkWell(
+                        onTap: () {
+                          widget.onChanged(item);
+                          _closeDropdown();
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? (widget.selectedItemColour ??
+                                      custom.primary)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: _buildDropdownItem(item, isSelected),
                         ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? (widget.selectedItemColour ??
-                                    custom.primary)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: _buildDropdownItem(item, isSelected),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -198,7 +201,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
       effectiveTextStyle = TextStyle(
         color: widget.selectedItemTextColour ?? custom.primaryText,
         fontWeight: FontWeight.bold,
-        fontSize: widget.selectedItemTextSize ?? 16,
+        fontSize: widget.selectedItemTextSize ?? 14,
       ).merge(widget.selectedItemTextStyle);
     } else {
       effectiveTextStyle = TextStyle(
