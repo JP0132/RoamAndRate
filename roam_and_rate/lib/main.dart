@@ -28,6 +28,7 @@ import 'package:roam_and_rate/data/repositories/trip_repository_impl.dart';
 import 'package:roam_and_rate/data/repositories/user_repository_impl.dart';
 import 'package:roam_and_rate/lifecycle_watcher.dart';
 
+
 Future<void> main() async {
   final db = AppDatabase.instance;
   final userRepository = UserRepositoryImpl(UserDao(db), ParticipantDao(db));
