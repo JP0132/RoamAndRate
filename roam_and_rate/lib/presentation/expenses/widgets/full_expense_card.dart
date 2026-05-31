@@ -99,12 +99,12 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
-                  backgroundColor: Colors.green,
+                  backgroundColor: custom.success,
                   padding: const EdgeInsets.all(10),
                 ),
-                child: const Icon(
+                child:  Icon(
                   FontAwesomeIcons.pencil,
-                  color: Colors.white,
+                  color: custom.icon,
                   size: 25,
                 ),
               );
@@ -154,12 +154,12 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
-                  backgroundColor: Colors.red,
+                  backgroundColor: custom.error,
                   padding: const EdgeInsets.all(10),
                 ),
-                child: const Icon(
+                child:  Icon(
                   FontAwesomeIcons.trash,
-                  color: Colors.white,
+                  color: custom.icon,
                   size: 25,
                 ),
               );
@@ -228,7 +228,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            color: custom.primary,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),

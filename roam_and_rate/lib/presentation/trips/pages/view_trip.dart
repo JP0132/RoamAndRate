@@ -300,7 +300,7 @@ class _ViewTripState extends State<ViewTrip> {
     print("Total paid spent: $_totalPaidSpent");
 
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text("Trip Overview")),
+      appBar: AppBar(centerTitle: true, title: Text("Trip Overview", style: TextStyle(color: custom.primary))),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -326,19 +326,19 @@ class _ViewTripState extends State<ViewTrip> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.search, color: Colors.white),
+                     Icon(Icons.search, color: custom.primary),
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextField(
                           controller: _searchController,
-                          decoration: const InputDecoration(
+                          decoration:  InputDecoration(
                             hintText: 'Search',
                             border: InputBorder.none,
-                            hintStyle: TextStyle(fontSize: 14),
+                            hintStyle: TextStyle(fontSize: 14, color: custom.primary),
                           ),
-                          style: const TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 14, color: custom.primary),
                         ),
                       ),
                     ),
@@ -350,7 +350,7 @@ class _ViewTripState extends State<ViewTrip> {
                         showBarrier: true,
                         popupDirection: TooltipDirection.left,
                         controller: _controller,
-                        content: const SizedBox(
+                        content:  SizedBox(
                           width: 250,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -358,16 +358,19 @@ class _ViewTripState extends State<ViewTrip> {
                             children: [
                               Text(
                                 "The search bar can be used to filter by names and tags.",
+                                style: TextStyle(color: custom.primaryText),
                               ),
                               SizedBox(height: 12),
-                              Text("Types of searches:"),
+                              Text("Types of searches:", style: TextStyle(color: custom.primaryText),),
                               SizedBox(height: 4),
-                              Text("• Used commas to multi-search."),
+                              Text("• Used commas to multi-search.", style: TextStyle(color: custom.primaryText),),
                               Text(
                                 "• Use the keyword 'tags:' to search tags only.",
+                                style: TextStyle(color: custom.primaryText),
                               ),
                               Text(
                                 "• Use the keyword 'category:' to search categories only.",
+                                style: TextStyle(color: custom.primaryText),
                               ),
                             ],
                           ),

@@ -93,12 +93,12 @@ class _FullRatingCardState extends State<FullRatingCard> {
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
-                  backgroundColor: Colors.green,
+                  backgroundColor: custom.success,
                   padding: const EdgeInsets.all(10),
                 ),
-                child: const Icon(
+                child:  Icon(
                   FontAwesomeIcons.pencil,
-                  color: Colors.white,
+                  color: custom.icon,
                   size: 25,
                 ),
               );
@@ -145,12 +145,12 @@ class _FullRatingCardState extends State<FullRatingCard> {
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
-                  backgroundColor: Colors.red,
+                  backgroundColor: custom.error,
                   padding: const EdgeInsets.all(10),
                 ),
-                child: const Icon(
+                child:  Icon(
                   FontAwesomeIcons.trash,
-                  color: Colors.white,
+                  color: custom.icon,
                   size: 25,
                 ),
               );
@@ -194,10 +194,10 @@ class _FullRatingCardState extends State<FullRatingCard> {
                     children: [
                       Text(
                         widget.ratingDetails.placeName,
-                        style: const TextStyle(
+                        style:  TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: custom.primaryText,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -264,7 +264,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   style:  TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: custom.primaryText,
                   ),
                 ),
                 
@@ -294,7 +294,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SizedBox(width: 60, child: Text(participantName.particpantName)),
+                            SizedBox(width: 60, child: Text(participantName.particpantName, style: TextStyle(color: custom.primaryText),)),
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -225,7 +225,7 @@ class _AddRatingPageState extends State<AddRatingPage> {
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text("Add Rating")),
+      appBar: AppBar(centerTitle: true, title: Text("Add Rating", style: TextStyle(color: custom.primary))),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () => _showPickOptionsDialog(context),

@@ -67,9 +67,10 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                   children: [
                     Text(
                       widget.tripModel.tripName,
-                      style: const TextStyle(
+                      style:  TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: custom.primary,
                       ),
                     ),
                     Container(
@@ -91,7 +92,7 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                             Icons.location_on_outlined,
                             color: custom.primary,
                           ),
-                          Text(widget.tripModel.location),
+                          Text(widget.tripModel.location, style: TextStyle(color: custom.primary),),
                         ],
                       ),
                     ),
@@ -116,7 +117,7 @@ class _TripOverviewCardState extends State<TripOverviewCard> {
                 ),
                 Flexible(
                   child: Text(
-                    "${DateFormat('dd MMM yyyy').format(widget.tripModel.endDate)}",
+                    DateFormat('dd MMM yyyy').format(widget.tripModel.endDate),
                     style:  TextStyle(
                       color: custom.secondaryText,
                       fontSize: 10,

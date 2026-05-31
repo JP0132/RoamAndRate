@@ -197,16 +197,17 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     children: [
                       Row(
                         children: [
-                          Expanded(child: Text("Amount Paid")),
+                          Expanded(child: Text("Amount Paid", style: TextStyle(color: custom.primary, fontSize: 20, fontWeight: FontWeight.bold, ),)),
                           Expanded(
                             child: CustomisableDropdown<String>(
                               items: CurrencyData.fiatCurrenciesNames,
-                              hint: "What currency did you use",
+                              hint: "What currency did you use?",
                               value: selectedCurrency,
                               backgroundColour: custom.surface,
-                              selectedItemTextColour: custom.primary,
-                              borderColour: Colors.transparent,
-                              padding: EdgeInsets.all(20),
+                              selectedItemTextColour: custom.secondaryText,
+                              selectedItemColour: custom.primary,
+                              borderColour: custom.primary,
+                              padding: EdgeInsets.all(15),
                               borderRadius: 20,
                               menuMaxHeight: 200,
                               onChanged: (value) {
@@ -214,10 +215,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                   final code = CurrencyData.getCodeFromName(
                                     value!,
                                   );
-                                  selectedCurrency = code;
+                                  selectedCurrency = value;
                                 });
                               },
-                              itemBuilder: (currency) => Text(currency),
+                              itemBuilder: (currency) => Text(currency, style: TextStyle(color: custom.primary),),
                             ),
                           ),
                         ],
@@ -226,6 +227,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       TextFormField(
                         controller: _paidController,
                         readOnly: true,
+                        style: TextStyle(color: custom.primary, fontSize: 30),
                         decoration: InputDecoration(
                           hintText: "Paid Amount",
                           hintStyle: TextStyle(color: custom.secondaryText),
@@ -241,7 +243,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       ),
 
                       Divider(color: custom.primary),
-                      Row(children: [Text("Converted to GBP")]),
+                      Row(children: [Text("Converted to GBP", style: TextStyle(color: custom.primary, fontSize: 16, fontWeight: FontWeight.bold, ),)]),
                     ],
                   ),
                 ),
@@ -331,34 +333,34 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
                 SizedBox(height: 20),
 
-                Text(
-                  "Currency *",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
-                ),
-                CustomisableDropdown<String>(
-                  items: CurrencyData.fiatCurrenciesNames,
-                  hint: "What currency did you use",
-                  value: selectedCurrency,
-                  backgroundColour: custom.surface,
-                  selectedItemTextColour: custom.primary,
-                  borderColour: Colors.transparent,
-                  padding: EdgeInsets.all(20),
-                  borderRadius: 20,
-                  menuMaxHeight: 200,
-                  onChanged: (value) {
-                    setState(() {
-                      final code = CurrencyData.getCodeFromName(value!);
-                      selectedCurrency = code;
-                    });
-                  },
-                  itemBuilder: (currency) => Text(currency),
-                ),
-                Text(
-                  formValid["currency"] == true
-                      ? ""
-                      : "Currency cannot be blank!",
-                  style: TextStyle(color: custom.error),
-                ),
+                // Text(
+                //   "Currency *",
+                //   style: TextStyle(fontSize: 14, color: custom.primary),
+                // ),
+                // CustomisableDropdown<String>(
+                //   items: CurrencyData.fiatCurrenciesNames,
+                //   hint: "What currency did you use",
+                //   value: selectedCurrency,
+                //   backgroundColour: custom.surface,
+                //   selectedItemTextColour: custom.primary,
+                //   borderColour: Colors.transparent,
+                //   padding: EdgeInsets.all(20),
+                //   borderRadius: 20,
+                //   menuMaxHeight: 200,
+                //   onChanged: (value) {
+                //     setState(() {
+                //       final code = CurrencyData.getCodeFromName(value!);
+                //       selectedCurrency = code;
+                //     });
+                //   },
+                //   itemBuilder: (currency) => Text(currency),
+                // ),
+                // Text(
+                //   formValid["currency"] == true
+                //       ? ""
+                //       : "Currency cannot be blank!",
+                //   style: TextStyle(color: custom.error),
+                // ),
 
                 Row(
                   children: [
@@ -395,8 +397,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             borderRadius: 20,
                             menuMaxHeight: 200,
                             selectedItemTextColour: custom.primary,
-                            unselectedItemTextColour: Colors.grey[300],
-
+                            unselectedItemTextColour: custom.primaryText,
                             onChanged: (category) {
                               setState(() {
                                 selectedCategory = category;
@@ -438,7 +439,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             borderRadius: 20,
                             menuMaxHeight: 200,
                             selectedItemTextColour: custom.primary,
-                            unselectedItemTextColour: Colors.grey[300],
+                            unselectedItemTextColour: custom.primaryText,
 
                             onChanged: (type) {
                               setState(() {

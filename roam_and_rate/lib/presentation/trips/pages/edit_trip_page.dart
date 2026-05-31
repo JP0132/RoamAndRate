@@ -117,7 +117,7 @@ class _EditTripPageState extends State<EditTripPage> {
               if (formValid["tripName"] == false)
                 Text(
                   "Trip Name cannot be blank or be less than 2 characters!",
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: custom.error),
                 ),
 
               SizedBox(height: 20),

@@ -23,16 +23,6 @@ class SessionManager {
     backupToDB = prefs.getBool("backupToDB");
   }
 
-  Future<void> setTheme(AppThemeMode mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('theme', mode.name);
-  }
-
-  Future<String> getTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('theme') ?? AppThemeMode.darkGrayGreen.name;
-  }
-
   Future<void> setServerData(String serverAddress, String portNo) async {
     print("⚠️ ⚠️ ⚠️  Getting the data $serverAddress $portNo");
     final Map<String, String> serverData = {

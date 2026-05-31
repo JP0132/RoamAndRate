@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 
 class CustomisableDropdown<T> extends StatefulWidget {
   final List<T> items;
@@ -60,6 +61,8 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
   OverlayEntry? _overlayEntry;
   bool _isOpen = false;
 
+
+
   void _toggleDropdown() {
     if (_isOpen) {
       _closeDropdown();
@@ -70,6 +73,8 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
   }
 
   void _openDropdown() {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     final overlay = Overlay.of(context);
     final renderBox =
         _buttonKey.currentContext?.findRenderObject() as RenderBox?;
@@ -145,9 +150,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? (widget.selectedItemColour ??
-                                    Theme.of(
-                                      context,
-                                    ).primaryColor.withValues(alpha: 0.2))
+                                    custom.primary)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -185,6 +188,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
 
   // ---------- _buildDropdownItem ----------
   Widget _buildDropdownItem(T item, bool isSelected) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     if (widget.dropdownItemBuilder != null) {
       return widget.dropdownItemBuilder!(item, isSelected);
     }
@@ -192,7 +196,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
     TextStyle effectiveTextStyle;
     if (isSelected) {
       effectiveTextStyle = TextStyle(
-        color: widget.selectedItemTextColour ?? Theme.of(context).primaryColor,
+        color: widget.selectedItemTextColour ?? custom.primaryText,
         fontWeight: FontWeight.bold,
         fontSize: widget.selectedItemTextSize ?? 16,
       ).merge(widget.selectedItemTextStyle);
@@ -200,7 +204,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
       effectiveTextStyle = TextStyle(
         color:
             widget.unselectedItemTextColour ??
-            Theme.of(context).textTheme.bodyLarge?.color,
+            custom.secondaryText,
       ).merge(widget.unselectedItemTextStyle);
     }
 
@@ -218,7 +222,10 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
   }
 
   @override
+
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
+
     return CompositedTransformTarget(
       link: _layerLink,
       child: GestureDetector(
@@ -245,7 +252,7 @@ class _CustomisableDropdownState<T> extends State<CustomisableDropdown<T>> {
                     : Text(
                         widget.hint,
                         style:
-                            widget.hintStyle ?? TextStyle(color: Colors.grey),
+                            widget.hintStyle ?? TextStyle(color: custom.secondaryText),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),

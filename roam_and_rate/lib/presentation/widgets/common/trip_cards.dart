@@ -15,21 +15,37 @@ bool isBetweenInclusive(DateTime target, DateTime start, DateTime end) {
       (target.isAtSameMomentAs(end) || target.isBefore(end));
 }
 
-String getTripStatus(DateTime startDate, DateTime endDate) {
+// String getTripStatus(DateTime startDate, DateTime endDate) {
+//   DateTime currentDate = DateTime.now();
+//   // Trip is ongoing
+//   if (isBetweenInclusive(currentDate, startDate, endDate)) {
+//     return "assets/images/icons/direct-flight.png";
+//   }
+
+//   // Trip is upcoming
+//   if (startDate.isAfter(currentDate)) {
+//     return "assets/images/icons/time-left.png";
+//   }
+
+//   // Trip is done
+//   return "assets/images/icons/flag.png";
+// }
+
+IconData getTripStatusIcon(DateTime startDate, DateTime endDate) {
   DateTime currentDate = DateTime.now();
   // Trip is ongoing
   if (isBetweenInclusive(currentDate, startDate, endDate)) {
-    return "assets/images/icons/direct-flight.png";
-  }
+    return FontAwesomeIcons.plane;}
 
   // Trip is upcoming
   if (startDate.isAfter(currentDate)) {
-    return "assets/images/icons/time-left.png";
+    return FontAwesomeIcons.clock;
   }
 
   // Trip is done
-  return "assets/images/icons/flag.png";
+  return FontAwesomeIcons.flagCheckered;
 }
+
 
 class TripCards extends StatefulWidget {
   final TripModel tripModel;
@@ -64,12 +80,12 @@ class _TripCardsState extends State<TripCards> {
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
-                  backgroundColor: Colors.green,
+                  backgroundColor: custom.success,
                   padding: const EdgeInsets.all(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   FontAwesomeIcons.pencil,
-                  color: Colors.white,
+                  color: custom.icon,
                   size: 25,
                 ),
               );
@@ -98,18 +114,18 @@ class _TripCardsState extends State<TripCards> {
                             );
 
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                               SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 content: Text('Trip deleted successfully!'),
-                                backgroundColor: Colors.green,
+                                backgroundColor: custom.success,
                               ),
                             );
                             widget.onDelete!(widget.tripModel.tripId);
                             Navigator.pop(context);
                           },
-                          child: const Text(
+                          child: Text(
                             "DELETE",
-                            style: TextStyle(color: Colors.red),
+                            style: TextStyle(color: custom.error),
                           ),
                         ),
                       ],
@@ -142,27 +158,29 @@ class _TripCardsState extends State<TripCards> {
                   Expanded(
                     child: Text(
                       widget.tripModel.tripName,
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                      style:  TextStyle(color: custom.primary, fontSize: 20),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   SizedBox(width: 8),
                   Container(
-                    height: 30,
-                    width: 30,
+                    height: 40,
+                    width: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: custom.primary,
+                      color: custom.secondarySurface,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Image.asset(
-                        getTripStatus(
-                          widget.tripModel.startDate,
-                          widget.tripModel.endDate,
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: FaIcon(
+                          getTripStatusIcon(
+                            widget.tripModel.startDate,
+                            widget.tripModel.endDate,
+                          ),
+                          color: custom.primary,
                         ),
-                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
@@ -171,13 +189,13 @@ class _TripCardsState extends State<TripCards> {
 
               SizedBox(height: 12),
 
-              const Text('Balance', style: TextStyle(color: Colors.white)),
+              Text('Balance', style: TextStyle(color: custom.primary)),
 
               SizedBox(height: 4),
 
               Text(
                 "${widget.tripModel.budget}",
-                style: const TextStyle(color: Colors.white, fontSize: 25),
+                style:  TextStyle(color: custom.primaryText, fontSize: 25),
               ),
 
               SizedBox(height: 12),
@@ -188,13 +206,13 @@ class _TripCardsState extends State<TripCards> {
                   Flexible(
                     child: Text(
                       "FROM: ${DateFormat('dd/MM/yyyy').format(widget.tripModel.startDate)}",
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      style:  TextStyle(color: custom.primaryText, fontSize: 12),
                     ),
                   ),
                   Flexible(
                     child: Text(
                       "EXP: ${DateFormat('dd/MM/yyyy').format(widget.tripModel.endDate)}",
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      style:  TextStyle(color: custom.primaryText, fontSize: 12),
                     ),
                   ),
                 ],

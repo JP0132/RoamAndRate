@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: AppBar(title: Text("Home"), centerTitle: true,),
+      appBar: AppBar(title: Text("Home", style: TextStyle(color: custom.primary)), centerTitle: true,),
       body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                       (user) => user.admin == true,
                     );
                     SessionManager().setUserId(adminUser.userId!);
-                    return Text("Welcome, ${adminUser.username}");
+                    return Text("Welcome, ${adminUser.username}", style: TextStyle(color: custom.primary));
                   } catch (e) {
                     return const Text("No admin user found");
                   }
