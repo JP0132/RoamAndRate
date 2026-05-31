@@ -7,19 +7,22 @@ class CustomInputField extends StatelessWidget {
   final String inputText;
   final bool isObscureText;
   final String regFilter;
-  final FaIcon inputIcon;
+  final FaIcon? inputIcon;
   final TextEditingController controller;
   final bool numberKeyBoard;
   final String? Function(String?)? validator;
+  final Color? inputFieldColour;
+  final double? inputPadding;
+  final double? inputTextSize;
   const CustomInputField({
     super.key,
     required this.inputText,
-    required this.inputIcon,
+    this.inputIcon,
     required this.controller,
     this.isObscureText = false,
     this.regFilter = ".*",
     this.numberKeyBoard = false,
-    this.validator,
+    this.validator, this.inputFieldColour, this.inputPadding, this.inputTextSize,
   });
 
   @override
@@ -28,11 +31,11 @@ class CustomInputField extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: custom.surface,
+        color: inputFieldColour ?? custom.surface,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(inputPadding ?? 8.0),
         child: TextFormField(
           controller: controller,
           obscureText: isObscureText,
@@ -43,12 +46,14 @@ class CustomInputField extends StatelessWidget {
           keyboardType: numberKeyBoard
               ? TextInputType.numberWithOptions(decimal: true)
               : null,
+          style: TextStyle(color: custom.primaryText, fontSize: inputTextSize ?? 14),
           decoration: InputDecoration(
             hintText: inputText,
-            hintStyle: TextStyle(color: custom.secondaryText),
+            hintStyle: TextStyle(color: custom.secondaryText, fontSize: inputTextSize ?? 14),
             icon: inputIcon,
             iconColor: custom.primary,
             filled: false,
+            contentPadding: const EdgeInsets.only(left: 8.0),
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
             enabledBorder: InputBorder.none,

@@ -58,16 +58,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
   List<ParticipantModel> _participants = [];
   String selectedParticipant = "";
 
-  // final List<String> categories = [
-  //   "Food",
-  //   "Tourist",
-  //   "Stay",
-  //   "Shopping",
-  //   "Nature",
-  //   "Transport",
-  //   "Wellness",
-  //   "Other",
-  // ];
   String? selectedCategory;
   String? selectedType;
   String? selectedCurrency;
@@ -336,67 +326,25 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       : "Name cannot be blank!",
                   style: TextStyle(color: custom.error),
                 ),
-                SizedBox(height: 20),
-
-                Row(
+                SizedBox(height: 20), // Space between containers
+                // How much it costed
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // How much you paid
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Paid *",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: custom.primary,
-                            ),
-                          ),
-                          CustomInputField(
-                            inputText: "Paid",
-                            inputIcon: FaIcon(FontAwesomeIcons.moneyBill),
-                            controller: _paidController,
-                            numberKeyBoard: true,
-                            regFilter: Values.decimalOnlyRegExp,
-                          ),
-                          Text(
-                            formValid["paid"] == true
-                                ? ""
-                                : "Paid cannot be blank!",
-                            style: TextStyle(color: custom.error),
-                          ),
-                        ],
-                      ),
+                    Text(
+                      "Cost *",
+                      style: TextStyle(fontSize: 14, color: custom.primary),
                     ),
-
-                    SizedBox(width: 10), // Space between containers
-                    // How much it costed
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Cost *",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: custom.primary,
-                            ),
-                          ),
-                          CustomInputField(
-                            inputText: "Cost",
-                            inputIcon: FaIcon(FontAwesomeIcons.moneyBill1Wave),
-                            controller: _costController,
-                            numberKeyBoard: true,
-                            regFilter: Values.decimalOnlyRegExp,
-                          ),
-                          Text(
-                            formValid["cost"] == true
-                                ? ""
-                                : "Cost cannot be blank!",
-                            style: TextStyle(color: custom.error),
-                          ),
-                        ],
-                      ),
+                    CustomInputField(
+                      inputText: "Cost",
+                      inputIcon: FaIcon(FontAwesomeIcons.moneyBill1Wave),
+                      controller: _costController,
+                      numberKeyBoard: true,
+                      regFilter: Values.decimalOnlyRegExp,
+                    ),
+                    Text(
+                      formValid["cost"] == true ? "" : "Cost cannot be blank!",
+                      style: TextStyle(color: custom.error),
                     ),
                   ],
                 ),
@@ -410,90 +358,115 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                   shrinkWrap: true,
-                
+
                   physics: const NeverScrollableScrollPhysics(),
-                  children: Categories.tripCategories
+                  children: Categories.categories
                       .map(
-                        (e) => Container(
-                          decoration: BoxDecoration(
-                            color: custom.surface,
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                             Container(
-                              padding: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: custom.primary,
-                                border: Border.all(color: custom.primary),
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                        (e) => GestureDetector(
+                          onTap: () => setState(() {
+                            selectedCategory = e.name;
+                          }),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: custom.surface,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
                               ),
-                              child: FaIcon(e.icon, size: 30, color: custom.surface,)),
-                             Text(e.name),
-                            ],
+                              border: selectedCategory == e.name
+                                  ? Border.all(color: custom.primary)
+                                  : null,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: custom.primary,
+                                    border: Border.all(color: custom.primary),
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: FaIcon(
+                                    e.icon,
+                                    size: 30,
+                                    color: custom.surface,
+                                  ),
+                                ),
+                                Text(e.name),
+                              ],
+                            ),
                           ),
                         ),
                       )
                       .toList(),
                 ),
+                Text(
+                  formValid["category"] == true
+                      ? ""
+                      : "Category cannot be blank!",
+                  style: TextStyle(color: custom.error),
+                ),
 
+                SizedBox(height: 20),
+                Text("DETAILS", style: TextStyle(color: custom.secondaryText)),
+                Container(
+                  decoration: BoxDecoration(
+                    color: custom.surface,
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: custom.secondarySurface,
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                          child:  Center(child: FaIcon(FontAwesomeIcons.alignLeft, color: custom.icon,)),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "EXPENSE NAME",
+                                style: TextStyle(color: custom.secondaryText),
+                              ),
+                              CustomInputField(
+                                inputText: "What you spent it on?",
+                                inputFieldColour: custom.secondarySurface,
+                                controller: _expenseNameController,
+                                inputPadding: 4,
+                              ),
+
+                              if (formValid["expenseName"] != true)
+                                Text(
+                                  "Name cannot be blank!",
+                                  style: TextStyle(color: custom.error),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 Row(
                   children: [
-                    // Select the date you visted
-                    // TODO: If status is marked as planned then disable the field
-                    // Expanded(
-                    //   child: Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-                    //       Text(
-                    //         "Category *",
-                    //         style: TextStyle(
-                    //           fontSize: 14,
-                    //           color: custom.primary,
-                    //         ),
-                    //       ),
-                    //       CustomisableDropdown<String>(
-                    //         items: categories,
-                    //         hint: "Select which category?",
-                    //         value: selectedCategory,
-                    //         backgroundColour: custom.surface,
-                    //         borderColour: Colors.transparent,
-                    //         selectedItemBuilder: (value) => Text(
-                    //           value,
-                    //           style: TextStyle(
-                    //             fontSize:
-                    //                 selectedCategory == "Accommodation" ||
-                    //                     selectedCategory == "Tourist Attraction"
-                    //                 ? 12
-                    //                 : 16,
-                    //           ),
-                    //         ),
-                    //         padding: EdgeInsets.all(20),
-                    //         borderRadius: 20,
-                    //         menuMaxHeight: 200,
-                    //         selectedItemTextColour: custom.primary,
-                    //         unselectedItemTextColour: custom.primaryText,
-                    //         onChanged: (category) {
-                    //           setState(() {
-                    //             selectedCategory = category;
-                    //           });
-
-                    //           _updateConversion();
-                    //         },
-                    //         itemBuilder: (value) => Text(value),
-                    //       ),
-                    //       Text(
-                    //         formValid["category"] == true
-                    //             ? ""
-                    //             : "Category cannot be blank!",
-                    //         style: TextStyle(color: custom.error),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-
                     SizedBox(width: 10), // Space between containers
                     // Dropdown to select the value, if the cost was worth it
                     // TODO: Add dollar symbols
