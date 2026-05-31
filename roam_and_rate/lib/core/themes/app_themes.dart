@@ -10,6 +10,8 @@ class AppThemes {
    static ThemeData of(AppThemeMode mode) => switch (mode) {
     AppThemeMode.coffee => _coffee,
     AppThemeMode.darkGrayGreen   => _darkGrayGreen,
+    AppThemeMode.ocean => _ocean,
+    AppThemeMode.travel => _travel
   };
 
   static final _darkGrayGreen = ThemeData(
@@ -35,6 +37,30 @@ class AppThemes {
       error: Color(0xFFCF6679),
     ),
     extensions: const [CustomColours.coffee],
+  );
+
+  static final _ocean = ThemeData(
+    useMaterial3: true,
+    colorScheme: const ColorScheme.dark(
+      surface: Color(0xFF0B2447),
+      primary: Color(0xFFD4956A),
+      onPrimary: Color(0xFF1a0e06),
+      onSurface: Color(0xFFF5E6D3),
+      error: Color(0xFFCF6679),
+    ),
+    extensions: const [CustomColours.ocean],
+  );
+
+  static final _travel = ThemeData(
+    useMaterial3: true,
+    colorScheme: const ColorScheme.dark(
+      surface: Color(0xFFF4F7F9),
+      primary: Color(0xFF2E86AB),
+      onPrimary: Color(0xFF1C2A33),
+      onSurface: Color(0xFFF5E6D3),
+      error: Color(0xFFCF6679),
+    ),
+    extensions: const [CustomColours.travel],
   );
 
 }

@@ -10,6 +10,8 @@ class ThemePickerWidget extends StatelessWidget {
   static const _themes = {
     AppThemeMode.coffee: ('Coffee',  Color(0xFFD4956A)),
     AppThemeMode.darkGrayGreen: ('DarkGrayGreen',  Color(0xFFc5ee7e)),
+    AppThemeMode.ocean: ('Ocean',  Color(0xFF0B2447)),
+    AppThemeMode.travel: ('Travel',  Color(0xFF2E86AB)),
     
   };
 

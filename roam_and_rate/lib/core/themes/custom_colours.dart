@@ -9,6 +9,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
   final Color secondary;
   final Color primaryText;
   final Color secondaryText;
+  final Color icon;
   final Color success;
   final Color error;
 
@@ -21,6 +22,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
     required this.secondary,
     required this.primaryText,
     required this.secondaryText,
+    required this.icon,
     required this.success,
     required this.error,
   });
@@ -34,6 +36,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
     secondary: Color(0xFF71f7b0),
     primaryText: Color(0xFFFFFFFF),
     secondaryText: Color(0xFFa9a9a9),
+    icon: Color(0xFFc5ee7e),
     success: Color.fromRGBO(240, 97, 109, 1),
     error: Color.fromRGBO(39, 173, 117, 1),
   );
@@ -47,8 +50,37 @@ class CustomColours extends ThemeExtension<CustomColours> {
     secondary: Color(0xFFD7B899),
     primaryText: Color(0xFFF5E9DC),
     secondaryText: Color(0xFFCCB7A1),
+    icon: Color(0xFFC08B5C),
     success: Color(0xFF6FA36F),
     error: Color(0xFFB85C4B),
+  );
+
+  static const ocean = CustomColours(
+    background: Color(0xFF0B1F2A),
+    surface: Color(0xFF123040),
+    secondarySurface: Color(0xFF1A455A),
+    primary: Color(0xFF3FA7D6),
+    primaryVariant: Color(0xFF2D7FA3),
+    secondary: Color(0xFF7FD1C8),
+    primaryText: Color(0xFFEAF7FF),
+    secondaryText: Color(0xFFB8D4E3),
+    icon: Color(0xFFFFFFFF),
+    success: Color(0xFF4CAF88),
+    error: Color(0xFFE06C75),
+  );
+
+  static const travel = CustomColours(
+    background: Color(0xFFF4F7F9),
+    surface:  Color(0xFFFFFFFF),
+    secondarySurface: Color(0xFFE3EDF2),
+    primary: Color(0xFF2E86AB),
+    primaryVariant: Color(0xFF1F5F7A),
+    secondary: Color(0xFFFFC857),
+    primaryText: Color(0xFF1C2A33),
+    secondaryText: Color(0xFF60717D),
+    icon: Color(0xFFFFFFFF),
+    success: Color(0xFF3FA37C),
+    error: Color(0xFFD95D5D),
   );
 
   @override
@@ -61,6 +93,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
     Color? secondary,
     Color? primaryText,
     Color? secondaryText,
+    Color? icon,
     Color? success,
     Color? error,
   }) {
@@ -73,6 +106,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
       secondary: secondary ?? this.secondary,
       primaryText: primaryText ?? this.primaryText,
       secondaryText: secondaryText ?? this.secondaryText,
+      icon: icon ?? this.icon,
       success: success ?? this.success,
       error: error ?? this.error,
     );
@@ -98,7 +132,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
       primaryText: Color.lerp(primaryText, other.primaryText, t)!,
       secondaryText: Color.lerp(secondaryText, other.secondaryText, t)!,
       success: Color.lerp(success, other.success, t)!,
-      error: Color.lerp(error, other.error, t)!,
+      error: Color.lerp(error, other.error, t)!, icon: Color.lerp(icon, other.icon, t)!,
     );
   }
 }

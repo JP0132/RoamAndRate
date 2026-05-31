@@ -36,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final custom = Theme.of(context).extension<CustomColours>()!;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Settings"), centerTitle: true),
+      appBar: AppBar(title: Text("Settings", style: TextStyle(color: custom.primary)), centerTitle: true,),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -100,7 +100,7 @@ class SettingsBtn extends StatelessWidget {
                   ),
                 ),
 
-                Text(btnText, style: TextStyle(fontSize: 20)),
+                Text(btnText, style: TextStyle(fontSize: 20, color: custom.primary)),
                 FaIcon(
                   FontAwesomeIcons.arrowRight,
                   color: custom.primary,
