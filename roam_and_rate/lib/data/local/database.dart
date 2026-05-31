@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase._internal();
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: 'roamandrate_db',
@@ -64,6 +64,7 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         await migrator.addColumn(expenses, expenses.isNotBudget);
       }
+      // Updating the categories in expenses
       if (from < 3){
         await customStatement(""" 
          UPDATE expenses
@@ -85,6 +86,32 @@ class AppDatabase extends _$AppDatabase {
 
         await customStatement(""" 
          UPDATE expenses
+         SET category = 'Tourism'
+         WHERE category = 'Tourist Attraction'
+        """);
+      }
+      // Updating the categories in ratings
+      if (from < 5){
+        await customStatement(""" 
+         UPDATE rating_details
+         SET category = 'Health'
+         WHERE category = 'Wellness'
+        """);
+
+        await customStatement(""" 
+         UPDATE rating_details
+         SET category = 'Stay'
+         WHERE category = 'Accommodation'
+        """);
+
+        await customStatement(""" 
+         UPDATE rating_details
+         SET category = 'Food'
+         WHERE category = 'Food & Drink'
+        """);
+
+        await customStatement(""" 
+         UPDATE rating_details
          SET category = 'Tourism'
          WHERE category = 'Tourist Attraction'
         """);
