@@ -12,6 +12,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
   final Color icon;
   final Color success;
   final Color error;
+  final Map<String, Color> categoryColours;
 
   const CustomColours({
     required this.background,
@@ -25,6 +26,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
     required this.icon,
     required this.success,
     required this.error,
+    required this.categoryColours,
   });
 
   static const darkGreyGreen = CustomColours(
@@ -39,6 +41,16 @@ class CustomColours extends ThemeExtension<CustomColours> {
     icon: Color(0xFFc5ee7e),
     success: Color.fromRGBO(240, 97, 109, 1),
     error: Color.fromRGBO(39, 173, 117, 1),
+    categoryColours: {
+      "food": Color.fromARGB(255, 227, 42, 42),
+      "tourism": Color.fromARGB(255, 248, 52, 238),
+      "transport": Color.fromARGB(255, 248, 215, 66),
+      "stay": Color.fromARGB(255, 7, 146, 21),
+      "shopping": Color.fromARGB(255, 36, 57, 247),
+      "nature": Color.fromARGB(255, 41, 247, 175),
+      "health": Color.fromARGB(255, 159, 244, 90),
+      "other": Color.fromARGB(255, 123, 124, 123),
+    },
   );
 
   static const coffee = CustomColours(
@@ -53,6 +65,16 @@ class CustomColours extends ThemeExtension<CustomColours> {
     icon: Color(0xFFC08B5C),
     success: Color(0xFF6FA36F),
     error: Color(0xFFB85C4B),
+    categoryColours: {
+      "food": Color.fromARGB(255, 227, 42, 42),
+      "tourism": Color.fromARGB(255, 248, 52, 238),
+      "transport": Color.fromARGB(255, 248, 215, 66),
+      "stay": Color.fromARGB(255, 7, 146, 21),
+      "shopping": Color.fromARGB(255, 36, 57, 247),
+      "nature": Color.fromARGB(255, 41, 247, 175),
+      "health": Color.fromARGB(255, 159, 244, 90),
+      "other": Color.fromARGB(255, 123, 124, 123),
+    },
   );
 
   static const ocean = CustomColours(
@@ -67,11 +89,21 @@ class CustomColours extends ThemeExtension<CustomColours> {
     icon: Color(0xFFFFFFFF),
     success: Color(0xFF4CAF88),
     error: Color(0xFFE06C75),
+    categoryColours: {
+      "food": Color.fromARGB(255, 227, 42, 42),
+      "tourism": Color.fromARGB(255, 248, 52, 238),
+      "transport": Color.fromARGB(255, 248, 215, 66),
+      "stay": Color.fromARGB(255, 7, 146, 21),
+      "shopping": Color.fromARGB(255, 36, 57, 247),
+      "nature": Color.fromARGB(255, 41, 247, 175),
+      "health": Color.fromARGB(255, 159, 244, 90),
+      "other": Color.fromARGB(255, 123, 124, 123),
+    },
   );
 
   static const travel = CustomColours(
     background: Color(0xFFF4F7F9),
-    surface:  Color(0xFFFFFFFF),
+    surface: Color(0xFFFFFFFF),
     secondarySurface: Color(0xFFE3EDF2),
     primary: Color(0xFF2E86AB),
     primaryVariant: Color(0xFF1F5F7A),
@@ -81,6 +113,16 @@ class CustomColours extends ThemeExtension<CustomColours> {
     icon: Color(0xFFFFFFFF),
     success: Color(0xFF3FA37C),
     error: Color(0xFFD95D5D),
+    categoryColours: {
+      "food": Color.fromARGB(255, 227, 42, 42),
+      "tourism": Color.fromARGB(255, 248, 52, 238),
+      "transport": Color.fromARGB(255, 248, 215, 66),
+      "stay": Color.fromARGB(255, 7, 146, 21),
+      "shopping": Color.fromARGB(255, 36, 57, 247),
+      "nature": Color.fromARGB(255, 41, 247, 175),
+      "health": Color.fromARGB(255, 159, 244, 90),
+      "other": Color.fromARGB(255, 123, 124, 123),
+    },
   );
 
   @override
@@ -96,6 +138,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
     Color? icon,
     Color? success,
     Color? error,
+    Map<String, Color>? categorieColours,
   }) {
     return CustomColours(
       background: background ?? this.background,
@@ -109,6 +152,7 @@ class CustomColours extends ThemeExtension<CustomColours> {
       icon: icon ?? this.icon,
       success: success ?? this.success,
       error: error ?? this.error,
+      categoryColours: categorieColours ?? this.categoryColours,
     );
   }
 
@@ -132,7 +176,50 @@ class CustomColours extends ThemeExtension<CustomColours> {
       primaryText: Color.lerp(primaryText, other.primaryText, t)!,
       secondaryText: Color.lerp(secondaryText, other.secondaryText, t)!,
       success: Color.lerp(success, other.success, t)!,
-      error: Color.lerp(error, other.error, t)!, icon: Color.lerp(icon, other.icon, t)!,
+      error: Color.lerp(error, other.error, t)!,
+      icon: Color.lerp(icon, other.icon, t)!,
+      categoryColours: {
+        "food": Color.lerp(
+          categoryColours["food"],
+          other.categoryColours["food"],
+          t,
+        )!,
+        "tourism": Color.lerp(
+          categoryColours["tourism"],
+          other.categoryColours["tourism"],
+          t,
+        )!,
+        "transport": Color.lerp(
+          categoryColours["transport"],
+          other.categoryColours["transport"],
+          t,
+        )!,
+        "stay": Color.lerp(
+          categoryColours["stay"],
+          other.categoryColours["stay"],
+          t,
+        )!,
+        "shopping": Color.lerp(
+          categoryColours["shopping"],
+          other.categoryColours["shopping"],
+          t,
+        )!,
+        "nature": Color.lerp(
+          categoryColours["nature"],
+          other.categoryColours["nature"],
+          t,
+        )!,
+        "health": Color.lerp(
+          categoryColours["health"],
+          other.categoryColours["health"],
+          t,
+        )!,
+        "other": Color.lerp(
+          categoryColours["other"],
+          other.categoryColours["other"],
+          t,
+        )!,
+      },
     );
   }
 }
