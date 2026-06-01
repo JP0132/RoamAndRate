@@ -23,6 +23,7 @@ import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/numpad.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
@@ -191,7 +192,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text("Add Expense")),
+      appBar: CustomAppBar(title: "New Expense",custom: custom),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () => _showPickOptionsDialog(context),
@@ -214,7 +215,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   height: 200,
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: custom.surface,
+                    color: custom.surface.withValues(alpha: 0.6),
+                    border: Border.all(color: custom.surface),
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
                   child: Column(
@@ -223,11 +225,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         children: [
                           Expanded(
                             child: Text(
-                              "Amount Paid",
+                              "AMOUNT PAID",
                               style: TextStyle(
-                                color: custom.primary,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                                color: custom.secondaryText.withValues(alpha: 0.8),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                           ),
@@ -240,7 +242,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                               selectedItemTextColour: custom.surface,
                               unselectedItemTextColour: custom.primary,
                               selectedItemColour: custom.primary,
-                              borderColour: custom.primary,
+                              borderColour: custom.secondaryText,
                               padding: EdgeInsets.all(5),
                               borderRadius: 20,
                               menuMaxHeight: 200,
@@ -259,22 +261,36 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         ],
                       ),
 
-                      TextFormField(
-                        controller: _paidController,
-                        readOnly: true,
-                        style: TextStyle(color: custom.primary, fontSize: 30),
-                        decoration: InputDecoration(
-                          hintText: "Paid Amount",
-                          hintStyle: TextStyle(color: custom.secondaryText),
-                          icon: FaIcon(FontAwesomeIcons.dollarSign),
-                          iconColor: custom.primary,
-                          filled: false,
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            CurrencyData.currencySymbolFromCode(selectedCurrency!),
+                            style: TextStyle(
+                              color: custom.secondaryText,
+                              fontSize: 20,
+                            ),
+
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _paidController,
+                              readOnly: true,
+                              style: TextStyle(color: custom.primaryText, fontSize: 40),
+                              decoration: InputDecoration(
+                                hintText: "Paid Amount",
+                                hintStyle: TextStyle(color: custom.secondaryText),
+                                contentPadding: const EdgeInsets.only(left: 8.0),
+                                iconColor: custom.primary,
+                                filled: false,
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
                       Divider(color: custom.primary),
@@ -368,13 +384,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           }),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: custom.surface,
+                              color: selectedCategory == e.name ? custom.categoryColours[e.name.toLowerCase()]!.withValues(alpha: 0.2) : custom.surface.withValues(alpha: 0.4),
                               borderRadius: BorderRadius.all(
                                 Radius.circular(10),
                               ),
                               border: selectedCategory == e.name
-                                  ? Border.all(color: custom.primary)
-                                  : null,
+                                  ? Border.all(color: custom.categoryColours[e.name.toLowerCase()]!)
+                                  : Border.all(color: custom.surface),
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -383,8 +399,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 Container(
                                   padding: EdgeInsets.all(5),
                                   decoration: BoxDecoration(
-                                    color: custom.primary,
-                                    border: Border.all(color: custom.primary),
+                                    color: custom.categoryColours[e.name.toLowerCase()]!.withValues(
+                                      alpha: 0.3,),
+                                    border: Border.all(color: custom.categoryColours[e.name.toLowerCase()]!),
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(10),
                                     ),
@@ -392,7 +409,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                   child: FaIcon(
                                     e.icon,
                                     size: 30,
-                                    color: custom.surface,
+                                    color: custom.categoryColours[e.name.toLowerCase()],
                                   ),
                                 ),
                                 Text(e.name),
