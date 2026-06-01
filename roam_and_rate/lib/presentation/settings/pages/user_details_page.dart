@@ -7,6 +7,7 @@ import 'package:roam_and_rate/application/user/user_state.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customised_date_picker.dart';
@@ -68,7 +69,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     final custom = Theme.of(context).extension<CustomColours>()!;
 
     return Scaffold(
-      appBar: AppBar(title: Text("User's Details"), centerTitle: true),
+      appBar: CustomAppBar(title: "Your Details",custom: custom),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(

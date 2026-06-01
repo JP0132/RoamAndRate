@@ -17,6 +17,7 @@ import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/domain/repositories/user_repository.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/expense_card.dart';
 import 'package:roam_and_rate/presentation/widgets/common/rating_cards.dart';
 import 'package:roam_and_rate/presentation/home/widgets/swipeable_card_stack.dart';
@@ -89,7 +90,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: AppBar(title: Text("Home", style: TextStyle(color: custom.primary)), centerTitle: true,),
+      appBar: CustomAppBar(title: "Home",custom: custom),
       body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/presentation/get_started/widgets/dropdown_with_input.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 
 class SyncSettings extends StatefulWidget {
@@ -89,7 +90,7 @@ class _SyncSettingsState extends State<SyncSettings> {
 
 
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text("Current Sync Settings")),
+      appBar: CustomAppBar(title: "Current Sync Settings",custom: custom),
       body: SingleChildScrollView(
         child: Column(
           children: [

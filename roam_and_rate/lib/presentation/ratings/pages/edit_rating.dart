@@ -17,6 +17,7 @@ import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/rating_container.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customised_date_picker.dart';
@@ -211,7 +212,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text("Add Rating")),
+      appBar: CustomAppBar(title: "Edit Rating",custom: custom),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () => _showPickOptionsDialog(context),

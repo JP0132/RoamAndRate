@@ -4,6 +4,7 @@ import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/presentation/settings/widget/theme_picker_widget.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -36,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final custom = Theme.of(context).extension<CustomColours>()!;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Settings", style: TextStyle(color: custom.primary)), centerTitle: true,),
+      appBar: CustomAppBar(title: "Settings",custom: custom),
       body: SingleChildScrollView(
         child: Column(
           children: [

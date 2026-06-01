@@ -18,6 +18,7 @@ import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
@@ -168,7 +169,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(centerTitle: true, title: Text("Edit Expense")),
+        appBar: CustomAppBar(title: "Edit Expense",custom: custom),
         floatingActionButton: FloatingActionButton(
           shape: const CircleBorder(),
           onPressed: () => _showPickOptionsDialog(context),

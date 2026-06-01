@@ -9,6 +9,7 @@ import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 
 class ParticipantPage extends StatefulWidget {
   const ParticipantPage({super.key});
@@ -26,7 +27,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
     final custom = Theme.of(context).extension<CustomColours>()!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Participants"), centerTitle: true),
+      appBar: CustomAppBar(title: "Participants",custom: custom),
       body: Column(
         children: [
           // Expanded List area

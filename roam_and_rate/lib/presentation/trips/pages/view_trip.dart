@@ -30,6 +30,7 @@ import 'package:roam_and_rate/presentation/trips/classes/tabitem.dart';
 import 'package:roam_and_rate/presentation/trips/pages/segmented_switcher.dart';
 import 'package:roam_and_rate/presentation/trips/widgets/add_btn.dart';
 import 'package:roam_and_rate/presentation/trips/widgets/trip_overview_card.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
@@ -300,7 +301,7 @@ class _ViewTripState extends State<ViewTrip> {
     print("Total paid spent: $_totalPaidSpent");
 
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text("Trip Overview", style: TextStyle(color: custom.primary))),
+      appBar: CustomAppBar(title: "Trip Overview",custom: custom),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

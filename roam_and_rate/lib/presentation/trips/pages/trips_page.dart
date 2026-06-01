@@ -4,9 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:roam_and_rate/app_router.dart';
 import 'package:roam_and_rate/application/trips/trip_bloc.dart';
 import 'package:roam_and_rate/application/trips/trip_state.dart';
+import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/colours.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/trips/pages/view_trip.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
 import 'package:roam_and_rate/presentation/widgets/common/trip_cards.dart';
 
@@ -69,8 +71,9 @@ class _TripsPageState extends State<TripsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text("Trips")),
+      appBar: CustomAppBar(title: "Trips",custom: custom),
       body: BlocBuilder<TripBloc, TripState>(
         builder: (context, state) {
           if (state is TripInitial) {

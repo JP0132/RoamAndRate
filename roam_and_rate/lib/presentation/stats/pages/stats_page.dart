@@ -17,6 +17,7 @@ import 'package:roam_and_rate/application/rating/ratings_state.dart';
 import 'package:roam_and_rate/application/rating/ratings_event.dart';
 import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 
 class StatsPage extends StatefulWidget {
@@ -74,12 +75,7 @@ class _StatsPageState extends State<StatsPage> with SingleTickerProviderStateMix
     final custom = Theme.of(context).extension<CustomColours>()!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Stats'),
-        centerTitle: true,
-        elevation: 1,
-        backgroundColor: custom.surface,
-      ),
+      appBar: CustomAppBar(title: "Stats",custom: custom),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         child: Column(

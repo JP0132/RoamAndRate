@@ -5,6 +5,7 @@ import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/restore_db_backup.dart';
 import 'package:roam_and_rate/presentation/get_started/widgets/dropdown_with_input.dart';
+import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
 import 'package:roam_and_rate/presentation/widgets/common/smooth_transition_page.dart';
@@ -67,7 +68,7 @@ class _ConnectToDatabasePageState extends State<ConnectToDatabasePage> {
     }
 
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text("Backup to your Database")),
+      appBar: CustomAppBar(title: "Backup to your database",custom: custom),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
