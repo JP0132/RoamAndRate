@@ -192,7 +192,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: CustomAppBar(title: "New Expense",custom: custom),
+      appBar: CustomAppBar(title: "New Expense", custom: custom),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () => _showPickOptionsDialog(context),
@@ -227,7 +227,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             child: Text(
                               "AMOUNT PAID",
                               style: TextStyle(
-                                color: custom.secondaryText.withValues(alpha: 0.8),
+                                color: custom.secondaryText.withValues(
+                                  alpha: 0.8,
+                                ),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -264,22 +266,30 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       Row(
                         children: [
                           Text(
-                            CurrencyData.currencySymbolFromCode(selectedCurrency!),
+                            CurrencyData.currencySymbolFromCode(
+                              selectedCurrency!,
+                            ),
                             style: TextStyle(
                               color: custom.secondaryText,
                               fontSize: 20,
                             ),
-
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _paidController,
                               readOnly: true,
-                              style: TextStyle(color: custom.primaryText, fontSize: 40),
+                              style: TextStyle(
+                                color: custom.primaryText,
+                                fontSize: 40,
+                              ),
                               decoration: InputDecoration(
                                 hintText: "Paid Amount",
-                                hintStyle: TextStyle(color: custom.secondaryText),
-                                contentPadding: const EdgeInsets.only(left: 8.0),
+                                hintStyle: TextStyle(
+                                  color: custom.secondaryText,
+                                ),
+                                contentPadding: const EdgeInsets.only(
+                                  left: 8.0,
+                                ),
                                 iconColor: custom.primary,
                                 filled: false,
                                 border: InputBorder.none,
@@ -384,12 +394,20 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           }),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: selectedCategory == e.name ? custom.categoryColours[e.name.toLowerCase()]!.withValues(alpha: 0.2) : custom.surface.withValues(alpha: 0.4),
+                              color: selectedCategory == e.name
+                                  ? custom
+                                        .categoryColours[e.name.toLowerCase()]!
+                                        .withValues(alpha: 0.2)
+                                  : custom.surface.withValues(alpha: 0.4),
                               borderRadius: BorderRadius.all(
                                 Radius.circular(10),
                               ),
                               border: selectedCategory == e.name
-                                  ? Border.all(color: custom.categoryColours[e.name.toLowerCase()]!)
+                                  ? Border.all(
+                                      color:
+                                          custom.categoryColours[e.name
+                                              .toLowerCase()]!,
+                                    )
                                   : Border.all(color: custom.surface),
                             ),
                             child: Column(
@@ -399,9 +417,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 Container(
                                   padding: EdgeInsets.all(5),
                                   decoration: BoxDecoration(
-                                    color: custom.categoryColours[e.name.toLowerCase()]!.withValues(
-                                      alpha: 0.3,),
-                                    border: Border.all(color: custom.categoryColours[e.name.toLowerCase()]!),
+                                    color: custom
+                                        .categoryColours[e.name.toLowerCase()]!
+                                        .withValues(alpha: 0.3),
+                                    border: Border.all(
+                                      color:
+                                          custom.categoryColours[e.name
+                                              .toLowerCase()]!,
+                                    ),
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(10),
                                     ),
@@ -409,7 +432,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                   child: FaIcon(
                                     e.icon,
                                     size: 30,
-                                    color: custom.categoryColours[e.name.toLowerCase()],
+                                    color: custom
+                                        .categoryColours[e.name.toLowerCase()],
                                   ),
                                 ),
                                 Text(e.name),
@@ -436,97 +460,201 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    child: Column(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: custom.secondarySurface,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                          child:  Center(child: FaIcon(FontAwesomeIcons.alignLeft, color: custom.icon,)),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "EXPENSE NAME",
-                                style: TextStyle(color: custom.secondaryText),
-                              ),
-                              CustomInputField(
-                                inputText: "What you spent it on?",
-                                inputFieldColour: custom.secondarySurface,
-                                controller: _expenseNameController,
-                                inputPadding: 4,
-                              ),
-
-                              if (formValid["expenseName"] != true)
-                                Text(
-                                  "Name cannot be blank!",
-                                  style: TextStyle(color: custom.error),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: custom.secondarySurface,
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
                                 ),
-                            ],
-                          ),
+                              ),
+                              child: Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.alignLeft,
+                                  color: custom.icon,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "EXPENSE NAME",
+                                    style: TextStyle(
+                                      color: custom.secondaryText,
+                                    ),
+                                  ),
+                                  CustomInputField(
+                                    inputText: "What you spent it on?",
+                                    inputFieldColour: custom.secondarySurface,
+                                    controller: _expenseNameController,
+                                    inputPadding: 4,
+                                  ),
+
+                                  if (formValid["expenseName"] != true)
+                                    Text(
+                                      "Name cannot be blank!",
+                                      style: TextStyle(color: custom.error),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        Divider(color: custom.primary, thickness: 2),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: custom.secondarySurface,
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              child: Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.calendar,
+                                  color: custom.icon,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => ShowPicker.showCustomStyledPicker(
+                                  context,
+                                  selectedDate,
+                                  _setDate,
+                                ),
+
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 8),
+                                  decoration: BoxDecoration(
+                                    color: custom.surface,
+
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(20),
+                                    ),
+                                  ),
+
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "DATE",
+                                              style: TextStyle(
+                                                color: custom.secondaryText,
+                                              ),
+                                            ),
+                                            Text(
+                                              DateFormat(
+                                                'dd/MM/yyyy',
+                                              ).format(selectedDate!),
+
+                                              textAlign: TextAlign.justify,
+
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                          ],
+                                        ),
+                                        FaIcon(
+                                          FontAwesomeIcons.chevronRight,
+                                          color: custom.icon,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              formValid["datePaid"] == true
+                                  ? ""
+                                  : "Date Paid cannot be blank!",
+                              style: TextStyle(color: custom.error),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: custom.primary, thickness: 2,),
+                        const SizedBox(height: 10),
+                        Text(
+                          "PAYMENT TYPE",
+                          style: TextStyle(color: custom.secondaryText),
+                        ),
+                        GridView.count(
+                          crossAxisCount: 3,
+                          primary: false,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          childAspectRatio: 2.5,
+                          children: types
+                              .map(
+                                (type) => GestureDetector(
+                                  onTap: () =>
+                                      setState(() => selectedType = type),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: selectedType == type
+                                          ? custom.secondarySurface
+                                          : custom.secondarySurface.withValues(
+                                              alpha: 0.6,
+                                            ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
+                                      border: Border.all(
+                                        color: selectedType == type
+                                            ? custom.primary
+                                            : Colors.transparent,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        type.toUpperCase(),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: custom.primary),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                        Text(
+                          formValid["type"] == true
+                              ? ""
+                              : "Type cannot be blank!",
+                          style: TextStyle(color: custom.error),
                         ),
                       ],
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    SizedBox(width: 10), // Space between containers
-                    // Dropdown to select the value, if the cost was worth it
-                    // TODO: Add dollar symbols
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Payment Type *",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: custom.primary,
-                            ),
-                          ),
-                          CustomisableDropdown<String>(
-                            items: types,
-                            hint: "Select payment type",
-                            value: selectedType,
-                            backgroundColour: custom.surface,
-                            borderColour: Colors.transparent,
-                            padding: EdgeInsets.all(20),
-                            borderRadius: 20,
-                            menuMaxHeight: 200,
-                            selectedItemTextColour: custom.primary,
-                            unselectedItemTextColour: custom.primaryText,
-
-                            onChanged: (type) {
-                              setState(() {
-                                selectedType = type;
-                              });
-                            },
-                            itemBuilder: (value) => Text(value),
-                          ),
-                          Text(
-                            formValid["type"] == true
-                                ? ""
-                                : "Type cannot be blank!",
-                            style: TextStyle(color: custom.error),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
 
                 SizedBox(height: 20),
