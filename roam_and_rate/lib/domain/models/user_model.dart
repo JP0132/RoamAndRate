@@ -3,6 +3,7 @@ class UserModel {
   final String fullName;
   final String username;
   final DateTime? dob;
+  final String currency;
   final String gender;
   final bool admin;
   final DateTime? lastUpdated;
@@ -11,6 +12,7 @@ class UserModel {
     this.userId,
     required this.fullName,
     required this.username,
+    required this.currency,
     required this.dob,
     required this.gender,
     required this.admin,
@@ -24,6 +26,7 @@ class UserModel {
     DateTime? dob,
     String? gender,
     bool? admin,
+    String? currency,
     DateTime? lastUpdated,
   }) {
     return UserModel(
@@ -32,6 +35,7 @@ class UserModel {
       dob: dob ?? this.dob,
       gender: gender ?? this.gender,
       admin: admin ?? this.admin,
+      currency: currency ?? this.currency,
       fullName: fullName ?? this.fullName,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );

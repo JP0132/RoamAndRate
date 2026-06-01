@@ -70,6 +70,18 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       'CHECK ("admin" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _currencyMeta = const VerificationMeta(
+    'currency',
+  );
+  @override
+  late final GeneratedColumn<String> currency = GeneratedColumn<String>(
+    'currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant("GBP"),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -101,6 +113,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     dob,
     gender,
     admin,
+    currency,
     createdAt,
     lastUpdated,
   ];
@@ -159,6 +172,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_adminMeta);
     }
+    if (data.containsKey('currency')) {
+      context.handle(
+        _currencyMeta,
+        currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -209,6 +228,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.bool,
         data['${effectivePrefix}admin'],
       )!,
+      currency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -233,6 +256,7 @@ class User extends DataClass implements Insertable<User> {
   final DateTime dob;
   final String gender;
   final bool admin;
+  final String currency;
   final DateTime createdAt;
   final DateTime lastUpdated;
   const User({
@@ -242,6 +266,7 @@ class User extends DataClass implements Insertable<User> {
     required this.dob,
     required this.gender,
     required this.admin,
+    required this.currency,
     required this.createdAt,
     required this.lastUpdated,
   });
@@ -254,6 +279,7 @@ class User extends DataClass implements Insertable<User> {
     map['dob'] = Variable<DateTime>(dob);
     map['gender'] = Variable<String>(gender);
     map['admin'] = Variable<bool>(admin);
+    map['currency'] = Variable<String>(currency);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['last_updated'] = Variable<DateTime>(lastUpdated);
     return map;
@@ -267,6 +293,7 @@ class User extends DataClass implements Insertable<User> {
       dob: Value(dob),
       gender: Value(gender),
       admin: Value(admin),
+      currency: Value(currency),
       createdAt: Value(createdAt),
       lastUpdated: Value(lastUpdated),
     );
@@ -284,6 +311,7 @@ class User extends DataClass implements Insertable<User> {
       dob: serializer.fromJson<DateTime>(json['dob']),
       gender: serializer.fromJson<String>(json['gender']),
       admin: serializer.fromJson<bool>(json['admin']),
+      currency: serializer.fromJson<String>(json['currency']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
     );
@@ -298,6 +326,7 @@ class User extends DataClass implements Insertable<User> {
       'dob': serializer.toJson<DateTime>(dob),
       'gender': serializer.toJson<String>(gender),
       'admin': serializer.toJson<bool>(admin),
+      'currency': serializer.toJson<String>(currency),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
     };
@@ -310,6 +339,7 @@ class User extends DataClass implements Insertable<User> {
     DateTime? dob,
     String? gender,
     bool? admin,
+    String? currency,
     DateTime? createdAt,
     DateTime? lastUpdated,
   }) => User(
@@ -319,6 +349,7 @@ class User extends DataClass implements Insertable<User> {
     dob: dob ?? this.dob,
     gender: gender ?? this.gender,
     admin: admin ?? this.admin,
+    currency: currency ?? this.currency,
     createdAt: createdAt ?? this.createdAt,
     lastUpdated: lastUpdated ?? this.lastUpdated,
   );
@@ -330,6 +361,7 @@ class User extends DataClass implements Insertable<User> {
       dob: data.dob.present ? data.dob.value : this.dob,
       gender: data.gender.present ? data.gender.value : this.gender,
       admin: data.admin.present ? data.admin.value : this.admin,
+      currency: data.currency.present ? data.currency.value : this.currency,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       lastUpdated: data.lastUpdated.present
           ? data.lastUpdated.value
@@ -346,6 +378,7 @@ class User extends DataClass implements Insertable<User> {
           ..write('dob: $dob, ')
           ..write('gender: $gender, ')
           ..write('admin: $admin, ')
+          ..write('currency: $currency, ')
           ..write('createdAt: $createdAt, ')
           ..write('lastUpdated: $lastUpdated')
           ..write(')'))
@@ -360,6 +393,7 @@ class User extends DataClass implements Insertable<User> {
     dob,
     gender,
     admin,
+    currency,
     createdAt,
     lastUpdated,
   );
@@ -373,6 +407,7 @@ class User extends DataClass implements Insertable<User> {
           other.dob == this.dob &&
           other.gender == this.gender &&
           other.admin == this.admin &&
+          other.currency == this.currency &&
           other.createdAt == this.createdAt &&
           other.lastUpdated == this.lastUpdated);
 }
@@ -384,6 +419,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<DateTime> dob;
   final Value<String> gender;
   final Value<bool> admin;
+  final Value<String> currency;
   final Value<DateTime> createdAt;
   final Value<DateTime> lastUpdated;
   final Value<int> rowid;
@@ -394,6 +430,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.dob = const Value.absent(),
     this.gender = const Value.absent(),
     this.admin = const Value.absent(),
+    this.currency = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -405,6 +442,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required DateTime dob,
     required String gender,
     required bool admin,
+    this.currency = const Value.absent(),
     required DateTime createdAt,
     this.lastUpdated = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -421,6 +459,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<DateTime>? dob,
     Expression<String>? gender,
     Expression<bool>? admin,
+    Expression<String>? currency,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? lastUpdated,
     Expression<int>? rowid,
@@ -432,6 +471,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (dob != null) 'dob': dob,
       if (gender != null) 'gender': gender,
       if (admin != null) 'admin': admin,
+      if (currency != null) 'currency': currency,
       if (createdAt != null) 'created_at': createdAt,
       if (lastUpdated != null) 'last_updated': lastUpdated,
       if (rowid != null) 'rowid': rowid,
@@ -445,6 +485,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<DateTime>? dob,
     Value<String>? gender,
     Value<bool>? admin,
+    Value<String>? currency,
     Value<DateTime>? createdAt,
     Value<DateTime>? lastUpdated,
     Value<int>? rowid,
@@ -456,6 +497,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       dob: dob ?? this.dob,
       gender: gender ?? this.gender,
       admin: admin ?? this.admin,
+      currency: currency ?? this.currency,
       createdAt: createdAt ?? this.createdAt,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       rowid: rowid ?? this.rowid,
@@ -483,6 +525,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (admin.present) {
       map['admin'] = Variable<bool>(admin.value);
     }
+    if (currency.present) {
+      map['currency'] = Variable<String>(currency.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -504,6 +549,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('dob: $dob, ')
           ..write('gender: $gender, ')
           ..write('admin: $admin, ')
+          ..write('currency: $currency, ')
           ..write('createdAt: $createdAt, ')
           ..write('lastUpdated: $lastUpdated, ')
           ..write('rowid: $rowid')
@@ -4024,6 +4070,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       required DateTime dob,
       required String gender,
       required bool admin,
+      Value<String> currency,
       required DateTime createdAt,
       Value<DateTime> lastUpdated,
       Value<int> rowid,
@@ -4036,6 +4083,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<DateTime> dob,
       Value<String> gender,
       Value<bool> admin,
+      Value<String> currency,
       Value<DateTime> createdAt,
       Value<DateTime> lastUpdated,
       Value<int> rowid,
@@ -4118,6 +4166,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<bool> get admin => $composableBuilder(
     column: $table.admin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currency => $composableBuilder(
+    column: $table.currency,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4221,6 +4274,11 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -4258,6 +4316,9 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<bool> get admin =>
       $composableBuilder(column: $table.admin, builder: (column) => column);
+
+  GeneratedColumn<String> get currency =>
+      $composableBuilder(column: $table.currency, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -4352,6 +4413,7 @@ class $$UsersTableTableManager
                 Value<DateTime> dob = const Value.absent(),
                 Value<String> gender = const Value.absent(),
                 Value<bool> admin = const Value.absent(),
+                Value<String> currency = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -4362,6 +4424,7 @@ class $$UsersTableTableManager
                 dob: dob,
                 gender: gender,
                 admin: admin,
+                currency: currency,
                 createdAt: createdAt,
                 lastUpdated: lastUpdated,
                 rowid: rowid,
@@ -4374,6 +4437,7 @@ class $$UsersTableTableManager
                 required DateTime dob,
                 required String gender,
                 required bool admin,
+                Value<String> currency = const Value.absent(),
                 required DateTime createdAt,
                 Value<DateTime> lastUpdated = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -4384,6 +4448,7 @@ class $$UsersTableTableManager
                 dob: dob,
                 gender: gender,
                 admin: admin,
+                currency: currency,
                 createdAt: createdAt,
                 lastUpdated: lastUpdated,
                 rowid: rowid,

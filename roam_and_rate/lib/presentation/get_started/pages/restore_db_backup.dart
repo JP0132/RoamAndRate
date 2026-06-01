@@ -257,7 +257,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
         dob: DateTime.parse(userData["dob"]),
         gender: userData["gender"],
         admin: userData["admin"],
-        userId: userData["id"],
+        userId: userData["id"], currency: userData["currency"],
       );
 
       List<dynamic> tripsData = userData["trips"];

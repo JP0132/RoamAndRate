@@ -9,6 +9,7 @@ class Users extends Table {
   DateTimeColumn get dob => dateTime()();
   TextColumn get gender => text()();
   BoolColumn get admin => boolean()();
+  TextColumn get currency => text().withDefault(const Constant("GBP"))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get lastUpdated => dateTime().withDefault(currentDateAndTime)();
 

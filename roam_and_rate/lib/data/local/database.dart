@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase._internal();
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: 'roamandrate_db',
@@ -115,6 +115,10 @@ class AppDatabase extends _$AppDatabase {
          SET category = 'Tourism'
          WHERE category = 'Tourist Attraction'
         """);
+      }
+
+      if(from < 6){
+        await migrator.addColumn(users, users.currency);
       }
       
     },

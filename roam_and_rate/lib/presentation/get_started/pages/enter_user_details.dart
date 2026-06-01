@@ -33,6 +33,8 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
 
+  final String _selectedCurrency = "GBP";
+
   final List<String> genderOptions = [
     'Male',
     'Female',
@@ -290,7 +292,7 @@ class _EnterUserDetailsState extends State<EnterUserDetails> {
                             username: _usernameController.text,
                             dob: selectedDate,
                             gender: selectedGender!,
-                            admin: true,
+                            admin: true, currency: _selectedCurrency,
                           );
                           checkIfFormSubmitted();
                           context.read<UserBloc>().add(AddUser(newUser));

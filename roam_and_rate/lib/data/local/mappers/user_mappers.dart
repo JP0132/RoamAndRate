@@ -11,7 +11,7 @@ extension UserEntityMapper on User {
       dob: dob,
       gender: gender,
       admin: admin,
-      lastUpdated: lastUpdated
+      lastUpdated: lastUpdated, currency: currency,
     );
   }
 }
