@@ -28,8 +28,8 @@ class AddBtn extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Icon(Icons.add, fontWeight: FontWeight.bold),
-            Text(btnText, style: TextStyle(fontWeight: FontWeight.bold)),
+            Icon(Icons.add, fontWeight: FontWeight.bold, color:  custom.primaryText),
+            Text(btnText, style: TextStyle(fontWeight: FontWeight.bold, color: custom.primaryText)),
           ],
         ),
       ),
