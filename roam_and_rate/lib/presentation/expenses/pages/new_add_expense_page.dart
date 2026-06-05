@@ -86,13 +86,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
     super.initState();
     selectedCurrency = widget.tripDetails.currency;
 
-    if (widget.participants.any((p) => p.id == selectedPayee?.id)) {
-      final admin = _participants.firstWhere(
-        (p) => p.isAdmin,
-        orElse: () => _participants.first,
-      );
-      selectedPayee = admin;
-    }
+    final admin = widget.participants.firstWhere((p) => p.isAdmin, orElse: () => widget.participants.first);
+    selectedPayee = admin;
+    selectedSplitParticipants.add(admin);
+
+    print("🥶🥶🥶🥶 ${selectedSplitParticipants.first.particpantName}");
+   
     
     _paidController.addListener(() {
       _updateConversion();
@@ -819,10 +818,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                   title: 'Split Expense',
                   subtitle: 'Divide this cost between people',
-                  expanded: Column(children: [
-
-                    ],
-                  ),
+                  expanded: _buildSplitExpanded(custom),
                   expandedState: toBeSplit,
                 ),
                 SizedBox(height: 10),
@@ -1016,9 +1012,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Split among", style: TextStyle(color: custom.secondaryText)),
-            Text(" ${-1}", style: TextStyle(color: custom.primaryText)),
+            Text(" ${selectedSplitParticipants.length}", style: TextStyle(color: custom.primaryText)),
           ],
         ),
       ],
