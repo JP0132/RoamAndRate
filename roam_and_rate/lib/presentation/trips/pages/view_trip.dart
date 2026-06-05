@@ -22,6 +22,7 @@ import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/mappers/expense_mappers.dart';
 import 'package:roam_and_rate/data/local/mappers/rating_details_mappers.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
@@ -255,26 +256,26 @@ class _ViewTripState extends State<ViewTrip> {
     );
 
     // Listen for the loaded state exactly once
-    _tripDataSubscription = context.read<TripDataBloc>().stream.listen((state) {
-      final hasData =
-          state.expenses.isNotEmpty ||
-          state.ratings.isNotEmpty ||
-          state.ratingsMade.isNotEmpty;
+    // _tripDataSubscription = context.read<TripDataBloc>().stream.listen((state) {
+    //   final hasData =
+    //       state.expenses.isNotEmpty ||
+    //       state.ratings.isNotEmpty ||
+    //       state.ratingsMade.isNotEmpty;
 
-      if (hasData && !_dataLoaded) {
-        setState(() {
-          state = state;
-          _expenses = state.expenses.map((e) => e.toModel()).toList();
-          _ratings = state.ratings.map((e) => e.toModel()).toList();
-          ;
+    //   if (hasData && !_dataLoaded) {
+    //     setState(() {
+    //       state = state;
+    //       _expenses = state.expenses.map((e) => e.toModel()).toList();
+    //       _ratings = state.ratings.map((e) => e.toModel()).toList();
+    //       ;
 
-          _dataLoaded = true;
-        });
+    //       _dataLoaded = true;
+    //     });
 
-        // Cancel the subscription after first successful load
-        _tripDataSubscription.cancel();
-      }
-    });
+    //     // Cancel the subscription after first successful load
+    //     _tripDataSubscription.cancel();
+    //   }
+    // });
 
     _searchController.addListener(_onSearchChanged);
   }
@@ -293,157 +294,223 @@ class _ViewTripState extends State<ViewTrip> {
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
 
-    final totals = _calculateTotals();
-    final _totalBudgetSpent = totals["budgetTotal"];
-    final _totalPaidSpent = totals["paidTotal"];
+    // final totals = _calculateTotals();
+    // final _totalBudgetSpent = totals["budgetTotal"];
+    // final _totalPaidSpent = totals["paidTotal"];
 
-    print("Total budget spent: $_totalBudgetSpent");
-    print("Total paid spent: $_totalPaidSpent");
+    // print("Total budget spent: $_totalBudgetSpent");
+    // print("Total paid spent: $_totalPaidSpent");
 
-    return Scaffold(
-      appBar: CustomAppBar(title: "Trip Overview",custom: custom),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            TripOverviewCard(
-              tripModel: widget.tripDetails,
-              totalSpent: _totalPaidSpent!, totalBudgetSpent: _totalBudgetSpent!,
-            ),
-            //TripCards(tripModel: widget.tripDetails),
-            const SizedBox(height: 20),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<TripDataBloc, TripDataState>(
+          listener: (context, state) {
+            _latestState = state;
 
-            
-            const SizedBox(height: 10),
+            final newRatings = state.ratings.map((e) => e.toModel()).toList();
 
-            // Search bar
-            Container(
-              height: 40.0,
-              decoration: BoxDecoration(
-                color: custom.surface,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                     Icon(Icons.search, color: custom.primary),
-                    const SizedBox(width: 8.0),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration:  InputDecoration(
-                            hintText: 'Search',
-                            border: InputBorder.none,
-                            hintStyle: TextStyle(fontSize: 14, color: custom.primary),
-                          ),
-                          style: TextStyle(fontSize: 14, color: custom.primary),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await _controller.showTooltip();
-                      },
-                      child: SuperTooltip(
-                        showBarrier: true,
-                        popupDirection: TooltipDirection.left,
-                        controller: _controller,
-                        content:  SizedBox(
-                          width: 250,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "The search bar can be used to filter by names and tags.",
-                                style: TextStyle(color: custom.primaryText),
-                              ),
-                              SizedBox(height: 12),
-                              Text("Types of searches:", style: TextStyle(color: custom.primaryText),),
-                              SizedBox(height: 4),
-                              Text("• Used commas to multi-search.", style: TextStyle(color: custom.primaryText),),
-                              Text(
-                                "• Use the keyword 'tags:' to search tags only.",
-                                style: TextStyle(color: custom.primaryText),
-                              ),
-                              Text(
-                                "• Use the keyword 'category:' to search categories only.",
-                                style: TextStyle(color: custom.primaryText),
-                              ),
-                            ],
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.info_outline,
-                          color: custom.primary,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+            final newExpenses = state.expenses.map((e) => e.toModel()).toList();
 
-            SegmentedSwitcher(
-              items: [
-                TabItem(title: "Expenses", count: 4),
-                TabItem(title: "Ratings", count: 5),
-              ],
-              onTabSelected: _onSelectIndex,
-              selectedIndex: _selectedIndex,
-            ),
+            if (!listEquals(newExpenses, _expenses) ||
+                !listEquals(newRatings, _ratings)) {
+              setState(() {
+                _ratings = newRatings;
+                _expenses = newExpenses;
 
-            const SizedBox(height: 12),
+                _filterTripData();
+              });
 
-            // Content
-            BlocListener<TripDataBloc, TripDataState>(
-              listener: (context, state) {
-                _latestState = state;
-
-                // Update data
-                final newRatings = state.ratings
-                    .map((e) => e.toModel())
-                    .toList();
-                final newExpenses = state.expenses
-                    .map((e) => e.toModel())
-                    .toList();
-
-                // Only update if data actually changed
-                if (!listEquals(newExpenses, _expenses) ||
-                    !listEquals(newRatings, _ratings)) {
-                  setState(() {
-                    _ratings = newRatings;
-                    _expenses = newExpenses;
-                    _filterTripData();
-
-                    
-                  });
-
-                  _convertAllExpenses();
-                }
-
-                
-              },
-              child: Expanded(
-                child: _selectedIndex == 1
-                    ? _buildRatingsList(_latestState)
-                    : _buildExpensesList(),
-              ),
-            ),
-          ],
+              _convertAllExpenses();
+            }
+          },
         ),
+      ],
+      child: BlocBuilder<ParticipantBloc, ParticipantState>(
+        builder: (context, participantState) {
+          if (participantState is ParticipantLoading) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (participantState is! ParticipantLoaded) {
+            return const Scaffold(
+              body: Center(child: Text("Failed to load participants")),
+            );
+          }
+
+          final participants = participantState.participants;
+
+          final totals = _calculateTotals();
+
+          final totalBudgetSpent = totals["budgetTotal"] ?? 0.0;
+          final totalPaidSpent = totals["paidTotal"] ?? 0.0;
+
+          return Scaffold(
+            appBar: CustomAppBar(title: "Trip Overview", custom: custom),
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  TripOverviewCard(
+                    tripModel: widget.tripDetails,
+                    totalSpent: totalPaidSpent!,
+                    totalBudgetSpent: totalBudgetSpent!,
+                  ),
+                  //TripCards(tripModel: widget.tripDetails),
+                  const SizedBox(height: 20),
+
+                  const SizedBox(height: 10),
+
+                  // Search bar
+                  Container(
+                    height: 40.0,
+                    decoration: BoxDecoration(
+                      color: custom.surface,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.search, color: custom.primary),
+                          const SizedBox(width: 8.0),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Search',
+                                  border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    fontSize: 14,
+                                    color: custom.primary,
+                                  ),
+                                ),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: custom.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              await _controller.showTooltip();
+                            },
+                            child: SuperTooltip(
+                              showBarrier: true,
+                              popupDirection: TooltipDirection.left,
+                              controller: _controller,
+                              content: SizedBox(
+                                width: 250,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "The search bar can be used to filter by names and tags.",
+                                      style: TextStyle(
+                                        color: custom.primaryText,
+                                      ),
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      "Types of searches:",
+                                      style: TextStyle(
+                                        color: custom.primaryText,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      "• Used commas to multi-search.",
+                                      style: TextStyle(
+                                        color: custom.primaryText,
+                                      ),
+                                    ),
+                                    Text(
+                                      "• Use the keyword 'tags:' to search tags only.",
+                                      style: TextStyle(
+                                        color: custom.primaryText,
+                                      ),
+                                    ),
+                                    Text(
+                                      "• Use the keyword 'category:' to search categories only.",
+                                      style: TextStyle(
+                                        color: custom.primaryText,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.info_outline,
+                                color: custom.primary,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  SegmentedSwitcher(
+                    items: [
+                      TabItem(title: "Expenses", count: 4),
+                      TabItem(title: "Ratings", count: 5),
+                    ],
+                    onTabSelected: _onSelectIndex,
+                    selectedIndex: _selectedIndex,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Content
+                  BlocListener<TripDataBloc, TripDataState>(
+                    listener: (context, state) {
+                      _latestState = state;
+
+                      // Update data
+                      final newRatings = state.ratings
+                          .map((e) => e.toModel())
+                          .toList();
+                      final newExpenses = state.expenses
+                          .map((e) => e.toModel())
+                          .toList();
+
+                      // Only update if data actually changed
+                      if (!listEquals(newExpenses, _expenses) ||
+                          !listEquals(newRatings, _ratings)) {
+                        setState(() {
+                          _ratings = newRatings;
+                          _expenses = newExpenses;
+                          _filterTripData();
+                        });
+
+                        _convertAllExpenses();
+                      }
+                    },
+                    child: Expanded(
+                      child: _selectedIndex == 1
+                          ? _buildRatingsList(participants)
+                          : _buildExpensesList(participants),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: _buildBottomButtons(participants),
+          );
+        },
       ),
-      bottomNavigationBar: _buildBottomButtons(),
     );
   }
 
-  Widget _buildRatingsList(TripDataState? state) {
-    if (state == null || _filteredRatings.isEmpty) {
+  Widget _buildRatingsList(List<ParticipantModel> participants) {
+    if (_filteredRatings.isEmpty) {
       return const Center(child: Text("No ratings yet"));
     }
 
@@ -452,30 +519,21 @@ class _ViewTripState extends State<ViewTrip> {
       itemCount: _filteredRatings.length,
       itemBuilder: (context, index) {
         final rating = _filteredRatings[index];
+
         final ratingsMade = state.ratingsMade
             .where((rm) => rm.ratingDetailsId == rating.id)
             .toList();
 
-        return BlocBuilder<ParticipantBloc, ParticipantState>(
-          builder: (context, participantState) {
-            if (participantState is ParticipantLoading) {
-              return const CircularProgressIndicator();
-            }
-            if (participantState is ParticipantLoaded) {
-              return FullRatingCard(
-                ratingDetails: rating,
-                participantRatings: ratingsMade,
-                participants: participantState.participants,
-              );
-            }
-            return const CircularProgressIndicator();
-          },
+        return FullRatingCard(
+          ratingDetails: rating,
+          participantRatings: ratingsMade,
+          participants: participants,
         );
       },
     );
   }
 
-  Widget _buildExpensesList() {
+  Widget _buildExpensesList(List<ParticipantModel> participants) {
     if (_filteredExpenses.isEmpty) {
       return const Center(child: Text("No expenses found"));
     }
@@ -505,42 +563,30 @@ class _ViewTripState extends State<ViewTrip> {
               e.datePaid.day == date.day,
         );
 
-        return BlocBuilder<ParticipantBloc, ParticipantState>(
-          builder: (context, participantState) {
-            if (participantState is ParticipantLoading) {
-              return const CircularProgressIndicator();
-            }
-
-            if (participantState is ParticipantLoaded) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...expensesForDate.map(
-                    (expense) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: FullExpenseCard(
-                        expenseDetails: expense,
-                        tripDetails: widget.tripDetails,
-                        onCostConverted: _onCostConverted,
-                        convertedCosts: _convertedCosts,
-                        participantName: participantState.participants
-                            .firstWhere((p) => p.id == expense.participantId)
-                            .particpantName,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }
-
-            return Container();
-          },
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...expensesForDate.map(
+              (expense) => Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: FullExpenseCard(
+                  expenseDetails: expense,
+                  tripDetails: widget.tripDetails,
+                  onCostConverted: _onCostConverted,
+                  convertedCosts: _convertedCosts,
+                  participantName: participants
+                      .firstWhere((p) => p.id == expense.participantId)
+                      .particpantName,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildBottomButtons() {
+  Widget _buildBottomButtons(List<ParticipantModel> particpant) {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -553,7 +599,7 @@ class _ViewTripState extends State<ViewTrip> {
               onPressed: () => Navigator.pushNamed(
                 context,
                 AppRouter.addExpense,
-                arguments: AddExpenseArguments(tripDetails: widget.tripDetails),
+                arguments: AddExpenseArguments(tripDetails: widget.tripDetails, participants: particpant),
               ),
             ),
             const SizedBox(width: 12),
