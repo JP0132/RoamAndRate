@@ -206,7 +206,6 @@ class _ViewTripState extends State<ViewTrip> {
   }
 
   bool _dataLoaded = false;
-  late final StreamSubscription<TripDataState> _tripDataSubscription;
 
   Future<void> _convertAllExpenses() async {
     if (_isConverting) return;
@@ -284,7 +283,6 @@ class _ViewTripState extends State<ViewTrip> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
-    _tripDataSubscription.cancel();
     super.dispose();
   }
 
