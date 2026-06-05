@@ -31,27 +31,33 @@ class OptionWidget extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(20)),
         border: Border.all(color: custom.secondarySurface.withValues(alpha: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: custom.secondarySurface,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Center(child: FaIcon(icon, color: custom.icon)),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: TextStyle(color: custom.primaryText)),
-              Text(subtitle, style: TextStyle(color: custom.secondaryText)),
+              Container(
+                padding: const EdgeInsets.all(8),
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: custom.secondarySurface,
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Center(child: FaIcon(icon, color: custom.icon)),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(color: custom.primaryText)),
+                  Text(subtitle, style: TextStyle(color: custom.secondaryText)),
+                ],
+              ),
+              action,
+              
             ],
           ),
-          action,
+          SizedBox(height: 8),
           expandedState ? expanded : const SizedBox.shrink(),
         ],
       ),

@@ -22,11 +22,13 @@ import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
+import 'package:roam_and_rate/presentation/expenses/widgets/chevron_toggle.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/numpad.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/option_widget.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
+import 'package:roam_and_rate/presentation/widgets/common/dashed_border_container.dart';
 import 'package:roam_and_rate/presentation/widgets/common/sub_headings.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
@@ -60,6 +62,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   DateTime? selectedDate = DateTime.now();
   bool toBeSplit = false;
   bool isNotBudget = false;
+  bool isPayeeSelectorOpen = false;
 
   final List<String> value = ["Cheap", "Just Right", "Expensive"];
   final List<String> types = ["card", "cash", "bank transfer"];
@@ -86,13 +89,15 @@ class _AddExpensePageState extends State<AddExpensePage> {
     super.initState();
     selectedCurrency = widget.tripDetails.currency;
 
-    final admin = widget.participants.firstWhere((p) => p.isAdmin, orElse: () => widget.participants.first);
+    final admin = widget.participants.firstWhere(
+      (p) => p.isAdmin,
+      orElse: () => widget.participants.first,
+    );
     selectedPayee = admin;
     selectedSplitParticipants.add(admin);
 
     print("🥶🥶🥶🥶 ${selectedSplitParticipants.first.particpantName}");
-   
-    
+
     _paidController.addListener(() {
       _updateConversion();
 
@@ -839,20 +844,22 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   expandedState: isNotBudget,
                 ),
 
-                // OptionWidget(
-                //   custom: custom,
-                //   icon: FontAwesomeIcons.wallet,
-                //   action: Switch(
-                //     value: isNotBudget,
-                //     onChanged: (bool value) {
-                //       setState(() {
-                //         isNotBudget = value;
-                //       });
-                //     },
-                //   ),
-                //   title: 'Who Paid?',
-                //   subtitle: 'Count this towards your budget', expanded: Column(), expandedState: isNotBudget,
-                // ),
+                OptionWidget(
+                  custom: custom,
+                  icon: FontAwesomeIcons.solidCircleUser,
+                  action: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isPayeeSelectorOpen = !isPayeeSelectorOpen;
+                      });
+                    },
+                    icon: ChevronToggle(isExpanded: isPayeeSelectorOpen),
+                  ),
+                  title: 'Who Paid?',
+                  subtitle: selectedPayee!.particpantName,
+                  expanded: Column(),
+                  expandedState: isPayeeSelectorOpen,
+                ),
                 const SizedBox(height: 10),
 
                 Text(
@@ -1008,15 +1015,266 @@ class _AddExpensePageState extends State<AddExpensePage> {
     );
   }
 
+  double get _splitAmountPerPerson {
+    final paid = double.tryParse(_paidController.text) ?? 0.0;
+
+    if (selectedSplitParticipants.isEmpty) {
+      return 0.0;
+    }
+
+    return paid / selectedSplitParticipants.length;
+  }
+
+  double get _splitConvertedPerPerson {
+    final paidConverted = double.tryParse(_convertedAmount) ?? 0.0;
+
+    if (selectedSplitParticipants.isEmpty) {
+      return 0.0;
+    }
+
+    return paidConverted / selectedSplitParticipants.length;
+  }
+
   Widget _buildSplitExpanded(CustomColours custom) {
+    String splitAmount = "";
+
+    void showParticipantsDialog() {
+      final rootContext = context;
+
+      showDialog(
+        context: rootContext,
+        builder: (dialogContext) {
+          final tempSelected = List.of(selectedSplitParticipants);
+
+          return StatefulBuilder(
+            builder: (context, setDialogState) {
+              final isEmpty = tempSelected.isEmpty;
+
+              return AlertDialog(
+                title: SubHeadings(custom: custom, text: "Split Among?"),
+
+                content: SizedBox(
+                  width: double.maxFinite,
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: widget.participants.length,
+                    itemBuilder: (context, index) {
+                      final participant = widget.participants[index];
+
+                      final isSelected = tempSelected.any(
+                        (p) => p.id == participant.id,
+                      );
+
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          setDialogState(() {
+                            if (isSelected) {
+                              tempSelected.removeWhere(
+                                (p) => p.id == participant.id,
+                              );
+                            } else {
+                              tempSelected.add(participant);
+                            }
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? custom.success
+                                  : custom.primary.withValues(alpha: .3),
+                              width: 1.2,
+                            ),
+                            color: isSelected
+                                ? custom.success.withValues(alpha: 0.08)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 18,
+                                child: Text(
+                                  participant.particpantName
+                                      .substring(0, 1)
+                                      .toUpperCase(),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  participant.particpantName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+
+                              if (isSelected)
+                                Icon(Icons.check_circle, color: custom.success),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text("Cancel"),
+                  ),
+
+                  TextButton(
+                    onPressed: isEmpty
+                        ? null
+                        : () {
+                            setState(() {
+                              selectedSplitParticipants
+                                ..clear()
+                                ..addAll(tempSelected);
+                            });
+
+                            Navigator.pop(dialogContext);
+                          },
+                    child: const Text("Done"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    }
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Split among", style: TextStyle(color: custom.secondaryText)),
-            Text(" ${selectedSplitParticipants.length}", style: TextStyle(color: custom.primaryText)),
+            Text(
+              " ${selectedSplitParticipants.length}",
+              style: TextStyle(color: custom.primaryText),
+            ),
           ],
+        ),
+        SizedBox(height: 8),
+        ...selectedSplitParticipants.map(
+          (p) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: custom.secondarySurface,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              color: custom.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                p.particpantName.substring(0, 1).toUpperCase(),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: custom.secondarySurface, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Text(p.particpantName, style: TextStyle(color: custom.primaryText, fontWeight: FontWeight.bold, fontSize: 18),),
+                            SizedBox(width: 4,),
+                            p.isAdmin ? Container(
+                              padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                              decoration: BoxDecoration(
+                                color: custom.secondary.withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              child: Center(child: Text(" ${p.isAdmin ? "YOU" : ""}", style: TextStyle(color: custom.primaryText, fontSize: 10),)),
+                            ) : Container(),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          "${CurrencyData.currencySymbolFromCode(selectedCurrency!)} ${_splitAmountPerPerson.toStringAsFixed(2)}",
+                          style: TextStyle(
+                            color: custom.primaryText,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${_splitConvertedPerPerson.toStringAsFixed(2)}",
+                          style: TextStyle(
+                            color: custom.secondaryText,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => showParticipantsDialog(),
+          child: DashedBorderContainer(
+            borderColour: custom.primary,
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: custom.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(child: FaIcon(FontAwesomeIcons.plus)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Add/Remove a person"),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
