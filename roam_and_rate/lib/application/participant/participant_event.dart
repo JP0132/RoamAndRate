@@ -25,3 +25,4 @@ class EditParticipant extends ParticipantEvent {
 class LoadParticipants extends ParticipantEvent {
   LoadParticipants();
 }
+

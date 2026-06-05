@@ -14,6 +14,8 @@ class CustomInputField extends StatelessWidget {
   final Color? inputFieldColour;
   final double? inputPadding;
   final double? inputTextSize;
+  final bool? isReadOnly;
+  final Widget? prefix;
   const CustomInputField({
     super.key,
     required this.inputText,
@@ -22,7 +24,12 @@ class CustomInputField extends StatelessWidget {
     this.isObscureText = false,
     this.regFilter = ".*",
     this.numberKeyBoard = false,
-    this.validator, this.inputFieldColour, this.inputPadding, this.inputTextSize,
+    this.validator,
+    this.inputFieldColour,
+    this.inputPadding,
+    this.inputTextSize,
+    this.isReadOnly,
+    this.prefix,
   });
 
   @override
@@ -32,13 +39,15 @@ class CustomInputField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: inputFieldColour ?? custom.surface,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
       child: Padding(
         padding: EdgeInsets.all(inputPadding ?? 8.0),
         child: TextFormField(
+          readOnly: isReadOnly ?? false,
           controller: controller,
           obscureText: isObscureText,
+          onChanged: (value) => controller.text = value,
           validator: validator,
           inputFormatters: <TextInputFormatter>[
             FilteringTextInputFormatter.allow(RegExp(regFilter)),
@@ -46,10 +55,17 @@ class CustomInputField extends StatelessWidget {
           keyboardType: numberKeyBoard
               ? TextInputType.numberWithOptions(decimal: true)
               : null,
-          style: TextStyle(color: custom.primaryText, fontSize: inputTextSize ?? 14),
+          style: TextStyle(
+            color: custom.primaryText,
+            fontSize: inputTextSize ?? 14,
+          ),
           decoration: InputDecoration(
             hintText: inputText,
-            hintStyle: TextStyle(color: custom.secondaryText, fontSize: inputTextSize ?? 14),
+            hintStyle: TextStyle(
+              color: custom.secondaryText,
+              fontSize: inputTextSize ?? 14,
+            ),
+            prefix: prefix,
             icon: inputIcon,
             iconColor: custom.primary,
             filled: false,

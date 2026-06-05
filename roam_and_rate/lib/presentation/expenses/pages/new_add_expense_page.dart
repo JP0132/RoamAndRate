@@ -23,9 +23,11 @@ import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/numpad.dart';
+import 'package:roam_and_rate/presentation/expenses/widgets/option_widget.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_app_bar.dart';
 import 'package:roam_and_rate/presentation/widgets/common/custom_input_field.dart';
 import 'package:roam_and_rate/presentation/widgets/common/customisable_dropdown.dart';
+import 'package:roam_and_rate/presentation/widgets/common/sub_headings.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_picker.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
@@ -33,7 +35,12 @@ import 'package:roam_and_rate/presentation/widgets/date_picker/show_custom_style
 
 class AddExpensePage extends StatefulWidget {
   final TripModel tripDetails;
-  const AddExpensePage({super.key, required this.tripDetails});
+  final List<ParticipantModel> participants;
+  const AddExpensePage({
+    super.key,
+    required this.tripDetails,
+    required this.participants,
+  });
 
   @override
   State<AddExpensePage> createState() => _AddExpensePageState();
@@ -41,6 +48,7 @@ class AddExpensePage extends StatefulWidget {
 
 class _AddExpensePageState extends State<AddExpensePage> {
   final TextEditingController _expenseNameController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _paidController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
@@ -58,12 +66,17 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   List<ParticipantModel> _participants = [];
   String selectedParticipant = "";
+  List<ParticipantModel> selectedSplitParticipants = [];
+
+  ParticipantModel? selectedPayee;
 
   String? selectedCategory;
   String? selectedType;
   String? selectedCurrency;
 
   List<String> addedTags = [];
+
+  String _lastPaidValue = "";
 
   File? _image;
   final ImagePicker _picker = ImagePicker();
@@ -72,8 +85,23 @@ class _AddExpensePageState extends State<AddExpensePage> {
   void initState() {
     super.initState();
     selectedCurrency = widget.tripDetails.currency;
+
+    if (widget.participants.any((p) => p.id == selectedPayee?.id)) {
+      final admin = _participants.firstWhere(
+        (p) => p.isAdmin,
+        orElse: () => _participants.first,
+      );
+      selectedPayee = admin;
+    }
+    
     _paidController.addListener(() {
       _updateConversion();
+
+      if (_costController.text.isEmpty ||
+          _costController.text == _lastPaidValue) {
+        _costController.text = _paidController.text;
+      }
+      _lastPaidValue = _paidController.text;
     });
   }
 
@@ -336,47 +364,99 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 Numpad(controller: _paidController),
 
                 SizedBox(height: 20),
-                // Input field to enter the name of the place
-                Text(
-                  "Expense Name *",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
-                ),
-                CustomInputField(
-                  inputText: "What you spent it on?",
-                  inputIcon: FaIcon(FontAwesomeIcons.earthEurope),
-                  controller: _expenseNameController,
-                ),
-                Text(
-                  formValid["expenseName"] == true
-                      ? ""
-                      : "Name cannot be blank!",
-                  style: TextStyle(color: custom.error),
-                ),
-                SizedBox(height: 20), // Space between containers
-                // How much it costed
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                SubHeadings(custom: custom, text: "COST BREAKDOWN"),
+
+                Row(
                   children: [
-                    Text(
-                      "Cost *",
-                      style: TextStyle(fontSize: 14, color: custom.primary),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: custom.surface.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(color: custom.secondarySurface),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("LISTED COST"),
+                            CustomInputField(
+                              inputText: "0.00",
+                              controller: _costController,
+                              numberKeyBoard: true,
+                              regFilter: Values.decimalOnlyRegExp,
+                              inputFieldColour: custom.secondarySurface,
+                              inputPadding: 0,
+
+                              prefix: Text(
+                                CurrencyData.currencySymbolFromCode(
+                                  selectedCurrency!,
+                                ),
+                                style: TextStyle(
+                                  color: custom.primaryText,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              formValid["cost"] == true
+                                  ? ""
+                                  : "Cost cannot be blank!",
+                              style: TextStyle(color: custom.error),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    CustomInputField(
-                      inputText: "Cost",
-                      inputIcon: FaIcon(FontAwesomeIcons.moneyBill1Wave),
-                      controller: _costController,
-                      numberKeyBoard: true,
-                      regFilter: Values.decimalOnlyRegExp,
-                    ),
-                    Text(
-                      formValid["cost"] == true ? "" : "Cost cannot be blank!",
-                      style: TextStyle(color: custom.error),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: custom.surface.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(color: custom.secondarySurface),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("PAID"),
+                            CustomInputField(
+                              inputText: "0.00",
+                              controller: _paidController,
+                              numberKeyBoard: true,
+                              regFilter: Values.decimalOnlyRegExp,
+                              inputFieldColour: custom.secondarySurface,
+                              inputPadding: 0,
+                              isReadOnly: true,
+                              prefix: Text(
+                                CurrencyData.currencySymbolFromCode(
+                                  selectedCurrency!,
+                                ),
+                                style: TextStyle(
+                                  color: custom.primaryText,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              formValid["paid"] == true
+                                  ? ""
+                                  : "Paid cannot be blank!",
+                              style: TextStyle(color: custom.error),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
+
                 SizedBox(height: 20),
 
-                Text("CATEGORY", style: TextStyle(color: custom.secondaryText)),
+                // Category Selection
+                SubHeadings(custom: custom, text: "Category"),
 
                 GridView.count(
                   primary: false,
@@ -452,11 +532,15 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
 
                 SizedBox(height: 20),
-                Text("DETAILS", style: TextStyle(color: custom.secondaryText)),
+
+                // Details Section - Expense Name, Date Paid, Payment Method and Location
+                SubHeadings(custom: custom, text: "Details"),
+                SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
-                    color: custom.surface,
+                    color: custom.surface.withValues(alpha: 0.2),
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: custom.surface),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -500,6 +584,67 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                     inputText: "What you spent it on?",
                                     inputFieldColour: custom.secondarySurface,
                                     controller: _expenseNameController,
+                                    inputPadding: 4,
+                                  ),
+
+                                  if (formValid["expenseName"] != true)
+                                    Text(
+                                      "Name cannot be blank!",
+                                      style: TextStyle(color: custom.error),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        Divider(color: custom.primary, thickness: 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: custom.secondarySurface,
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              child: Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.locationDot,
+                                  color: custom.icon,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 4,
+                                      left: 2,
+                                    ),
+                                    child: Text(
+                                      "LOCATION",
+                                      style: TextStyle(
+                                        color: custom.secondaryText,
+                                        fontSize: 12,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                  CustomInputField(
+                                    inputText: "Where you spent it?",
+                                    inputFieldColour: custom.secondarySurface,
+                                    controller: _locationController,
                                     inputPadding: 4,
                                   ),
 
@@ -598,8 +743,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             ),
                           ],
                         ),
-                        Divider(
-                          color: custom.primary, thickness: 2,),
+                        Divider(color: custom.primary, thickness: 2),
                         const SizedBox(height: 10),
                         Text(
                           "PAYMENT TYPE",
@@ -657,33 +801,64 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                 ),
 
-                SizedBox(height: 20),
-                Text(
-                  "Will this expense be splitted?",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
+                const SizedBox(height: 20),
+
+                SubHeadings(custom: custom, text: "Options"),
+                const SizedBox(height: 5),
+
+                OptionWidget(
+                  custom: custom,
+                  icon: FontAwesomeIcons.arrowsSplitUpAndLeft,
+                  action: Switch(
+                    value: toBeSplit,
+                    onChanged: (bool value) {
+                      setState(() {
+                        toBeSplit = value;
+                      });
+                    },
+                  ),
+                  title: 'Split Expense',
+                  subtitle: 'Divide this cost between people',
+                  expanded: Column(children: [
+
+                    ],
+                  ),
+                  expandedState: toBeSplit,
                 ),
-                Switch(
-                  value: toBeSplit,
-                  onChanged: (bool value) {
-                    setState(() {
-                      toBeSplit = value;
-                    });
-                  },
+                SizedBox(height: 10),
+                OptionWidget(
+                  custom: custom,
+                  icon: FontAwesomeIcons.wallet,
+                  action: Switch(
+                    value: isNotBudget,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isNotBudget = value;
+                      });
+                    },
+                  ),
+                  title: 'Include in Budget',
+                  subtitle: 'Count this towards your budget',
+                  expanded: Column(),
+                  expandedState: isNotBudget,
                 ),
-                SizedBox(height: 20),
-                Text(
-                  "Do you want to include it in your budget?",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
-                ),
-                Switch(
-                  value: isNotBudget,
-                  onChanged: (bool value) {
-                    setState(() {
-                      isNotBudget = value;
-                    });
-                  },
-                ),
-                SizedBox(height: 20),
+
+                // OptionWidget(
+                //   custom: custom,
+                //   icon: FontAwesomeIcons.wallet,
+                //   action: Switch(
+                //     value: isNotBudget,
+                //     onChanged: (bool value) {
+                //       setState(() {
+                //         isNotBudget = value;
+                //       });
+                //     },
+                //   ),
+                //   title: 'Who Paid?',
+                //   subtitle: 'Count this towards your budget', expanded: Column(), expandedState: isNotBudget,
+                // ),
+                const SizedBox(height: 10),
+
                 Text(
                   "Who paid for it? *",
                   style: TextStyle(fontSize: 14, color: custom.primary),
@@ -737,80 +912,19 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
-
-                Text(
-                  "Date Paid *",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
-                ),
-                InkWell(
-                  onTap: () => ShowPicker.showCustomStyledPicker(
-                    context,
-                    selectedDate,
-                    _setDate,
-                  ),
-
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: custom.surface,
-
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.only(right: 20),
-
-                            child: Icon(
-                              Icons.calendar_today,
-                              color: custom.primary,
-                            ),
-                          ),
-                        ),
-
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-
-                          child: Text(
-                            DateFormat('dd/MM/yyyy').format(selectedDate!),
-
-                            textAlign: TextAlign.justify,
-
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  formValid["datePaid"] == true
-                      ? ""
-                      : "Date Paid cannot be blank!",
-                  style: TextStyle(color: custom.error),
-                ),
 
                 SizedBox(height: 20),
 
-                Text(
-                  "Tags",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
-                ),
+                SubHeadings(custom: custom, text: "Tags"),
+
                 WTagField(
                   onTagsChanged: handleTagsChanged,
                   addedTags: addedTags,
                 ),
                 SizedBox(height: 20),
-                Text(
-                  "Notes",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
-                ),
+
+                SubHeadings(custom: custom, text: "Notes"),
+
                 WLargeTextfield(
                   hintText: "Notes",
                   controller: _notesController,
@@ -895,6 +1009,19 @@ class _AddExpensePageState extends State<AddExpensePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSplitExpanded(CustomColours custom) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text("Split among", style: TextStyle(color: custom.secondaryText)),
+            Text(" ${-1}", style: TextStyle(color: custom.primaryText)),
+          ],
+        ),
+      ],
     );
   }
 }

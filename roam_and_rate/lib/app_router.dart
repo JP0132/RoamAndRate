@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
@@ -33,8 +34,9 @@ class EditTripArguments {
 
 class AddExpenseArguments {
   final TripModel tripDetails;
+  final List<ParticipantModel> participants;
 
-  AddExpenseArguments({required this.tripDetails});
+  AddExpenseArguments({required this.participants, required this.tripDetails});
 }
 
 class EditExpenseArugments {
@@ -115,7 +117,7 @@ class AppRouter {
       case addExpense:
         final args = selectedRoute.arguments as AddExpenseArguments;
         return MaterialPageRoute(
-          builder: (_) => AddExpensePage(tripDetails: args.tripDetails),
+          builder: (_) => AddExpensePage(tripDetails: args.tripDetails, participants: args.participants,),
         );
       case editExpense:
         final args = selectedRoute.arguments as EditExpenseArugments;
