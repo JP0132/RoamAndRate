@@ -7,7 +7,12 @@ class SegmentedSwitcher extends StatefulWidget {
   final void Function(int index) onTabSelected;
   final int selectedIndex;
 
-  const SegmentedSwitcher({super.key, required this.items, required this.onTabSelected, required this.selectedIndex});
+  const SegmentedSwitcher({
+    super.key,
+    required this.items,
+    required this.onTabSelected,
+    required this.selectedIndex,
+  });
 
   @override
   State<SegmentedSwitcher> createState() => _SegmentedSwitcherState();
@@ -15,14 +20,13 @@ class SegmentedSwitcher extends StatefulWidget {
 
 class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
   int selectedIndex = 0;
-  
+
   @override
   void initState() {
     selectedIndex = widget.selectedIndex;
     super.initState();
   }
 
- 
   @override
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
@@ -34,9 +38,7 @@ class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
       decoration: BoxDecoration(
         color: custom.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: custom.primary.withValues(alpha: 0.5),
-        ),
+        border: Border.all(color: custom.primary.withValues(alpha: 0.5)),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -86,15 +88,42 @@ class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
                       },
                       behavior: HitTestBehavior.opaque,
                       child: Center(
-                        child: Text(
-                          item.title,
-                          style: TextStyle(
-                            color: isSelected
-                                ? custom.background
-                                : custom.primaryText.withValues(alpha: 0.35),
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              item.title,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? custom.background
+                                    : custom.primaryText.withValues(
+                                        alpha: 0.35,
+                                      ),
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Container(
+                              constraints: const BoxConstraints(
+                                minWidth: 28,
+                                minHeight: 28,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: selectedIndex == index ? custom.secondary : custom.secondarySurface,
+                              ),
+                              child: Text(
+                                item.count.toString(),
+                                style: TextStyle(color: selectedIndex == index ? custom.primaryText : custom.secondaryText),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -108,4 +137,3 @@ class _SegmentedSwitcherState extends State<SegmentedSwitcher> {
     );
   }
 }
-
