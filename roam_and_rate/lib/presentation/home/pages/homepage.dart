@@ -114,6 +114,7 @@ class _HomePageState extends State<HomePage> {
                       (user) => user.admin == true,
                     );
                     SessionManager().setUserId(adminUser.userId!);
+                    SessionManager().setUserCurrency(adminUser.currency);
                     return Text("Welcome, ${adminUser.username}", style: TextStyle(color: custom.primary));
                   } catch (e) {
                     return const Text("No admin user found");

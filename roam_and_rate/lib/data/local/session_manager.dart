@@ -9,6 +9,7 @@ class SessionManager {
   SessionManager._internal();
 
   String? userId;
+  String? userCurrency;
 
   String? lastSyncTime;
 
@@ -19,6 +20,7 @@ class SessionManager {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('userId');
+    userCurrency = prefs.getString('userCurrency');
     lastSyncTime = prefs.getString('lastSyncTime');
     backupToDB = prefs.getBool("backupToDB");
   }
@@ -79,6 +81,12 @@ class SessionManager {
     userId = id;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userId', id);
+  }
+
+   Future<void> setUserCurrency(String currency) async {
+    userCurrency = currency;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userCurrency', userCurrency!);
   }
 
   Future<void> setLastSyncTime(DateTime newSyncTime) async {

@@ -21,6 +21,7 @@ import 'package:roam_and_rate/data/local/daos/ratings_made_dao.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/mappers/expense_mappers.dart';
 import 'package:roam_and_rate/data/local/mappers/rating_details_mappers.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
@@ -47,6 +48,9 @@ class _ViewTripState extends State<ViewTrip> {
   int _selectedIndex = 0;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+
+  final sessionManager = SessionManager();
+  String? userCurrency = "";
 
   List<RatingDetailsModel> _ratings = [];
   List<ExpenseModel> _expenses = [];
@@ -172,12 +176,15 @@ class _ViewTripState extends State<ViewTrip> {
   Map<String, double> _calculateTotals() {
     double budgetTotal = 0.0;
     double paidTotal = 0.0;
+    double userCurrencyTotal = 0.0;
 
     for (final expense in _filteredExpenses) {
       final double amount = _getConvertedOrPaid(expense);
+      final double userCurrAmount = _getUserCurrencyTotal(expense);
       print("Expense: ${expense.name} = $amount");
       // All expenses
       paidTotal += amount;
+      userCurrencyTotal += userCurrAmount;
       print("Paid total: $paidTotal");
       if (!expense.isNotBudget) {
         // Only budget expenses
@@ -185,13 +192,21 @@ class _ViewTripState extends State<ViewTrip> {
       }
     }
 
-    return {"budgetTotal": budgetTotal, "paidTotal": paidTotal};
+    return {"budgetTotal": budgetTotal, "paidTotal": paidTotal, "userCurrencyTotal": userCurrencyTotal};
   }
 
   double _getConvertedOrPaid(ExpenseModel expense) {
-    if (widget.tripDetails.currency == expense.currency) return expense.paid;
+    if (widget.tripDetails.currency == expense.currency && userCurrency == expense.currency) return expense.paid;
     if (_convertedCosts.containsKey(expense.expenseId))
       return _convertedCosts[expense.expenseId]!;
+    return expense.paid;
+  }
+
+  double _getUserCurrencyTotal(ExpenseModel expense) {
+    if(userCurrency == expense.currency) return expense.paid;
+    if (_convertedCosts.containsKey("user_${expense.expenseId}")) {
+      return _convertedCosts["user_${expense.expenseId}"]!;
+    }
     return expense.paid;
   }
 
@@ -216,10 +231,28 @@ class _ViewTripState extends State<ViewTrip> {
 
     for (final expense in _expenses) {
       final id = expense.expenseId!;
+      final userCurrId = "user_$id";
 
       // Same currency → no conversion needed
       if (widget.tripDetails.currency == expense.currency) {
         newConverted[id] = expense.paid;
+
+        // Convert to user currency if not equal
+        if (userCurrency != expense.currency) {
+          try {
+            final result = await CurrencyHelper().getConvertedAmount(
+              base: expense.currency.toUpperCase(),
+              target: userCurrency!.toUpperCase(),
+              value: expense.paid,
+            );
+
+            if (result != null) {
+              newConverted[userCurrId] = double.parse(result);
+            }
+          } catch (e) {
+            debugPrint("Conversion failed for $id: $e");
+          }
+        }
         continue;
       }
 
@@ -275,6 +308,7 @@ class _ViewTripState extends State<ViewTrip> {
     //     _tripDataSubscription.cancel();
     //   }
     // });
+    userCurrency = SessionManager().userCurrency;
 
     _searchController.addListener(_onSearchChanged);
   }
@@ -343,6 +377,7 @@ class _ViewTripState extends State<ViewTrip> {
 
           final totalBudgetSpent = totals["budgetTotal"] ?? 0.0;
           final totalPaidSpent = totals["paidTotal"] ?? 0.0;
+          final totalUserCurrencySpent = totals["userCurrencyTotal"] ?? 0.0;
 
           return Scaffold(
             appBar: CustomAppBar(title: "Trip Overview", custom: custom),
@@ -455,10 +490,13 @@ class _ViewTripState extends State<ViewTrip> {
                   ),
                   const SizedBox(height: 20),
 
+                  
+                  Text("Total User Currency Spent: $totalUserCurrencySpent"),
+
                   SegmentedSwitcher(
                     items: [
-                      TabItem(title: "Expenses", count: 4),
-                      TabItem(title: "Ratings", count: 5),
+                      TabItem(title: "Expenses", count: _expenses.length),
+                      TabItem(title: "Ratings", count: _ratings.length),
                     ],
                     onTabSelected: _onSelectIndex,
                     selectedIndex: _selectedIndex,
@@ -597,7 +635,10 @@ class _ViewTripState extends State<ViewTrip> {
               onPressed: () => Navigator.pushNamed(
                 context,
                 AppRouter.addExpense,
-                arguments: AddExpenseArguments(tripDetails: widget.tripDetails, participants: particpant),
+                arguments: AddExpenseArguments(
+                  tripDetails: widget.tripDetails,
+                  participants: particpant,
+                ),
               ),
             ),
             const SizedBox(width: 12),

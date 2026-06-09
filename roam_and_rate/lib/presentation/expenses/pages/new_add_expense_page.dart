@@ -54,14 +54,15 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _paidController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
-  final SessionManager _sessionManager = SessionManager();
+  final  sessionManager = SessionManager();
+  String? userCurrency = "";
 
   String _convertedAmount = "0.00";
   String _converstionRate = "";
 
   DateTime? selectedDate = DateTime.now();
   bool toBeSplit = false;
-  bool isNotBudget = false;
+  bool isBudget = true;
   bool isPayeeSelectorOpen = false;
 
   final List<String> value = ["Cheap", "Just Right", "Expensive"];
@@ -88,6 +89,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   void initState() {
     super.initState();
     selectedCurrency = widget.tripDetails.currency;
+    userCurrency = sessionManager.userCurrency;
 
     final admin = widget.participants.firstWhere(
       (p) => p.isAdmin,
@@ -209,7 +211,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
     final result = await CurrencyHelper().getConvertedAmount(
       base: selectedCurrency!.toUpperCase(),
-      target: widget.tripDetails.currency.toUpperCase(),
+      target: userCurrency!.toUpperCase(),
       value: amount,
     );
 
@@ -343,7 +345,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           Column(
                             children: [
                               Text(
-                                "Converted to  ${widget.tripDetails.currency}",
+                                "Converted to  ${userCurrency!.toUpperCase()}",
                                 style: TextStyle(
                                   color: custom.secondaryText,
                                   fontSize: 12,
@@ -831,17 +833,17 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   custom: custom,
                   icon: FontAwesomeIcons.wallet,
                   action: Switch(
-                    value: isNotBudget,
+                    value: isBudget,
                     onChanged: (bool value) {
                       setState(() {
-                        isNotBudget = value;
+                        isBudget = value;
                       });
                     },
                   ),
                   title: 'Include in Budget',
                   subtitle: 'Count this towards your budget',
                   expanded: Column(),
-                  expandedState: isNotBudget,
+                  expandedState: isBudget,
                 ),
 
                 OptionWidget(
@@ -984,7 +986,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 ? _notesController.text
                                 : "",
                             tags: addedTags.isNotEmpty ? addedTags : [],
-                            isNotBudget: isNotBudget,
+                            isNotBudget: !isBudget,
                           );
 
                           context.read<ExpenseBloc>().add(
@@ -1234,7 +1236,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${_splitConvertedPerPerson.toStringAsFixed(2)}",
+                          "${CurrencyData.currencySymbolFromCode(userCurrency!.toUpperCase())}${_splitConvertedPerPerson.toStringAsFixed(2)}",
                           style: TextStyle(
                             color: custom.secondaryText,
                             fontSize: 14,
