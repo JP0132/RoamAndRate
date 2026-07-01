@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,10 +19,12 @@ import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
+import 'package:roam_and_rate/domain/models/currency_model.dart';
 import 'package:roam_and_rate/domain/models/date_picker_model.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
+import 'package:roam_and_rate/presentation/expenses/helpers/expense_helper_functions.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/chevron_toggle.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/numpad.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/option_widget.dart';
@@ -54,11 +57,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _paidController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
-  final  sessionManager = SessionManager();
+  final sessionManager = SessionManager();
   String? userCurrency = "";
 
   String _convertedAmount = "0.00";
-  String _converstionRate = "";
+  
+  double _conversionRate = 0.0;
 
   DateTime? selectedDate = DateTime.now();
   bool toBeSplit = false;
@@ -118,6 +122,20 @@ class _AddExpensePageState extends State<AddExpensePage> {
         _image = File(pickedFile.path);
       });
     }
+  }
+
+  // int toMinor(String value) {
+  //   int decimialDigits = CurrencyData.getCurrencyDecimalDigits(userCurrency!);
+  //   final factor = pow(10, decimialDigits);
+  //   final numeric = value.replaceAll(RegExp(r'[^\d.-]'), '');
+  //   return (double.parse(numeric) * factor).round();
+  // }
+
+  String convertCost(String value){
+    return NumberFormat.currency(
+            symbol: CurrencyData.currencySymbolFromCode(userCurrency!),
+            decimalDigits: CurrencyData.getCurrencyDecimalDigits(userCurrency!),  
+          ).format((_conversionRate * double.parse(value)));
   }
 
   void _showPickOptionsDialog(BuildContext context) {
@@ -199,6 +217,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   double _amount = 0.0;
 
+
+
   Future<void> _updateConversion() async {
     final amount = double.tryParse(_paidController.text);
 
@@ -209,15 +229,27 @@ class _AddExpensePageState extends State<AddExpensePage> {
       return;
     }
 
-    final result = await CurrencyHelper().getConvertedAmount(
+    // final result = await CurrencyHelper().getConvertedAmount(
+    //   base: selectedCurrency!.toUpperCase(),
+    //   target: userCurrency!.toUpperCase(),
+    //   value: amount,
+    // );
+
+    final result = await CurrencyHelper().getExchangeRateCached(
       base: selectedCurrency!.toUpperCase(),
       target: userCurrency!.toUpperCase(),
-      value: amount,
     );
 
     if (mounted) {
       setState(() {
-        _convertedAmount = result ?? "0.00";
+        if (result != null) {
+          // _convertedAmount = (result * amount).toString();
+          _conversionRate = result;
+          _convertedAmount = NumberFormat.currency(
+            symbol: CurrencyData.currencySymbolFromCode(userCurrency!),
+            decimalDigits: CurrencyData.getCurrencyDecimalDigits(userCurrency!),  
+          ).format((_conversionRate * amount));
+        }
       });
     }
   }
@@ -281,7 +313,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                               borderColour: custom.secondaryText,
                               padding: EdgeInsets.all(5),
                               borderRadius: 20,
-                              menuMaxHeight: 200,
+                              menuMaxHeight: 100,
                               onChanged: (value) {
                                 setState(() {
                                   // final code = CurrencyData.getCodeFromName(
@@ -974,6 +1006,31 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             name: _expenseNameController.text.trim(),
                             tripId: widget.tripDetails.tripId!,
                             participantId: selectedParticipant,
+                          
+                            baseCurrency: selectedCurrency!,
+                            targetCurrency: userCurrency,
+
+                            baseCostAmountMinor: toMinor(
+                              _costController.text.trim(),
+                              userCurrency!,
+                            ),
+                            basePaidAmountMinor: toMinor(
+                              _costController.text.trim(),
+                              userCurrency!,
+                            ),
+
+                            targetCostAmountMinor: toMinor(
+                              convertCost(_costController.text.trim()),
+                              userCurrency!,
+                            ),
+                            targetPaidAmountMinor: toMinor(
+                              _convertedAmount,
+                              userCurrency!,
+                            ),
+
+                            exchangeRate: _conversionRate,
+                            exchangeRateDate: DateTime.now(),
+
                             paid: double.parse(_paidController.text.trim()),
                             cost: double.parse(_costController.text.trim()),
                             dateTimeAdded: DateTime.now(),
@@ -1197,25 +1254,51 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             child: Center(
                               child: Text(
                                 p.particpantName.substring(0, 1).toUpperCase(),
-                                style: TextStyle(fontWeight: FontWeight.bold, color: custom.secondarySurface, fontSize: 16),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: custom.secondarySurface,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
                         ),
                         Row(
                           children: [
-                            Text(p.particpantName, style: TextStyle(color: custom.primaryText, fontWeight: FontWeight.bold, fontSize: 18),),
-                            SizedBox(width: 4,),
-                            p.isAdmin ? Container(
-                              padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-                              decoration: BoxDecoration(
-                                color: custom.secondary.withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
+                            Text(
+                              p.particpantName,
+                              style: TextStyle(
+                                color: custom.primaryText,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
-                              child: Center(child: Text(" ${p.isAdmin ? "YOU" : ""}", style: TextStyle(color: custom.primaryText, fontSize: 10),)),
-                            ) : Container(),
+                            ),
+                            SizedBox(width: 4),
+                            p.isAdmin
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 4.0,
+                                      vertical: 2.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: custom.secondary.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        " ${p.isAdmin ? "YOU" : ""}",
+                                        style: TextStyle(
+                                          color: custom.primaryText,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
                           ],
                         ),
                       ],

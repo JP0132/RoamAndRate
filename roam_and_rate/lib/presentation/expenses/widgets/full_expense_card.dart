@@ -5,22 +5,18 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
-import 'package:roam_and_rate/application/currency/currency_bloc.dart';
-import 'package:roam_and_rate/application/currency/currency_event.dart';
-import 'package:roam_and_rate/application/currency/currency_state.dart';
+
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_event.dart';
-import 'package:roam_and_rate/application/participant/participant_bloc.dart';
-import 'package:roam_and_rate/application/participant/participant_state.dart';
+
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
-import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
 import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
-import 'package:roam_and_rate/core/utils/helper/currency_rate.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
-import 'package:roam_and_rate/domain/models/category_model.dart';
+import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
+import 'package:roam_and_rate/presentation/expenses/helpers/expense_helper_functions.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/tag_widget.dart';
 
 class FullExpenseCard extends StatefulWidget {
@@ -45,40 +41,46 @@ class FullExpenseCard extends StatefulWidget {
 class _FullExpenseCardState extends State<FullExpenseCard> {
   bool _expanded = false;
   late Future<String?> _conversionFuture; // Store the future
+   final sessionManager = SessionManager();
+  String? userCurrency = "";
 
   @override
   void initState() {
     super.initState();
-    _initializeConversionFuture();
+    print("🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetPaidAmountMinor.toString()}");
+    print("🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetCostAmountMinor.toString()}");
+    print("🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetCurrency.toString()}");
+    userCurrency = sessionManager.userCurrency;
+
+    // _initializeConversionFuture();
   }
 
-  @override
-  void didUpdateWidget(FullExpenseCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
+  // @override
+  // void didUpdateWidget(FullExpenseCard oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
 
-    // Re-initialize if expense details changed
-    if (oldWidget.expenseDetails.paid != widget.expenseDetails.paid ||
-        oldWidget.expenseDetails.currency != widget.expenseDetails.currency ||
-        oldWidget.tripDetails.currency != widget.tripDetails.currency) {
-      _initializeConversionFuture();
-    }
-  }
+  //   // Re-initialize if expense details changed
+  //   if (oldWidget.expenseDetails.basePaidAmountMinor != widget.expenseDetails.basePaidAmountMinor ||
+  //       oldWidget.expenseDetails.baseCurrency != widget.expenseDetails.baseCurrency ||
+  //       oldWidget.tripDetails.currency != widget.tripDetails.currency) {
+  //     _initializeConversionFuture();
+  //   }
+  // }
 
-  void _initializeConversionFuture() {
-    if (widget.tripDetails.currency != widget.expenseDetails.currency) {
-      _conversionFuture = CurrencyHelper().getConvertedAmount(
-        base: widget.expenseDetails.currency.toUpperCase(),
-        target: widget.tripDetails.currency.toUpperCase(),
-        value: widget.expenseDetails.paid,
-      );
-    }
-  }
+  // void _initializeConversionFuture() {
+  //   if (widget.tripDetails.currency != widget.expenseDetails.currency) {
+  //     _conversionFuture = CurrencyHelper().getConvertedAmount(
+  //       base: widget.expenseDetails.currency.toUpperCase(),
+  //       target: widget.tripDetails.currency.toUpperCase(),
+  //       value: widget.expenseDetails.paid,
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     final id = widget.expenseDetails.expenseId!;
-    final converted = widget.convertedCosts[id];
 
     return Slidable(
       key: Key(widget.expenseDetails.expenseId!),
@@ -237,7 +239,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.paid.toStringAsFixed(2)}",
+                              "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.baseCurrency!)}${getExpenseDisplay(widget.expenseDetails.basePaidAmountMinor!, widget.expenseDetails.baseCurrency!)}",
                               style: TextStyle(
                                 color: custom.primaryText,
                                 fontWeight: FontWeight.bold,
@@ -246,17 +248,8 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                             ),
                             SizedBox(width: 4),
 
-                            widget.tripDetails.currency ==
-                                    widget.expenseDetails.currency
+                             widget.expenseDetails.exchangeRate == 1.0
                                 ? SizedBox() // no need to convert
-                                : converted == null
-                                ? const Text(
-                                    "Converting...",
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 16,
-                                    ),
-                                  )
                                 : Container(
                                     padding: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
@@ -266,7 +259,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                       ),
                                     ),
                                     child: Text(
-                                      "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${converted.toStringAsFixed(2)}",
+                                      "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${getExpenseDisplay(widget.expenseDetails.targetPaidAmountMinor!, widget.expenseDetails.targetCurrency!)}",
                                       style: TextStyle(
                                         color: custom.primary,
                                         fontWeight: FontWeight.bold,
@@ -327,7 +320,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
 
                       _buildCostDetails(
                         "cost",
-                        "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.currency)}${widget.expenseDetails.cost.toStringAsFixed(2)}",
+                        "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.baseCurrency!)}${getExpenseDisplay(widget.expenseDetails.baseCostAmountMinor!, widget.expenseDetails.baseCurrency!)}",
                       ),
 
                       _buildCostDetails("type", widget.expenseDetails.type),

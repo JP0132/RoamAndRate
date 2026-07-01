@@ -26,6 +26,7 @@ import 'package:roam_and_rate/domain/models/expense_model.dart';
 import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
+import 'package:roam_and_rate/presentation/expenses/helpers/expense_helper_functions.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/full_expense_card.dart';
 import 'package:roam_and_rate/presentation/ratings/widgets/full_rating_card.dart';
 import 'package:roam_and_rate/presentation/trips/classes/tabitem.dart';
@@ -196,29 +197,37 @@ class _ViewTripState extends State<ViewTrip> {
   }
 
   double _getConvertedOrPaid(ExpenseModel expense) {
-    if (widget.tripDetails.currency == expense.currency && userCurrency == expense.currency) return expense.paid;
-    if (_convertedCosts.containsKey(expense.expenseId))
-      return _convertedCosts[expense.expenseId]!;
-    return expense.paid;
+    if(expense.exchangeRate != 1.0) return toMajor(expense.targetPaidAmountMinor!, expense.targetCurrency!);
+
+    // if (widget.tripDetails.currency == expense.baseCurrency && userCurrency == expense.baseCurrency) return toMajor(expense.basePaidAmountMinor!, expense.baseCurrency!);
+    // if (_convertedCosts.containsKey(expense.expenseId))
+    //   return _convertedCosts[expense.expenseId]!;
+    
+    return toMajor(expense.basePaidAmountMinor!, expense.baseCurrency!);
+
+    //return expense.paid;
   }
 
   double _getUserCurrencyTotal(ExpenseModel expense) {
-    if(userCurrency == expense.currency) return expense.paid;
-    if (_convertedCosts.containsKey("user_${expense.expenseId}")) {
-      return _convertedCosts["user_${expense.expenseId}"]!;
-    }
-    return expense.paid;
+    if(expense.exchangeRate != 1.0) return toMajor(expense.targetPaidAmountMinor!, expense.targetCurrency!);
+    // if(userCurrency == expense.currency) return expense.paid;
+    // if (_convertedCosts.containsKey("user_${expense.expenseId}")) {
+    //   return _convertedCosts["user_${expense.expenseId}"]!;
+    // }
+    return toMajor(expense.basePaidAmountMinor!, expense.baseCurrency!);
+    //return expense.paid;
+
   }
 
   // Initialize converted costs for expenses with matching currencies
-  void _initializeConvertedCosts() {
-    for (final expense in _expenses) {
-      if (widget.tripDetails.currency == expense.currency) {
-        _convertedCosts[expense.expenseId!] = expense.paid;
-      }
-    }
-    print("🏁 Initialized _convertedCosts: $_convertedCosts");
-  }
+  // void _initializeConvertedCosts() {
+  //   for (final expense in _expenses) {
+  //     if (widget.tripDetails.currency == expense.currency) {
+  //       _convertedCosts[expense.expenseId!] = expense.paid;
+  //     }
+  //   }
+  //   print("🏁 Initialized _convertedCosts: $_convertedCosts");
+  // }
 
   bool _dataLoaded = false;
 
@@ -287,27 +296,6 @@ class _ViewTripState extends State<ViewTrip> {
       StartWatchingTrip(widget.tripDetails.tripId!),
     );
 
-    // Listen for the loaded state exactly once
-    // _tripDataSubscription = context.read<TripDataBloc>().stream.listen((state) {
-    //   final hasData =
-    //       state.expenses.isNotEmpty ||
-    //       state.ratings.isNotEmpty ||
-    //       state.ratingsMade.isNotEmpty;
-
-    //   if (hasData && !_dataLoaded) {
-    //     setState(() {
-    //       state = state;
-    //       _expenses = state.expenses.map((e) => e.toModel()).toList();
-    //       _ratings = state.ratings.map((e) => e.toModel()).toList();
-    //       ;
-
-    //       _dataLoaded = true;
-    //     });
-
-    //     // Cancel the subscription after first successful load
-    //     _tripDataSubscription.cancel();
-    //   }
-    // });
     userCurrency = SessionManager().userCurrency;
 
     _searchController.addListener(_onSearchChanged);
@@ -387,8 +375,10 @@ class _ViewTripState extends State<ViewTrip> {
                 children: [
                   TripOverviewCard(
                     tripModel: widget.tripDetails,
-                    totalSpent: totalPaidSpent!,
-                    totalBudgetSpent: totalBudgetSpent!,
+                    totalSpent: totalPaidSpent,
+                    totalBudgetSpent: totalBudgetSpent,
+                    totalUserCurrencySpent: totalUserCurrencySpent,
+                    userCurrency: userCurrency,
                   ),
                   //TripCards(tripModel: widget.tripDetails),
                   const SizedBox(height: 20),
