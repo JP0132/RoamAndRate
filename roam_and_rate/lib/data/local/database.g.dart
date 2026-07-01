@@ -1892,6 +1892,91 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _targetPaidAmountMinorMeta =
+      const VerificationMeta('targetPaidAmountMinor');
+  @override
+  late final GeneratedColumn<int> targetPaidAmountMinor = GeneratedColumn<int>(
+    'target_paid_amount_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _targetCostAmountMinorMeta =
+      const VerificationMeta('targetCostAmountMinor');
+  @override
+  late final GeneratedColumn<int> targetCostAmountMinor = GeneratedColumn<int>(
+    'target_cost_amount_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _targetCurrencyMeta = const VerificationMeta(
+    'targetCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> targetCurrency = GeneratedColumn<String>(
+    'target_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _basePaidAmountMinorMeta =
+      const VerificationMeta('basePaidAmountMinor');
+  @override
+  late final GeneratedColumn<int> basePaidAmountMinor = GeneratedColumn<int>(
+    'base_paid_amount_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _baseCostAmountMinorMeta =
+      const VerificationMeta('baseCostAmountMinor');
+  @override
+  late final GeneratedColumn<int> baseCostAmountMinor = GeneratedColumn<int>(
+    'base_cost_amount_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _baseCurrencyMeta = const VerificationMeta(
+    'baseCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> baseCurrency = GeneratedColumn<String>(
+    'base_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _exchangeRateMeta = const VerificationMeta(
+    'exchangeRate',
+  );
+  @override
+  late final GeneratedColumn<double> exchangeRate = GeneratedColumn<double>(
+    'exchange_rate',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _exchangeRateDateMeta = const VerificationMeta(
+    'exchangeRateDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> exchangeRateDate =
+      GeneratedColumn<DateTime>(
+        'exchange_rate_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _datePaidMeta = const VerificationMeta(
     'datePaid',
   );
@@ -1974,6 +2059,14 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     paid,
     cost,
     currency,
+    targetPaidAmountMinor,
+    targetCostAmountMinor,
+    targetCurrency,
+    basePaidAmountMinor,
+    baseCostAmountMinor,
+    baseCurrency,
+    exchangeRate,
+    exchangeRateDate,
     datePaid,
     notes,
     images,
@@ -2076,6 +2169,78 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     } else if (isInserting) {
       context.missing(_currencyMeta);
     }
+    if (data.containsKey('target_paid_amount_minor')) {
+      context.handle(
+        _targetPaidAmountMinorMeta,
+        targetPaidAmountMinor.isAcceptableOrUnknown(
+          data['target_paid_amount_minor']!,
+          _targetPaidAmountMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('target_cost_amount_minor')) {
+      context.handle(
+        _targetCostAmountMinorMeta,
+        targetCostAmountMinor.isAcceptableOrUnknown(
+          data['target_cost_amount_minor']!,
+          _targetCostAmountMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('target_currency')) {
+      context.handle(
+        _targetCurrencyMeta,
+        targetCurrency.isAcceptableOrUnknown(
+          data['target_currency']!,
+          _targetCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('base_paid_amount_minor')) {
+      context.handle(
+        _basePaidAmountMinorMeta,
+        basePaidAmountMinor.isAcceptableOrUnknown(
+          data['base_paid_amount_minor']!,
+          _basePaidAmountMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('base_cost_amount_minor')) {
+      context.handle(
+        _baseCostAmountMinorMeta,
+        baseCostAmountMinor.isAcceptableOrUnknown(
+          data['base_cost_amount_minor']!,
+          _baseCostAmountMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('base_currency')) {
+      context.handle(
+        _baseCurrencyMeta,
+        baseCurrency.isAcceptableOrUnknown(
+          data['base_currency']!,
+          _baseCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('exchange_rate')) {
+      context.handle(
+        _exchangeRateMeta,
+        exchangeRate.isAcceptableOrUnknown(
+          data['exchange_rate']!,
+          _exchangeRateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('exchange_rate_date')) {
+      context.handle(
+        _exchangeRateDateMeta,
+        exchangeRateDate.isAcceptableOrUnknown(
+          data['exchange_rate_date']!,
+          _exchangeRateDateMeta,
+        ),
+      );
+    }
     if (data.containsKey('date_paid')) {
       context.handle(
         _datePaidMeta,
@@ -2170,6 +2335,38 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         DriftSqlType.string,
         data['${effectivePrefix}currency'],
       )!,
+      targetPaidAmountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}target_paid_amount_minor'],
+      ),
+      targetCostAmountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}target_cost_amount_minor'],
+      ),
+      targetCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_currency'],
+      ),
+      basePaidAmountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}base_paid_amount_minor'],
+      ),
+      baseCostAmountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}base_cost_amount_minor'],
+      ),
+      baseCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}base_currency'],
+      ),
+      exchangeRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}exchange_rate'],
+      ),
+      exchangeRateDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}exchange_rate_date'],
+      ),
       datePaid: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}date_paid'],
@@ -2223,6 +2420,14 @@ class Expense extends DataClass implements Insertable<Expense> {
   final double paid;
   final double cost;
   final String currency;
+  final int? targetPaidAmountMinor;
+  final int? targetCostAmountMinor;
+  final String? targetCurrency;
+  final int? basePaidAmountMinor;
+  final int? baseCostAmountMinor;
+  final String? baseCurrency;
+  final double? exchangeRate;
+  final DateTime? exchangeRateDate;
   final DateTime datePaid;
   final String? notes;
   final String? images;
@@ -2241,6 +2446,14 @@ class Expense extends DataClass implements Insertable<Expense> {
     required this.paid,
     required this.cost,
     required this.currency,
+    this.targetPaidAmountMinor,
+    this.targetCostAmountMinor,
+    this.targetCurrency,
+    this.basePaidAmountMinor,
+    this.baseCostAmountMinor,
+    this.baseCurrency,
+    this.exchangeRate,
+    this.exchangeRateDate,
     required this.datePaid,
     this.notes,
     this.images,
@@ -2262,6 +2475,30 @@ class Expense extends DataClass implements Insertable<Expense> {
     map['paid'] = Variable<double>(paid);
     map['cost'] = Variable<double>(cost);
     map['currency'] = Variable<String>(currency);
+    if (!nullToAbsent || targetPaidAmountMinor != null) {
+      map['target_paid_amount_minor'] = Variable<int>(targetPaidAmountMinor);
+    }
+    if (!nullToAbsent || targetCostAmountMinor != null) {
+      map['target_cost_amount_minor'] = Variable<int>(targetCostAmountMinor);
+    }
+    if (!nullToAbsent || targetCurrency != null) {
+      map['target_currency'] = Variable<String>(targetCurrency);
+    }
+    if (!nullToAbsent || basePaidAmountMinor != null) {
+      map['base_paid_amount_minor'] = Variable<int>(basePaidAmountMinor);
+    }
+    if (!nullToAbsent || baseCostAmountMinor != null) {
+      map['base_cost_amount_minor'] = Variable<int>(baseCostAmountMinor);
+    }
+    if (!nullToAbsent || baseCurrency != null) {
+      map['base_currency'] = Variable<String>(baseCurrency);
+    }
+    if (!nullToAbsent || exchangeRate != null) {
+      map['exchange_rate'] = Variable<double>(exchangeRate);
+    }
+    if (!nullToAbsent || exchangeRateDate != null) {
+      map['exchange_rate_date'] = Variable<DateTime>(exchangeRateDate);
+    }
     map['date_paid'] = Variable<DateTime>(datePaid);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
@@ -2290,6 +2527,30 @@ class Expense extends DataClass implements Insertable<Expense> {
       paid: Value(paid),
       cost: Value(cost),
       currency: Value(currency),
+      targetPaidAmountMinor: targetPaidAmountMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetPaidAmountMinor),
+      targetCostAmountMinor: targetCostAmountMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetCostAmountMinor),
+      targetCurrency: targetCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetCurrency),
+      basePaidAmountMinor: basePaidAmountMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(basePaidAmountMinor),
+      baseCostAmountMinor: baseCostAmountMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(baseCostAmountMinor),
+      baseCurrency: baseCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(baseCurrency),
+      exchangeRate: exchangeRate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exchangeRate),
+      exchangeRateDate: exchangeRateDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exchangeRateDate),
       datePaid: Value(datePaid),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
@@ -2320,6 +2581,24 @@ class Expense extends DataClass implements Insertable<Expense> {
       paid: serializer.fromJson<double>(json['paid']),
       cost: serializer.fromJson<double>(json['cost']),
       currency: serializer.fromJson<String>(json['currency']),
+      targetPaidAmountMinor: serializer.fromJson<int?>(
+        json['targetPaidAmountMinor'],
+      ),
+      targetCostAmountMinor: serializer.fromJson<int?>(
+        json['targetCostAmountMinor'],
+      ),
+      targetCurrency: serializer.fromJson<String?>(json['targetCurrency']),
+      basePaidAmountMinor: serializer.fromJson<int?>(
+        json['basePaidAmountMinor'],
+      ),
+      baseCostAmountMinor: serializer.fromJson<int?>(
+        json['baseCostAmountMinor'],
+      ),
+      baseCurrency: serializer.fromJson<String?>(json['baseCurrency']),
+      exchangeRate: serializer.fromJson<double?>(json['exchangeRate']),
+      exchangeRateDate: serializer.fromJson<DateTime?>(
+        json['exchangeRateDate'],
+      ),
       datePaid: serializer.fromJson<DateTime>(json['datePaid']),
       notes: serializer.fromJson<String?>(json['notes']),
       images: serializer.fromJson<String?>(json['images']),
@@ -2343,6 +2622,14 @@ class Expense extends DataClass implements Insertable<Expense> {
       'paid': serializer.toJson<double>(paid),
       'cost': serializer.toJson<double>(cost),
       'currency': serializer.toJson<String>(currency),
+      'targetPaidAmountMinor': serializer.toJson<int?>(targetPaidAmountMinor),
+      'targetCostAmountMinor': serializer.toJson<int?>(targetCostAmountMinor),
+      'targetCurrency': serializer.toJson<String?>(targetCurrency),
+      'basePaidAmountMinor': serializer.toJson<int?>(basePaidAmountMinor),
+      'baseCostAmountMinor': serializer.toJson<int?>(baseCostAmountMinor),
+      'baseCurrency': serializer.toJson<String?>(baseCurrency),
+      'exchangeRate': serializer.toJson<double?>(exchangeRate),
+      'exchangeRateDate': serializer.toJson<DateTime?>(exchangeRateDate),
       'datePaid': serializer.toJson<DateTime>(datePaid),
       'notes': serializer.toJson<String?>(notes),
       'images': serializer.toJson<String?>(images),
@@ -2364,6 +2651,14 @@ class Expense extends DataClass implements Insertable<Expense> {
     double? paid,
     double? cost,
     String? currency,
+    Value<int?> targetPaidAmountMinor = const Value.absent(),
+    Value<int?> targetCostAmountMinor = const Value.absent(),
+    Value<String?> targetCurrency = const Value.absent(),
+    Value<int?> basePaidAmountMinor = const Value.absent(),
+    Value<int?> baseCostAmountMinor = const Value.absent(),
+    Value<String?> baseCurrency = const Value.absent(),
+    Value<double?> exchangeRate = const Value.absent(),
+    Value<DateTime?> exchangeRateDate = const Value.absent(),
     DateTime? datePaid,
     Value<String?> notes = const Value.absent(),
     Value<String?> images = const Value.absent(),
@@ -2382,6 +2677,26 @@ class Expense extends DataClass implements Insertable<Expense> {
     paid: paid ?? this.paid,
     cost: cost ?? this.cost,
     currency: currency ?? this.currency,
+    targetPaidAmountMinor: targetPaidAmountMinor.present
+        ? targetPaidAmountMinor.value
+        : this.targetPaidAmountMinor,
+    targetCostAmountMinor: targetCostAmountMinor.present
+        ? targetCostAmountMinor.value
+        : this.targetCostAmountMinor,
+    targetCurrency: targetCurrency.present
+        ? targetCurrency.value
+        : this.targetCurrency,
+    basePaidAmountMinor: basePaidAmountMinor.present
+        ? basePaidAmountMinor.value
+        : this.basePaidAmountMinor,
+    baseCostAmountMinor: baseCostAmountMinor.present
+        ? baseCostAmountMinor.value
+        : this.baseCostAmountMinor,
+    baseCurrency: baseCurrency.present ? baseCurrency.value : this.baseCurrency,
+    exchangeRate: exchangeRate.present ? exchangeRate.value : this.exchangeRate,
+    exchangeRateDate: exchangeRateDate.present
+        ? exchangeRateDate.value
+        : this.exchangeRateDate,
     datePaid: datePaid ?? this.datePaid,
     notes: notes.present ? notes.value : this.notes,
     images: images.present ? images.value : this.images,
@@ -2408,6 +2723,30 @@ class Expense extends DataClass implements Insertable<Expense> {
       paid: data.paid.present ? data.paid.value : this.paid,
       cost: data.cost.present ? data.cost.value : this.cost,
       currency: data.currency.present ? data.currency.value : this.currency,
+      targetPaidAmountMinor: data.targetPaidAmountMinor.present
+          ? data.targetPaidAmountMinor.value
+          : this.targetPaidAmountMinor,
+      targetCostAmountMinor: data.targetCostAmountMinor.present
+          ? data.targetCostAmountMinor.value
+          : this.targetCostAmountMinor,
+      targetCurrency: data.targetCurrency.present
+          ? data.targetCurrency.value
+          : this.targetCurrency,
+      basePaidAmountMinor: data.basePaidAmountMinor.present
+          ? data.basePaidAmountMinor.value
+          : this.basePaidAmountMinor,
+      baseCostAmountMinor: data.baseCostAmountMinor.present
+          ? data.baseCostAmountMinor.value
+          : this.baseCostAmountMinor,
+      baseCurrency: data.baseCurrency.present
+          ? data.baseCurrency.value
+          : this.baseCurrency,
+      exchangeRate: data.exchangeRate.present
+          ? data.exchangeRate.value
+          : this.exchangeRate,
+      exchangeRateDate: data.exchangeRateDate.present
+          ? data.exchangeRateDate.value
+          : this.exchangeRateDate,
       datePaid: data.datePaid.present ? data.datePaid.value : this.datePaid,
       notes: data.notes.present ? data.notes.value : this.notes,
       images: data.images.present ? data.images.value : this.images,
@@ -2433,6 +2772,14 @@ class Expense extends DataClass implements Insertable<Expense> {
           ..write('paid: $paid, ')
           ..write('cost: $cost, ')
           ..write('currency: $currency, ')
+          ..write('targetPaidAmountMinor: $targetPaidAmountMinor, ')
+          ..write('targetCostAmountMinor: $targetCostAmountMinor, ')
+          ..write('targetCurrency: $targetCurrency, ')
+          ..write('basePaidAmountMinor: $basePaidAmountMinor, ')
+          ..write('baseCostAmountMinor: $baseCostAmountMinor, ')
+          ..write('baseCurrency: $baseCurrency, ')
+          ..write('exchangeRate: $exchangeRate, ')
+          ..write('exchangeRateDate: $exchangeRateDate, ')
           ..write('datePaid: $datePaid, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
@@ -2445,7 +2792,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     tripId,
     participantId,
@@ -2456,6 +2803,14 @@ class Expense extends DataClass implements Insertable<Expense> {
     paid,
     cost,
     currency,
+    targetPaidAmountMinor,
+    targetCostAmountMinor,
+    targetCurrency,
+    basePaidAmountMinor,
+    baseCostAmountMinor,
+    baseCurrency,
+    exchangeRate,
+    exchangeRateDate,
     datePaid,
     notes,
     images,
@@ -2463,7 +2818,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     tags,
     dateAdded,
     lastUpdated,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2478,6 +2833,14 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.paid == this.paid &&
           other.cost == this.cost &&
           other.currency == this.currency &&
+          other.targetPaidAmountMinor == this.targetPaidAmountMinor &&
+          other.targetCostAmountMinor == this.targetCostAmountMinor &&
+          other.targetCurrency == this.targetCurrency &&
+          other.basePaidAmountMinor == this.basePaidAmountMinor &&
+          other.baseCostAmountMinor == this.baseCostAmountMinor &&
+          other.baseCurrency == this.baseCurrency &&
+          other.exchangeRate == this.exchangeRate &&
+          other.exchangeRateDate == this.exchangeRateDate &&
           other.datePaid == this.datePaid &&
           other.notes == this.notes &&
           other.images == this.images &&
@@ -2498,6 +2861,14 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<double> paid;
   final Value<double> cost;
   final Value<String> currency;
+  final Value<int?> targetPaidAmountMinor;
+  final Value<int?> targetCostAmountMinor;
+  final Value<String?> targetCurrency;
+  final Value<int?> basePaidAmountMinor;
+  final Value<int?> baseCostAmountMinor;
+  final Value<String?> baseCurrency;
+  final Value<double?> exchangeRate;
+  final Value<DateTime?> exchangeRateDate;
   final Value<DateTime> datePaid;
   final Value<String?> notes;
   final Value<String?> images;
@@ -2517,6 +2888,14 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.paid = const Value.absent(),
     this.cost = const Value.absent(),
     this.currency = const Value.absent(),
+    this.targetPaidAmountMinor = const Value.absent(),
+    this.targetCostAmountMinor = const Value.absent(),
+    this.targetCurrency = const Value.absent(),
+    this.basePaidAmountMinor = const Value.absent(),
+    this.baseCostAmountMinor = const Value.absent(),
+    this.baseCurrency = const Value.absent(),
+    this.exchangeRate = const Value.absent(),
+    this.exchangeRateDate = const Value.absent(),
     this.datePaid = const Value.absent(),
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
@@ -2537,6 +2916,14 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     required double paid,
     required double cost,
     required String currency,
+    this.targetPaidAmountMinor = const Value.absent(),
+    this.targetCostAmountMinor = const Value.absent(),
+    this.targetCurrency = const Value.absent(),
+    this.basePaidAmountMinor = const Value.absent(),
+    this.baseCostAmountMinor = const Value.absent(),
+    this.baseCurrency = const Value.absent(),
+    this.exchangeRate = const Value.absent(),
+    this.exchangeRateDate = const Value.absent(),
     required DateTime datePaid,
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
@@ -2568,6 +2955,14 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Expression<double>? paid,
     Expression<double>? cost,
     Expression<String>? currency,
+    Expression<int>? targetPaidAmountMinor,
+    Expression<int>? targetCostAmountMinor,
+    Expression<String>? targetCurrency,
+    Expression<int>? basePaidAmountMinor,
+    Expression<int>? baseCostAmountMinor,
+    Expression<String>? baseCurrency,
+    Expression<double>? exchangeRate,
+    Expression<DateTime>? exchangeRateDate,
     Expression<DateTime>? datePaid,
     Expression<String>? notes,
     Expression<String>? images,
@@ -2588,6 +2983,18 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       if (paid != null) 'paid': paid,
       if (cost != null) 'cost': cost,
       if (currency != null) 'currency': currency,
+      if (targetPaidAmountMinor != null)
+        'target_paid_amount_minor': targetPaidAmountMinor,
+      if (targetCostAmountMinor != null)
+        'target_cost_amount_minor': targetCostAmountMinor,
+      if (targetCurrency != null) 'target_currency': targetCurrency,
+      if (basePaidAmountMinor != null)
+        'base_paid_amount_minor': basePaidAmountMinor,
+      if (baseCostAmountMinor != null)
+        'base_cost_amount_minor': baseCostAmountMinor,
+      if (baseCurrency != null) 'base_currency': baseCurrency,
+      if (exchangeRate != null) 'exchange_rate': exchangeRate,
+      if (exchangeRateDate != null) 'exchange_rate_date': exchangeRateDate,
       if (datePaid != null) 'date_paid': datePaid,
       if (notes != null) 'notes': notes,
       if (images != null) 'images': images,
@@ -2610,6 +3017,14 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Value<double>? paid,
     Value<double>? cost,
     Value<String>? currency,
+    Value<int?>? targetPaidAmountMinor,
+    Value<int?>? targetCostAmountMinor,
+    Value<String?>? targetCurrency,
+    Value<int?>? basePaidAmountMinor,
+    Value<int?>? baseCostAmountMinor,
+    Value<String?>? baseCurrency,
+    Value<double?>? exchangeRate,
+    Value<DateTime?>? exchangeRateDate,
     Value<DateTime>? datePaid,
     Value<String?>? notes,
     Value<String?>? images,
@@ -2630,6 +3045,16 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       paid: paid ?? this.paid,
       cost: cost ?? this.cost,
       currency: currency ?? this.currency,
+      targetPaidAmountMinor:
+          targetPaidAmountMinor ?? this.targetPaidAmountMinor,
+      targetCostAmountMinor:
+          targetCostAmountMinor ?? this.targetCostAmountMinor,
+      targetCurrency: targetCurrency ?? this.targetCurrency,
+      basePaidAmountMinor: basePaidAmountMinor ?? this.basePaidAmountMinor,
+      baseCostAmountMinor: baseCostAmountMinor ?? this.baseCostAmountMinor,
+      baseCurrency: baseCurrency ?? this.baseCurrency,
+      exchangeRate: exchangeRate ?? this.exchangeRate,
+      exchangeRateDate: exchangeRateDate ?? this.exchangeRateDate,
       datePaid: datePaid ?? this.datePaid,
       notes: notes ?? this.notes,
       images: images ?? this.images,
@@ -2674,6 +3099,34 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     if (currency.present) {
       map['currency'] = Variable<String>(currency.value);
     }
+    if (targetPaidAmountMinor.present) {
+      map['target_paid_amount_minor'] = Variable<int>(
+        targetPaidAmountMinor.value,
+      );
+    }
+    if (targetCostAmountMinor.present) {
+      map['target_cost_amount_minor'] = Variable<int>(
+        targetCostAmountMinor.value,
+      );
+    }
+    if (targetCurrency.present) {
+      map['target_currency'] = Variable<String>(targetCurrency.value);
+    }
+    if (basePaidAmountMinor.present) {
+      map['base_paid_amount_minor'] = Variable<int>(basePaidAmountMinor.value);
+    }
+    if (baseCostAmountMinor.present) {
+      map['base_cost_amount_minor'] = Variable<int>(baseCostAmountMinor.value);
+    }
+    if (baseCurrency.present) {
+      map['base_currency'] = Variable<String>(baseCurrency.value);
+    }
+    if (exchangeRate.present) {
+      map['exchange_rate'] = Variable<double>(exchangeRate.value);
+    }
+    if (exchangeRateDate.present) {
+      map['exchange_rate_date'] = Variable<DateTime>(exchangeRateDate.value);
+    }
     if (datePaid.present) {
       map['date_paid'] = Variable<DateTime>(datePaid.value);
     }
@@ -2716,6 +3169,14 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
           ..write('paid: $paid, ')
           ..write('cost: $cost, ')
           ..write('currency: $currency, ')
+          ..write('targetPaidAmountMinor: $targetPaidAmountMinor, ')
+          ..write('targetCostAmountMinor: $targetCostAmountMinor, ')
+          ..write('targetCurrency: $targetCurrency, ')
+          ..write('basePaidAmountMinor: $basePaidAmountMinor, ')
+          ..write('baseCostAmountMinor: $baseCostAmountMinor, ')
+          ..write('baseCurrency: $baseCurrency, ')
+          ..write('exchangeRate: $exchangeRate, ')
+          ..write('exchangeRateDate: $exchangeRateDate, ')
           ..write('datePaid: $datePaid, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
@@ -5762,6 +6223,14 @@ typedef $$ExpensesTableCreateCompanionBuilder =
       required double paid,
       required double cost,
       required String currency,
+      Value<int?> targetPaidAmountMinor,
+      Value<int?> targetCostAmountMinor,
+      Value<String?> targetCurrency,
+      Value<int?> basePaidAmountMinor,
+      Value<int?> baseCostAmountMinor,
+      Value<String?> baseCurrency,
+      Value<double?> exchangeRate,
+      Value<DateTime?> exchangeRateDate,
       required DateTime datePaid,
       Value<String?> notes,
       Value<String?> images,
@@ -5783,6 +6252,14 @@ typedef $$ExpensesTableUpdateCompanionBuilder =
       Value<double> paid,
       Value<double> cost,
       Value<String> currency,
+      Value<int?> targetPaidAmountMinor,
+      Value<int?> targetCostAmountMinor,
+      Value<String?> targetCurrency,
+      Value<int?> basePaidAmountMinor,
+      Value<int?> baseCostAmountMinor,
+      Value<String?> baseCurrency,
+      Value<double?> exchangeRate,
+      Value<DateTime?> exchangeRateDate,
       Value<DateTime> datePaid,
       Value<String?> notes,
       Value<String?> images,
@@ -5881,6 +6358,46 @@ class $$ExpensesTableFilterComposer
 
   ColumnFilters<String> get currency => $composableBuilder(
     column: $table.currency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get targetPaidAmountMinor => $composableBuilder(
+    column: $table.targetPaidAmountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get targetCostAmountMinor => $composableBuilder(
+    column: $table.targetCostAmountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get targetCurrency => $composableBuilder(
+    column: $table.targetCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get basePaidAmountMinor => $composableBuilder(
+    column: $table.basePaidAmountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get baseCostAmountMinor => $composableBuilder(
+    column: $table.baseCostAmountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get baseCurrency => $composableBuilder(
+    column: $table.baseCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get exchangeRate => $composableBuilder(
+    column: $table.exchangeRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get exchangeRateDate => $composableBuilder(
+    column: $table.exchangeRateDate,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6016,6 +6533,46 @@ class $$ExpensesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get targetPaidAmountMinor => $composableBuilder(
+    column: $table.targetPaidAmountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get targetCostAmountMinor => $composableBuilder(
+    column: $table.targetCostAmountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get targetCurrency => $composableBuilder(
+    column: $table.targetCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get basePaidAmountMinor => $composableBuilder(
+    column: $table.basePaidAmountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get baseCostAmountMinor => $composableBuilder(
+    column: $table.baseCostAmountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get baseCurrency => $composableBuilder(
+    column: $table.baseCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get exchangeRate => $composableBuilder(
+    column: $table.exchangeRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get exchangeRateDate => $composableBuilder(
+    column: $table.exchangeRateDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get datePaid => $composableBuilder(
     column: $table.datePaid,
     builder: (column) => ColumnOrderings(column),
@@ -6135,6 +6692,46 @@ class $$ExpensesTableAnnotationComposer
   GeneratedColumn<String> get currency =>
       $composableBuilder(column: $table.currency, builder: (column) => column);
 
+  GeneratedColumn<int> get targetPaidAmountMinor => $composableBuilder(
+    column: $table.targetPaidAmountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get targetCostAmountMinor => $composableBuilder(
+    column: $table.targetCostAmountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get targetCurrency => $composableBuilder(
+    column: $table.targetCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get basePaidAmountMinor => $composableBuilder(
+    column: $table.basePaidAmountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get baseCostAmountMinor => $composableBuilder(
+    column: $table.baseCostAmountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get baseCurrency => $composableBuilder(
+    column: $table.baseCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get exchangeRate => $composableBuilder(
+    column: $table.exchangeRate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get exchangeRateDate => $composableBuilder(
+    column: $table.exchangeRateDate,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get datePaid =>
       $composableBuilder(column: $table.datePaid, builder: (column) => column);
 
@@ -6243,6 +6840,14 @@ class $$ExpensesTableTableManager
                 Value<double> paid = const Value.absent(),
                 Value<double> cost = const Value.absent(),
                 Value<String> currency = const Value.absent(),
+                Value<int?> targetPaidAmountMinor = const Value.absent(),
+                Value<int?> targetCostAmountMinor = const Value.absent(),
+                Value<String?> targetCurrency = const Value.absent(),
+                Value<int?> basePaidAmountMinor = const Value.absent(),
+                Value<int?> baseCostAmountMinor = const Value.absent(),
+                Value<String?> baseCurrency = const Value.absent(),
+                Value<double?> exchangeRate = const Value.absent(),
+                Value<DateTime?> exchangeRateDate = const Value.absent(),
                 Value<DateTime> datePaid = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
@@ -6262,6 +6867,14 @@ class $$ExpensesTableTableManager
                 paid: paid,
                 cost: cost,
                 currency: currency,
+                targetPaidAmountMinor: targetPaidAmountMinor,
+                targetCostAmountMinor: targetCostAmountMinor,
+                targetCurrency: targetCurrency,
+                basePaidAmountMinor: basePaidAmountMinor,
+                baseCostAmountMinor: baseCostAmountMinor,
+                baseCurrency: baseCurrency,
+                exchangeRate: exchangeRate,
+                exchangeRateDate: exchangeRateDate,
                 datePaid: datePaid,
                 notes: notes,
                 images: images,
@@ -6283,6 +6896,14 @@ class $$ExpensesTableTableManager
                 required double paid,
                 required double cost,
                 required String currency,
+                Value<int?> targetPaidAmountMinor = const Value.absent(),
+                Value<int?> targetCostAmountMinor = const Value.absent(),
+                Value<String?> targetCurrency = const Value.absent(),
+                Value<int?> basePaidAmountMinor = const Value.absent(),
+                Value<int?> baseCostAmountMinor = const Value.absent(),
+                Value<String?> baseCurrency = const Value.absent(),
+                Value<double?> exchangeRate = const Value.absent(),
+                Value<DateTime?> exchangeRateDate = const Value.absent(),
                 required DateTime datePaid,
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
@@ -6302,6 +6923,14 @@ class $$ExpensesTableTableManager
                 paid: paid,
                 cost: cost,
                 currency: currency,
+                targetPaidAmountMinor: targetPaidAmountMinor,
+                targetCostAmountMinor: targetCostAmountMinor,
+                targetCurrency: targetCurrency,
+                basePaidAmountMinor: basePaidAmountMinor,
+                baseCostAmountMinor: baseCostAmountMinor,
+                baseCurrency: baseCurrency,
+                exchangeRate: exchangeRate,
+                exchangeRateDate: exchangeRateDate,
                 datePaid: datePaid,
                 notes: notes,
                 images: images,

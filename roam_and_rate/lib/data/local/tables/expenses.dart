@@ -14,9 +14,30 @@ class Expenses extends Table {
   BoolColumn get isNotBudget => boolean().withDefault(const Constant(false))();
   TextColumn get expenseName => text()();
   TextColumn get category => text()();
+  
+  // The old way
   RealColumn get paid => real()();
   RealColumn get cost => real()();
   TextColumn get currency => text()();
+
+  // Target Currency Conversion (Users Currency)
+  IntColumn get targetPaidAmountMinor => integer().nullable()();
+  IntColumn get targetCostAmountMinor => integer().nullable()();
+  TextColumn get targetCurrency => text().nullable()();
+
+  // Base Currency Values  (What it is converted from)
+  IntColumn get basePaidAmountMinor => integer().nullable()();
+  IntColumn get baseCostAmountMinor => integer().nullable()();
+  TextColumn get baseCurrency => text().nullable()();
+
+  // Store exact EX rate used
+  RealColumn get exchangeRate => real().nullable()();
+
+  // Exchange rateAPI does not have a lot of historical data,
+  // so storing the date of the exchange rate
+  DateTimeColumn get exchangeRateDate => dateTime().nullable()();
+
+
   DateTimeColumn get datePaid => dateTime()();
   TextColumn get notes => text().nullable()();
   TextColumn get images => text().nullable()();

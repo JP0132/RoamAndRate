@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase._internal();
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 8;
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: 'roamandrate_db',
@@ -65,7 +65,7 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(expenses, expenses.isNotBudget);
       }
       // Updating the categories in expenses
-      if (from < 3){
+      if (from < 3) {
         await customStatement(""" 
          UPDATE expenses
          SET category = 'Health'
@@ -91,7 +91,7 @@ class AppDatabase extends _$AppDatabase {
         """);
       }
       // Updating the categories in ratings
-      if (from < 5){
+      if (from < 5) {
         await customStatement(""" 
          UPDATE rating_details
          SET category = 'Health'
@@ -117,10 +117,45 @@ class AppDatabase extends _$AppDatabase {
         """);
       }
 
-      if(from < 6){
+      if (from < 6) {
         await migrator.addColumn(users, users.currency);
       }
-      
+
+      if (from < 7) {
+        // await migrator.addColumn(expenses, expenses.originalPaidAmountMinor);
+        // await migrator.addColumn(expenses, expenses.originalCostAmountMinor);
+        await migrator.addColumn(expenses, expenses.basePaidAmountMinor);
+        await migrator.addColumn(expenses, expenses.baseCostAmountMinor);
+
+        // await migrator.addColumn(expenses, expenses.originalCurrency);
+        await migrator.addColumn(expenses, expenses.baseCurrency);
+
+        await migrator.addColumn(expenses, expenses.exchangeRate);
+        await migrator.addColumn(expenses, expenses.exchangeRateDate);
+
+        await customStatement("""
+            UPDATE expenses
+            SET original_paid_amount_minor = CAST(ROUND(paid * 100) AS INTEGER),
+            original_cost_amount_minor = CAST(ROUND(cost * 100) AS INTEGER),
+            base_paid_amount_minor = CAST(ROUND(paid * 100) AS INTEGER),
+            base_cost_amount_minor = CAST(ROUND(cost * 100) AS INTEGER),
+            original_currency = currency,
+            exchange_rate = 1.0
+        """);
+      }
+
+      if (from < 8) {
+        await customStatement("""
+            ALTER TABLE expenses RENAME COLUMN original_cost_amount_minor TO target_cost_amount_minor;
+        """);
+        await customStatement("""
+            ALTER TABLE expenses RENAME COLUMN original_paid_amount_minor TO target_paid_amount_minor;
+        """);
+
+        await customStatement("""
+            ALTER TABLE expenses RENAME COLUMN original_currency TO target_currency;
+        """);
+      }
     },
   );
 }

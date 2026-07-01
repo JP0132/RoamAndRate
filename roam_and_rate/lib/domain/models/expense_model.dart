@@ -3,6 +3,14 @@ class ExpenseModel {
   final String tripId;
   final String participantId;
   final String name;
+  final String? targetCurrency;
+  final String? baseCurrency;
+  final int? basePaidAmountMinor;
+  final int? baseCostAmountMinor;
+  final int? targetPaidAmountMinor;
+  final int? targetCostAmountMinor;
+  final double? exchangeRate;
+  final DateTime? exchangeRateDate;
   final double paid;
   final double cost;
   final String currency;
@@ -19,14 +27,22 @@ class ExpenseModel {
 
   ExpenseModel({
     required this.name,
+    required this.paid,
+    required this.cost,
     this.expenseId,
     required this.tripId,
     required this.participantId,
-    required this.paid,
-    required this.cost,
+    this.targetCurrency,
+    this.targetPaidAmountMinor,
+    this.targetCostAmountMinor,
+    this.basePaidAmountMinor,
+    this.baseCostAmountMinor,
+    this.exchangeRate,
+    this.exchangeRateDate,
     required this.dateTimeAdded,
     required this.datePaid,
     required this.currency,
+    this.baseCurrency,
     required this.toBeSplit,
     required this.isNotBudget,
     this.tags = const [],
@@ -44,7 +60,15 @@ class ExpenseModel {
     String? name,
     double? paid,
     double? cost,
+    String? targetCurrency,
+    int? targetPaidAmountMinor,
+    int? targetCostAmountMinor,
+    int? basePaidAmountMinor,
+    int? baseCostAmountMinor,
+    double? exchangeRate,
+    DateTime? exchangeRateDate,
     String? currency,
+    String? baseCurrency,
     String? category,
     DateTime? dateTimeAdded,
     DateTime? datePaid,
@@ -61,8 +85,8 @@ class ExpenseModel {
       tripId: tripId ?? this.tripId,
       name: name ?? this.name,
       type: type ?? this.type,
-      cost: cost ?? this.cost,
       paid: paid ?? this.paid,
+      cost: cost ?? this.cost,
       dateTimeAdded: dateTimeAdded ?? this.dateTimeAdded,
       datePaid: datePaid ?? this.datePaid,
       currency: currency ?? this.currency,
@@ -74,6 +98,14 @@ class ExpenseModel {
       toBeSplit: toBeSplit ?? this.toBeSplit,
       isNotBudget: isNotBudget ?? this.isNotBudget,
       lastUpdated: lastUpdated ?? this.lastUpdated,
+      targetCurrency: targetCurrency ?? this.targetCurrency,
+      targetPaidAmountMinor: targetPaidAmountMinor ?? this.targetPaidAmountMinor,
+      targetCostAmountMinor: targetCostAmountMinor ?? this.targetCostAmountMinor,
+      basePaidAmountMinor: basePaidAmountMinor ?? this.basePaidAmountMinor,
+      baseCostAmountMinor: baseCostAmountMinor ?? this.baseCostAmountMinor,
+      exchangeRate: exchangeRate ?? this.exchangeRate,
+      baseCurrency: baseCurrency ?? this.baseCurrency,
+      exchangeRateDate: exchangeRateDate ?? this.exchangeRateDate,
     );
   }
 }

@@ -9,8 +9,6 @@ extension ExpenseEntityMapper on Expense {
       name: expenseName,
       expenseId: id,
       tripId: tripId,
-      paid: paid,
-      cost: cost,
       dateTimeAdded: dateAdded,
       datePaid: datePaid,
       currency: currency,
@@ -23,6 +21,16 @@ extension ExpenseEntityMapper on Expense {
       notes: notes!,
       lastUpdated: lastUpdated,
       isNotBudget: isNotBudget,
+      basePaidAmountMinor: basePaidAmountMinor,
+      baseCostAmountMinor: baseCostAmountMinor,
+      targetPaidAmountMinor: targetPaidAmountMinor,
+      targetCostAmountMinor: targetCostAmountMinor,
+      exchangeRate: exchangeRate, 
+      paid: paid,
+      cost: cost,
+      baseCurrency: baseCurrency,
+      targetCurrency: targetCurrency,
+      exchangeRateDate: exchangeRateDate
     );
   }
 }
@@ -46,6 +54,15 @@ extension ExpenseModelMapper on ExpenseModel {
       images: Value(image),
       toBeSplit: toBeSplit,
       isNotBudget: Value(isNotBudget),
+      basePaidAmountMinor: Value(basePaidAmountMinor),
+      baseCostAmountMinor: Value(baseCostAmountMinor),
+      targetPaidAmountMinor: Value(targetPaidAmountMinor),
+      targetCostAmountMinor: Value(targetCostAmountMinor),
+      exchangeRate: Value(exchangeRate),
+      baseCurrency: Value(baseCurrency),
+      targetCurrency: Value(targetCurrency),
+      exchangeRateDate: Value(exchangeRateDate),
+
     );
   }
 }

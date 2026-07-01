@@ -18,8 +18,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     return (select(expenses)..where((t) => t.tripId.equals(tripId))).watch();
   }
 
-  Future<void> insertExpense(ExpensesCompanion expense) =>
-      into(expenses).insert(expense);
+  Future<void> insertExpense(ExpensesCompanion expense) {
+      print("🤯🤯🤯🤯🤯🤯 ${expense.targetPaidAmountMinor.toString()}");
+      return into(expenses).insert(expense);
+  }
 
   Future<void> deleteExpense(String id) =>
       (delete(expenses)..where((expenseTbl) => expenseTbl.id.equals(id))).go();
