@@ -11,6 +11,34 @@ class CurrencyHelper {
   final Map<String, Future<String?>> _pendingRequests = {};
   final Map<String, String> _resultCache = {};
 
+  Future<double?> getExchangeRateCached({required String base, required String target}) async {
+    final cacheKey = "${base}_${target}";
+
+    if (_resultCache.containsKey(cacheKey)) {
+      return double.tryParse(_resultCache[cacheKey]!);
+    }
+
+    final storedRate = await _sessionManager.getRate(base, target);
+
+    if (storedRate != null) {
+      _resultCache[cacheKey] = storedRate.toString();
+      return storedRate;
+    }
+
+    final response = await getExchangeRate(base, target);
+
+    if (response == null) return null;
+
+    final rate = response.mid;
+
+    await _sessionManager.saveRate(base, target, rate);
+    _resultCache[cacheKey] = rate.toString();
+
+    return rate;
+  }
+
+ 
+
   Future<String?> getConvertedAmount({
     required String base,
     required String target,
