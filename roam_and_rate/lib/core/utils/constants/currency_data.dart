@@ -29,6 +29,7 @@ class CurrencyData {
       symbol: '¥',
       rate: 147.36925252568113,
       isCrypto: false,
+      decimalDigits: 0,
     ),
     CurrencyModel(
       code: 'CAD',
@@ -71,6 +72,7 @@ class CurrencyData {
       symbol: '₩',
       rate: 1387.5999292953304,
       isCrypto: false,
+      decimalDigits: 0,
     ),
     CurrencyModel(
       code: 'BRL',
@@ -144,141 +146,141 @@ class CurrencyData {
     ),
 
     // Major Cryptocurrencies
-    CurrencyModel(
-      code: 'BTC',
-      name: 'Bitcoin',
-      symbol: '₿',
-      rate: 0.000009000000000000002,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'ETH',
-      name: 'Ethereum',
-      symbol: 'Ξ',
-      rate: 0.00027493900284455926,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'BNB',
-      name: 'Binance Coin',
-      symbol: 'BNB',
-      rate: 0.0013079999999999997,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'SOL',
-      name: 'Solana',
-      symbol: '◎',
-      rate: 0.006022374481362504,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'ADA',
-      name: 'Cardano',
-      symbol: '₳',
-      rate: 1.345222234324632,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'AVAX',
-      name: 'Avalanche',
-      symbol: 'AVAX',
-      rate: 0.04479508852220941,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'DOGE',
-      name: 'Dogecoin',
-      symbol: 'Ð',
-      rate: 4.914213374907768,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'MATIC',
-      name: 'Polygon',
-      symbol: 'MATIC',
-      rate: 4.702971353159646,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'DOT',
-      name: 'Polkadot',
-      symbol: 'DOT',
-      rate: 0.27419323365238535,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'SHIB',
-      name: 'Shiba Inu',
-      symbol: 'SHIB',
-      rate: 81706.66059214591,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'LTC',
-      name: 'Litecoin',
-      symbol: 'Ł',
-      rate: 0.008330449896327316,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'TRX',
-      name: 'Tron',
-      symbol: 'TRX',
-      rate: 2.992744,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'UNI',
-      name: 'Uniswap',
-      symbol: 'UNI',
-      rate: 0.1029406290268296,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'LINK',
-      name: 'Chainlink',
-      symbol: 'LINK',
-      rate: 0.060127119100481234,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'XRP',
-      name: 'Ripple',
-      symbol: 'XRP',
-      rate: 0.3328611470812977,
-      isCrypto: true,
-    ),
+    // CurrencyModel(
+    //   code: 'BTC',
+    //   name: 'Bitcoin',
+    //   symbol: '₿',
+    //   rate: 0.000009000000000000002,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'ETH',
+    //   name: 'Ethereum',
+    //   symbol: 'Ξ',
+    //   rate: 0.00027493900284455926,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'BNB',
+    //   name: 'Binance Coin',
+    //   symbol: 'BNB',
+    //   rate: 0.0013079999999999997,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'SOL',
+    //   name: 'Solana',
+    //   symbol: '◎',
+    //   rate: 0.006022374481362504,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'ADA',
+    //   name: 'Cardano',
+    //   symbol: '₳',
+    //   rate: 1.345222234324632,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'AVAX',
+    //   name: 'Avalanche',
+    //   symbol: 'AVAX',
+    //   rate: 0.04479508852220941,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'DOGE',
+    //   name: 'Dogecoin',
+    //   symbol: 'Ð',
+    //   rate: 4.914213374907768,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'MATIC',
+    //   name: 'Polygon',
+    //   symbol: 'MATIC',
+    //   rate: 4.702971353159646,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'DOT',
+    //   name: 'Polkadot',
+    //   symbol: 'DOT',
+    //   rate: 0.27419323365238535,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'SHIB',
+    //   name: 'Shiba Inu',
+    //   symbol: 'SHIB',
+    //   rate: 81706.66059214591,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'LTC',
+    //   name: 'Litecoin',
+    //   symbol: 'Ł',
+    //   rate: 0.008330449896327316,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'TRX',
+    //   name: 'Tron',
+    //   symbol: 'TRX',
+    //   rate: 2.992744,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'UNI',
+    //   name: 'Uniswap',
+    //   symbol: 'UNI',
+    //   rate: 0.1029406290268296,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'LINK',
+    //   name: 'Chainlink',
+    //   symbol: 'LINK',
+    //   rate: 0.060127119100481234,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'XRP',
+    //   name: 'Ripple',
+    //   symbol: 'XRP',
+    //   rate: 0.3328611470812977,
+    //   isCrypto: true,
+    // ),
 
-    // Stablecoins
-    CurrencyModel(
-      code: 'USDT',
-      name: 'Tether',
-      symbol: '₮',
-      rate: 1.0002287738799431,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'USDC',
-      name: 'USD Coin',
-      symbol: 'USDC',
-      rate: 0.9993173267382818,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'BUSD',
-      name: 'Binance USD',
-      symbol: 'BUSD',
-      rate: 0.9999258295460781,
-      isCrypto: true,
-    ),
-    CurrencyModel(
-      code: 'DAI',
-      name: 'Dai',
-      symbol: 'DAI',
-      rate: 1.0002424067376035,
-      isCrypto: true,
-    ),
+    // // Stablecoins
+    // CurrencyModel(
+    //   code: 'USDT',
+    //   name: 'Tether',
+    //   symbol: '₮',
+    //   rate: 1.0002287738799431,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'USDC',
+    //   name: 'USD Coin',
+    //   symbol: 'USDC',
+    //   rate: 0.9993173267382818,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'BUSD',
+    //   name: 'Binance USD',
+    //   symbol: 'BUSD',
+    //   rate: 0.9999258295460781,
+    //   isCrypto: true,
+    // ),
+    // CurrencyModel(
+    //   code: 'DAI',
+    //   name: 'Dai',
+    //   symbol: 'DAI',
+    //   rate: 1.0002424067376035,
+    //   isCrypto: true,
+    // ),
   ];
 
   // Get currencies sorted by name
@@ -296,6 +298,10 @@ class CurrencyData {
     return currencies.firstWhere((c) => c.name == name).code;
   }
 
+  static int getCurrencyDecimalDigits(String code) {
+    return currencies.firstWhere((c) => c.code == code).decimalDigits;
+  }
+
   static String getNameFromCode(String code) {
     return currencies.firstWhere((c) => c.code == code).name;
   }
@@ -309,6 +315,7 @@ class CurrencyData {
   }
 
   static String currencySymbolFromCode(String code) {
+    if (code == "British Pound") return "£";
     return currencies.firstWhere((c) => c.code == code).symbol;
   }
 
