@@ -1852,6 +1852,17 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _locationMeta = const VerificationMeta(
+    'location',
+  );
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+    'location',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _categoryMeta = const VerificationMeta(
     'category',
   );
@@ -1977,6 +1988,27 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         type: DriftSqlType.dateTime,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _conversionStatusMeta = const VerificationMeta(
+    'conversionStatus',
+  );
+  @override
+  late final GeneratedColumn<String> conversionStatus = GeneratedColumn<String>(
+    'conversion_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<List<String>?, String>
+  splitParticipants = GeneratedColumn<String>(
+    'split_participants',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  ).withConverter<List<String>?>($ExpensesTable.$convertersplitParticipantsn);
   static const VerificationMeta _datePaidMeta = const VerificationMeta(
     'datePaid',
   );
@@ -2055,6 +2087,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     toBeSplit,
     isNotBudget,
     expenseName,
+    location,
     category,
     paid,
     cost,
@@ -2067,6 +2100,8 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     baseCurrency,
     exchangeRate,
     exchangeRateDate,
+    conversionStatus,
+    splitParticipants,
     datePaid,
     notes,
     images,
@@ -2136,6 +2171,12 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       );
     } else if (isInserting) {
       context.missing(_expenseNameMeta);
+    }
+    if (data.containsKey('location')) {
+      context.handle(
+        _locationMeta,
+        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+      );
     }
     if (data.containsKey('category')) {
       context.handle(
@@ -2241,6 +2282,15 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         ),
       );
     }
+    if (data.containsKey('conversion_status')) {
+      context.handle(
+        _conversionStatusMeta,
+        conversionStatus.isAcceptableOrUnknown(
+          data['conversion_status']!,
+          _conversionStatusMeta,
+        ),
+      );
+    }
     if (data.containsKey('date_paid')) {
       context.handle(
         _datePaidMeta,
@@ -2319,6 +2369,10 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         DriftSqlType.string,
         data['${effectivePrefix}expense_name'],
       )!,
+      location: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location'],
+      ),
       category: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}category'],
@@ -2367,6 +2421,16 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}exchange_rate_date'],
       ),
+      conversionStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}conversion_status'],
+      )!,
+      splitParticipants: $ExpensesTable.$convertersplitParticipantsn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}split_participants'],
+        ),
+      ),
       datePaid: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}date_paid'],
@@ -2405,6 +2469,10 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     return $ExpensesTable(attachedDatabase, alias);
   }
 
+  static TypeConverter<List<String>, String> $convertersplitParticipants =
+      const StringListConverter();
+  static TypeConverter<List<String>?, String?> $convertersplitParticipantsn =
+      NullAwareTypeConverter.wrap($convertersplitParticipants);
   static TypeConverter<List<String>, String> $convertertags =
       const StringListConverter();
 }
@@ -2416,6 +2484,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   final bool toBeSplit;
   final bool isNotBudget;
   final String expenseName;
+  final String? location;
   final String category;
   final double paid;
   final double cost;
@@ -2428,6 +2497,8 @@ class Expense extends DataClass implements Insertable<Expense> {
   final String? baseCurrency;
   final double? exchangeRate;
   final DateTime? exchangeRateDate;
+  final String conversionStatus;
+  final List<String>? splitParticipants;
   final DateTime datePaid;
   final String? notes;
   final String? images;
@@ -2442,6 +2513,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     required this.toBeSplit,
     required this.isNotBudget,
     required this.expenseName,
+    this.location,
     required this.category,
     required this.paid,
     required this.cost,
@@ -2454,6 +2526,8 @@ class Expense extends DataClass implements Insertable<Expense> {
     this.baseCurrency,
     this.exchangeRate,
     this.exchangeRateDate,
+    required this.conversionStatus,
+    this.splitParticipants,
     required this.datePaid,
     this.notes,
     this.images,
@@ -2471,6 +2545,9 @@ class Expense extends DataClass implements Insertable<Expense> {
     map['to_be_split'] = Variable<bool>(toBeSplit);
     map['is_not_budget'] = Variable<bool>(isNotBudget);
     map['expense_name'] = Variable<String>(expenseName);
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
+    }
     map['category'] = Variable<String>(category);
     map['paid'] = Variable<double>(paid);
     map['cost'] = Variable<double>(cost);
@@ -2499,6 +2576,12 @@ class Expense extends DataClass implements Insertable<Expense> {
     if (!nullToAbsent || exchangeRateDate != null) {
       map['exchange_rate_date'] = Variable<DateTime>(exchangeRateDate);
     }
+    map['conversion_status'] = Variable<String>(conversionStatus);
+    if (!nullToAbsent || splitParticipants != null) {
+      map['split_participants'] = Variable<String>(
+        $ExpensesTable.$convertersplitParticipantsn.toSql(splitParticipants),
+      );
+    }
     map['date_paid'] = Variable<DateTime>(datePaid);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
@@ -2523,6 +2606,9 @@ class Expense extends DataClass implements Insertable<Expense> {
       toBeSplit: Value(toBeSplit),
       isNotBudget: Value(isNotBudget),
       expenseName: Value(expenseName),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
       category: Value(category),
       paid: Value(paid),
       cost: Value(cost),
@@ -2551,6 +2637,10 @@ class Expense extends DataClass implements Insertable<Expense> {
       exchangeRateDate: exchangeRateDate == null && nullToAbsent
           ? const Value.absent()
           : Value(exchangeRateDate),
+      conversionStatus: Value(conversionStatus),
+      splitParticipants: splitParticipants == null && nullToAbsent
+          ? const Value.absent()
+          : Value(splitParticipants),
       datePaid: Value(datePaid),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
@@ -2577,6 +2667,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       toBeSplit: serializer.fromJson<bool>(json['toBeSplit']),
       isNotBudget: serializer.fromJson<bool>(json['isNotBudget']),
       expenseName: serializer.fromJson<String>(json['expenseName']),
+      location: serializer.fromJson<String?>(json['location']),
       category: serializer.fromJson<String>(json['category']),
       paid: serializer.fromJson<double>(json['paid']),
       cost: serializer.fromJson<double>(json['cost']),
@@ -2599,6 +2690,10 @@ class Expense extends DataClass implements Insertable<Expense> {
       exchangeRateDate: serializer.fromJson<DateTime?>(
         json['exchangeRateDate'],
       ),
+      conversionStatus: serializer.fromJson<String>(json['conversionStatus']),
+      splitParticipants: serializer.fromJson<List<String>?>(
+        json['splitParticipants'],
+      ),
       datePaid: serializer.fromJson<DateTime>(json['datePaid']),
       notes: serializer.fromJson<String?>(json['notes']),
       images: serializer.fromJson<String?>(json['images']),
@@ -2618,6 +2713,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       'toBeSplit': serializer.toJson<bool>(toBeSplit),
       'isNotBudget': serializer.toJson<bool>(isNotBudget),
       'expenseName': serializer.toJson<String>(expenseName),
+      'location': serializer.toJson<String?>(location),
       'category': serializer.toJson<String>(category),
       'paid': serializer.toJson<double>(paid),
       'cost': serializer.toJson<double>(cost),
@@ -2630,6 +2726,8 @@ class Expense extends DataClass implements Insertable<Expense> {
       'baseCurrency': serializer.toJson<String?>(baseCurrency),
       'exchangeRate': serializer.toJson<double?>(exchangeRate),
       'exchangeRateDate': serializer.toJson<DateTime?>(exchangeRateDate),
+      'conversionStatus': serializer.toJson<String>(conversionStatus),
+      'splitParticipants': serializer.toJson<List<String>?>(splitParticipants),
       'datePaid': serializer.toJson<DateTime>(datePaid),
       'notes': serializer.toJson<String?>(notes),
       'images': serializer.toJson<String?>(images),
@@ -2647,6 +2745,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     bool? toBeSplit,
     bool? isNotBudget,
     String? expenseName,
+    Value<String?> location = const Value.absent(),
     String? category,
     double? paid,
     double? cost,
@@ -2659,6 +2758,8 @@ class Expense extends DataClass implements Insertable<Expense> {
     Value<String?> baseCurrency = const Value.absent(),
     Value<double?> exchangeRate = const Value.absent(),
     Value<DateTime?> exchangeRateDate = const Value.absent(),
+    String? conversionStatus,
+    Value<List<String>?> splitParticipants = const Value.absent(),
     DateTime? datePaid,
     Value<String?> notes = const Value.absent(),
     Value<String?> images = const Value.absent(),
@@ -2673,6 +2774,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     toBeSplit: toBeSplit ?? this.toBeSplit,
     isNotBudget: isNotBudget ?? this.isNotBudget,
     expenseName: expenseName ?? this.expenseName,
+    location: location.present ? location.value : this.location,
     category: category ?? this.category,
     paid: paid ?? this.paid,
     cost: cost ?? this.cost,
@@ -2697,6 +2799,10 @@ class Expense extends DataClass implements Insertable<Expense> {
     exchangeRateDate: exchangeRateDate.present
         ? exchangeRateDate.value
         : this.exchangeRateDate,
+    conversionStatus: conversionStatus ?? this.conversionStatus,
+    splitParticipants: splitParticipants.present
+        ? splitParticipants.value
+        : this.splitParticipants,
     datePaid: datePaid ?? this.datePaid,
     notes: notes.present ? notes.value : this.notes,
     images: images.present ? images.value : this.images,
@@ -2719,6 +2825,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       expenseName: data.expenseName.present
           ? data.expenseName.value
           : this.expenseName,
+      location: data.location.present ? data.location.value : this.location,
       category: data.category.present ? data.category.value : this.category,
       paid: data.paid.present ? data.paid.value : this.paid,
       cost: data.cost.present ? data.cost.value : this.cost,
@@ -2747,6 +2854,12 @@ class Expense extends DataClass implements Insertable<Expense> {
       exchangeRateDate: data.exchangeRateDate.present
           ? data.exchangeRateDate.value
           : this.exchangeRateDate,
+      conversionStatus: data.conversionStatus.present
+          ? data.conversionStatus.value
+          : this.conversionStatus,
+      splitParticipants: data.splitParticipants.present
+          ? data.splitParticipants.value
+          : this.splitParticipants,
       datePaid: data.datePaid.present ? data.datePaid.value : this.datePaid,
       notes: data.notes.present ? data.notes.value : this.notes,
       images: data.images.present ? data.images.value : this.images,
@@ -2768,6 +2881,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           ..write('toBeSplit: $toBeSplit, ')
           ..write('isNotBudget: $isNotBudget, ')
           ..write('expenseName: $expenseName, ')
+          ..write('location: $location, ')
           ..write('category: $category, ')
           ..write('paid: $paid, ')
           ..write('cost: $cost, ')
@@ -2780,6 +2894,8 @@ class Expense extends DataClass implements Insertable<Expense> {
           ..write('baseCurrency: $baseCurrency, ')
           ..write('exchangeRate: $exchangeRate, ')
           ..write('exchangeRateDate: $exchangeRateDate, ')
+          ..write('conversionStatus: $conversionStatus, ')
+          ..write('splitParticipants: $splitParticipants, ')
           ..write('datePaid: $datePaid, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
@@ -2799,6 +2915,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     toBeSplit,
     isNotBudget,
     expenseName,
+    location,
     category,
     paid,
     cost,
@@ -2811,6 +2928,8 @@ class Expense extends DataClass implements Insertable<Expense> {
     baseCurrency,
     exchangeRate,
     exchangeRateDate,
+    conversionStatus,
+    splitParticipants,
     datePaid,
     notes,
     images,
@@ -2829,6 +2948,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.toBeSplit == this.toBeSplit &&
           other.isNotBudget == this.isNotBudget &&
           other.expenseName == this.expenseName &&
+          other.location == this.location &&
           other.category == this.category &&
           other.paid == this.paid &&
           other.cost == this.cost &&
@@ -2841,6 +2961,8 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.baseCurrency == this.baseCurrency &&
           other.exchangeRate == this.exchangeRate &&
           other.exchangeRateDate == this.exchangeRateDate &&
+          other.conversionStatus == this.conversionStatus &&
+          other.splitParticipants == this.splitParticipants &&
           other.datePaid == this.datePaid &&
           other.notes == this.notes &&
           other.images == this.images &&
@@ -2857,6 +2979,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<bool> toBeSplit;
   final Value<bool> isNotBudget;
   final Value<String> expenseName;
+  final Value<String?> location;
   final Value<String> category;
   final Value<double> paid;
   final Value<double> cost;
@@ -2869,6 +2992,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<String?> baseCurrency;
   final Value<double?> exchangeRate;
   final Value<DateTime?> exchangeRateDate;
+  final Value<String> conversionStatus;
+  final Value<List<String>?> splitParticipants;
   final Value<DateTime> datePaid;
   final Value<String?> notes;
   final Value<String?> images;
@@ -2884,6 +3009,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.toBeSplit = const Value.absent(),
     this.isNotBudget = const Value.absent(),
     this.expenseName = const Value.absent(),
+    this.location = const Value.absent(),
     this.category = const Value.absent(),
     this.paid = const Value.absent(),
     this.cost = const Value.absent(),
@@ -2896,6 +3022,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.baseCurrency = const Value.absent(),
     this.exchangeRate = const Value.absent(),
     this.exchangeRateDate = const Value.absent(),
+    this.conversionStatus = const Value.absent(),
+    this.splitParticipants = const Value.absent(),
     this.datePaid = const Value.absent(),
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
@@ -2912,6 +3040,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     required bool toBeSplit,
     this.isNotBudget = const Value.absent(),
     required String expenseName,
+    this.location = const Value.absent(),
     required String category,
     required double paid,
     required double cost,
@@ -2924,6 +3053,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.baseCurrency = const Value.absent(),
     this.exchangeRate = const Value.absent(),
     this.exchangeRateDate = const Value.absent(),
+    this.conversionStatus = const Value.absent(),
+    this.splitParticipants = const Value.absent(),
     required DateTime datePaid,
     this.notes = const Value.absent(),
     this.images = const Value.absent(),
@@ -2951,6 +3082,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Expression<bool>? toBeSplit,
     Expression<bool>? isNotBudget,
     Expression<String>? expenseName,
+    Expression<String>? location,
     Expression<String>? category,
     Expression<double>? paid,
     Expression<double>? cost,
@@ -2963,6 +3095,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Expression<String>? baseCurrency,
     Expression<double>? exchangeRate,
     Expression<DateTime>? exchangeRateDate,
+    Expression<String>? conversionStatus,
+    Expression<String>? splitParticipants,
     Expression<DateTime>? datePaid,
     Expression<String>? notes,
     Expression<String>? images,
@@ -2979,6 +3113,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       if (toBeSplit != null) 'to_be_split': toBeSplit,
       if (isNotBudget != null) 'is_not_budget': isNotBudget,
       if (expenseName != null) 'expense_name': expenseName,
+      if (location != null) 'location': location,
       if (category != null) 'category': category,
       if (paid != null) 'paid': paid,
       if (cost != null) 'cost': cost,
@@ -2995,6 +3130,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       if (baseCurrency != null) 'base_currency': baseCurrency,
       if (exchangeRate != null) 'exchange_rate': exchangeRate,
       if (exchangeRateDate != null) 'exchange_rate_date': exchangeRateDate,
+      if (conversionStatus != null) 'conversion_status': conversionStatus,
+      if (splitParticipants != null) 'split_participants': splitParticipants,
       if (datePaid != null) 'date_paid': datePaid,
       if (notes != null) 'notes': notes,
       if (images != null) 'images': images,
@@ -3013,6 +3150,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Value<bool>? toBeSplit,
     Value<bool>? isNotBudget,
     Value<String>? expenseName,
+    Value<String?>? location,
     Value<String>? category,
     Value<double>? paid,
     Value<double>? cost,
@@ -3025,6 +3163,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Value<String?>? baseCurrency,
     Value<double?>? exchangeRate,
     Value<DateTime?>? exchangeRateDate,
+    Value<String>? conversionStatus,
+    Value<List<String>?>? splitParticipants,
     Value<DateTime>? datePaid,
     Value<String?>? notes,
     Value<String?>? images,
@@ -3041,6 +3181,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       toBeSplit: toBeSplit ?? this.toBeSplit,
       isNotBudget: isNotBudget ?? this.isNotBudget,
       expenseName: expenseName ?? this.expenseName,
+      location: location ?? this.location,
       category: category ?? this.category,
       paid: paid ?? this.paid,
       cost: cost ?? this.cost,
@@ -3055,6 +3196,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       baseCurrency: baseCurrency ?? this.baseCurrency,
       exchangeRate: exchangeRate ?? this.exchangeRate,
       exchangeRateDate: exchangeRateDate ?? this.exchangeRateDate,
+      conversionStatus: conversionStatus ?? this.conversionStatus,
+      splitParticipants: splitParticipants ?? this.splitParticipants,
       datePaid: datePaid ?? this.datePaid,
       notes: notes ?? this.notes,
       images: images ?? this.images,
@@ -3086,6 +3229,9 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     }
     if (expenseName.present) {
       map['expense_name'] = Variable<String>(expenseName.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
     }
     if (category.present) {
       map['category'] = Variable<String>(category.value);
@@ -3127,6 +3273,16 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     if (exchangeRateDate.present) {
       map['exchange_rate_date'] = Variable<DateTime>(exchangeRateDate.value);
     }
+    if (conversionStatus.present) {
+      map['conversion_status'] = Variable<String>(conversionStatus.value);
+    }
+    if (splitParticipants.present) {
+      map['split_participants'] = Variable<String>(
+        $ExpensesTable.$convertersplitParticipantsn.toSql(
+          splitParticipants.value,
+        ),
+      );
+    }
     if (datePaid.present) {
       map['date_paid'] = Variable<DateTime>(datePaid.value);
     }
@@ -3165,6 +3321,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
           ..write('toBeSplit: $toBeSplit, ')
           ..write('isNotBudget: $isNotBudget, ')
           ..write('expenseName: $expenseName, ')
+          ..write('location: $location, ')
           ..write('category: $category, ')
           ..write('paid: $paid, ')
           ..write('cost: $cost, ')
@@ -3177,6 +3334,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
           ..write('baseCurrency: $baseCurrency, ')
           ..write('exchangeRate: $exchangeRate, ')
           ..write('exchangeRateDate: $exchangeRateDate, ')
+          ..write('conversionStatus: $conversionStatus, ')
+          ..write('splitParticipants: $splitParticipants, ')
           ..write('datePaid: $datePaid, ')
           ..write('notes: $notes, ')
           ..write('images: $images, ')
@@ -6219,6 +6378,7 @@ typedef $$ExpensesTableCreateCompanionBuilder =
       required bool toBeSplit,
       Value<bool> isNotBudget,
       required String expenseName,
+      Value<String?> location,
       required String category,
       required double paid,
       required double cost,
@@ -6231,6 +6391,8 @@ typedef $$ExpensesTableCreateCompanionBuilder =
       Value<String?> baseCurrency,
       Value<double?> exchangeRate,
       Value<DateTime?> exchangeRateDate,
+      Value<String> conversionStatus,
+      Value<List<String>?> splitParticipants,
       required DateTime datePaid,
       Value<String?> notes,
       Value<String?> images,
@@ -6248,6 +6410,7 @@ typedef $$ExpensesTableUpdateCompanionBuilder =
       Value<bool> toBeSplit,
       Value<bool> isNotBudget,
       Value<String> expenseName,
+      Value<String?> location,
       Value<String> category,
       Value<double> paid,
       Value<double> cost,
@@ -6260,6 +6423,8 @@ typedef $$ExpensesTableUpdateCompanionBuilder =
       Value<String?> baseCurrency,
       Value<double?> exchangeRate,
       Value<DateTime?> exchangeRateDate,
+      Value<String> conversionStatus,
+      Value<List<String>?> splitParticipants,
       Value<DateTime> datePaid,
       Value<String?> notes,
       Value<String?> images,
@@ -6341,6 +6506,11 @@ class $$ExpensesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get category => $composableBuilder(
     column: $table.category,
     builder: (column) => ColumnFilters(column),
@@ -6399,6 +6569,17 @@ class $$ExpensesTableFilterComposer
   ColumnFilters<DateTime> get exchangeRateDate => $composableBuilder(
     column: $table.exchangeRateDate,
     builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get conversionStatus => $composableBuilder(
+    column: $table.conversionStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<List<String>?, List<String>, String>
+  get splitParticipants => $composableBuilder(
+    column: $table.splitParticipants,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<DateTime> get datePaid => $composableBuilder(
@@ -6513,6 +6694,11 @@ class $$ExpensesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get category => $composableBuilder(
     column: $table.category,
     builder: (column) => ColumnOrderings(column),
@@ -6570,6 +6756,16 @@ class $$ExpensesTableOrderingComposer
 
   ColumnOrderings<DateTime> get exchangeRateDate => $composableBuilder(
     column: $table.exchangeRateDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get conversionStatus => $composableBuilder(
+    column: $table.conversionStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get splitParticipants => $composableBuilder(
+    column: $table.splitParticipants,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -6680,6 +6876,9 @@ class $$ExpensesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
 
@@ -6729,6 +6928,17 @@ class $$ExpensesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get exchangeRateDate => $composableBuilder(
     column: $table.exchangeRateDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get conversionStatus => $composableBuilder(
+    column: $table.conversionStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<List<String>?, String>
+  get splitParticipants => $composableBuilder(
+    column: $table.splitParticipants,
     builder: (column) => column,
   );
 
@@ -6836,6 +7046,7 @@ class $$ExpensesTableTableManager
                 Value<bool> toBeSplit = const Value.absent(),
                 Value<bool> isNotBudget = const Value.absent(),
                 Value<String> expenseName = const Value.absent(),
+                Value<String?> location = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<double> paid = const Value.absent(),
                 Value<double> cost = const Value.absent(),
@@ -6848,6 +7059,8 @@ class $$ExpensesTableTableManager
                 Value<String?> baseCurrency = const Value.absent(),
                 Value<double?> exchangeRate = const Value.absent(),
                 Value<DateTime?> exchangeRateDate = const Value.absent(),
+                Value<String> conversionStatus = const Value.absent(),
+                Value<List<String>?> splitParticipants = const Value.absent(),
                 Value<DateTime> datePaid = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
@@ -6863,6 +7076,7 @@ class $$ExpensesTableTableManager
                 toBeSplit: toBeSplit,
                 isNotBudget: isNotBudget,
                 expenseName: expenseName,
+                location: location,
                 category: category,
                 paid: paid,
                 cost: cost,
@@ -6875,6 +7089,8 @@ class $$ExpensesTableTableManager
                 baseCurrency: baseCurrency,
                 exchangeRate: exchangeRate,
                 exchangeRateDate: exchangeRateDate,
+                conversionStatus: conversionStatus,
+                splitParticipants: splitParticipants,
                 datePaid: datePaid,
                 notes: notes,
                 images: images,
@@ -6892,6 +7108,7 @@ class $$ExpensesTableTableManager
                 required bool toBeSplit,
                 Value<bool> isNotBudget = const Value.absent(),
                 required String expenseName,
+                Value<String?> location = const Value.absent(),
                 required String category,
                 required double paid,
                 required double cost,
@@ -6904,6 +7121,8 @@ class $$ExpensesTableTableManager
                 Value<String?> baseCurrency = const Value.absent(),
                 Value<double?> exchangeRate = const Value.absent(),
                 Value<DateTime?> exchangeRateDate = const Value.absent(),
+                Value<String> conversionStatus = const Value.absent(),
+                Value<List<String>?> splitParticipants = const Value.absent(),
                 required DateTime datePaid,
                 Value<String?> notes = const Value.absent(),
                 Value<String?> images = const Value.absent(),
@@ -6919,6 +7138,7 @@ class $$ExpensesTableTableManager
                 toBeSplit: toBeSplit,
                 isNotBudget: isNotBudget,
                 expenseName: expenseName,
+                location: location,
                 category: category,
                 paid: paid,
                 cost: cost,
@@ -6931,6 +7151,8 @@ class $$ExpensesTableTableManager
                 baseCurrency: baseCurrency,
                 exchangeRate: exchangeRate,
                 exchangeRateDate: exchangeRateDate,
+                conversionStatus: conversionStatus,
+                splitParticipants: splitParticipants,
                 datePaid: datePaid,
                 notes: notes,
                 images: images,

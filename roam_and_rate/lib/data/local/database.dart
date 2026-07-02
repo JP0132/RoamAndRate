@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase._internal();
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 11;
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: 'roamandrate_db',
@@ -156,6 +156,32 @@ class AppDatabase extends _$AppDatabase {
             ALTER TABLE expenses RENAME COLUMN original_currency TO target_currency;
         """);
       }
+
+      if (from < 9) {
+        await migrator.addColumn(expenses, expenses.conversionStatus);
+
+        await customStatement("""
+            UPDATE expenses
+            SET conversion_status = 'completed'
+            WHERE target_paid_amount_minor IS NOT NULL
+        """);
+
+        await customStatement("""
+            UPDATE expenses
+            SET conversion_status = 'pending'
+            WHERE target_paid_amount_minor IS NULL
+        """);
+
+      }
+
+      if(from < 10){
+        await migrator.addColumn(expenses, expenses.location);
+      }
+
+      if(from < 11){
+        await migrator.addColumn(expenses, expenses.splitParticipants);
+      }
+
     },
   );
 }

@@ -15,6 +15,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<AddExpense>(_onAddExpense);
     on<DeleteExpense>(_onDeleteExpense);
     on<EditExpense>(_onEditExpense);
+    
 
     _subscription = _repository.watchExpenses().listen(
       (expenses) {

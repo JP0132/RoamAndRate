@@ -16,6 +16,7 @@ class ExpenseModel {
   final String currency;
   final String category;
   final bool toBeSplit;
+  final List<String>? splitParticipants;
   final bool isNotBudget;
   final DateTime dateTimeAdded;
   final DateTime datePaid;
@@ -23,7 +24,9 @@ class ExpenseModel {
   final List<String> tags;
   final String notes;
   final String image;
+  final String conversionStatus;
   final DateTime? lastUpdated;
+  final String? location;
 
   ExpenseModel({
     required this.name,
@@ -44,6 +47,7 @@ class ExpenseModel {
     required this.currency,
     this.baseCurrency,
     required this.toBeSplit,
+    this.splitParticipants,
     required this.isNotBudget,
     this.tags = const [],
     required this.category,
@@ -51,6 +55,8 @@ class ExpenseModel {
     this.notes = "",
     required this.type,
     this.lastUpdated,
+    required this.conversionStatus,
+    this.location
   });
 
   ExpenseModel copyWith({
@@ -79,6 +85,10 @@ class ExpenseModel {
     bool? toBeSplit,
     bool? isNotBudget,
     DateTime? lastUpdated,
+    String? conversionStatus,
+    String? location,
+    List<String>? splitParticipants,
+
   }) {
     return ExpenseModel(
       expenseId: expenseId ?? this.expenseId,
@@ -106,6 +116,9 @@ class ExpenseModel {
       exchangeRate: exchangeRate ?? this.exchangeRate,
       baseCurrency: baseCurrency ?? this.baseCurrency,
       exchangeRateDate: exchangeRateDate ?? this.exchangeRateDate,
+      conversionStatus: conversionStatus ?? this.conversionStatus,
+      location: location ?? this.location,
+      splitParticipants: splitParticipants ?? this.splitParticipants,
     );
   }
 }

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/app_router.dart';
+import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
+import 'package:roam_and_rate/application/expenses/expense_event.dart';
 import 'package:roam_and_rate/application/participant/participant_bloc.dart';
 import 'package:roam_and_rate/application/participant/participant_state.dart';
 import 'package:roam_and_rate/application/tripData/trip_data_bloc.dart';
@@ -69,6 +72,8 @@ class _ViewTripState extends State<ViewTrip> {
 
   // Track converted costs
   Map<String, double> _convertedCosts = {};
+
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySub;
 
   void _onSearchChanged() {
     setState(() {
@@ -193,30 +198,35 @@ class _ViewTripState extends State<ViewTrip> {
       }
     }
 
-    return {"budgetTotal": budgetTotal, "paidTotal": paidTotal, "userCurrencyTotal": userCurrencyTotal};
+    return {
+      "budgetTotal": budgetTotal,
+      "paidTotal": paidTotal,
+      "userCurrencyTotal": userCurrencyTotal,
+    };
   }
 
   double _getConvertedOrPaid(ExpenseModel expense) {
-    if(expense.exchangeRate != 1.0) return toMajor(expense.targetPaidAmountMinor!, expense.targetCurrency!);
+    if (expense.exchangeRate != 1.0)
+      return toMajor(expense.targetPaidAmountMinor!, expense.targetCurrency!);
 
     // if (widget.tripDetails.currency == expense.baseCurrency && userCurrency == expense.baseCurrency) return toMajor(expense.basePaidAmountMinor!, expense.baseCurrency!);
     // if (_convertedCosts.containsKey(expense.expenseId))
     //   return _convertedCosts[expense.expenseId]!;
-    
+
     return toMajor(expense.basePaidAmountMinor!, expense.baseCurrency!);
 
     //return expense.paid;
   }
 
   double _getUserCurrencyTotal(ExpenseModel expense) {
-    if(expense.exchangeRate != 1.0) return toMajor(expense.targetPaidAmountMinor!, expense.targetCurrency!);
+    if (expense.exchangeRate != 1.0)
+      return toMajor(expense.targetPaidAmountMinor!, expense.targetCurrency!);
     // if(userCurrency == expense.currency) return expense.paid;
     // if (_convertedCosts.containsKey("user_${expense.expenseId}")) {
     //   return _convertedCosts["user_${expense.expenseId}"]!;
     // }
     return toMajor(expense.basePaidAmountMinor!, expense.baseCurrency!);
     //return expense.paid;
-
   }
 
   // Initialize converted costs for expenses with matching currencies
@@ -231,67 +241,77 @@ class _ViewTripState extends State<ViewTrip> {
 
   bool _dataLoaded = false;
 
-  Future<void> _convertAllExpenses() async {
+  Future<void> _convertPendingExpenses() async {
     if (_isConverting) return;
 
-    _isConverting = true;
+    final pending = _expenses
+        .where((e) => e.conversionStatus == 'pending')
+        .toList();
 
-    final Map<String, double> newConverted = {};
+    if (pending.isEmpty) return;
 
-    for (final expense in _expenses) {
-      final id = expense.expenseId!;
-      final userCurrId = "user_$id";
+    setState(() {
+      _isConverting = true;
+    });
 
-      // Same currency → no conversion needed
-      if (widget.tripDetails.currency == expense.currency) {
-        newConverted[id] = expense.paid;
-
-        // Convert to user currency if not equal
-        if (userCurrency != expense.currency) {
-          try {
-            final result = await CurrencyHelper().getConvertedAmount(
-              base: expense.currency.toUpperCase(),
-              target: userCurrency!.toUpperCase(),
-              value: expense.paid,
-            );
-
-            if (result != null) {
-              newConverted[userCurrId] = double.parse(result);
-            }
-          } catch (e) {
-            debugPrint("Conversion failed for $id: $e");
-          }
-        }
-        continue;
-      }
-
+    for (final expense in pending) {
       try {
-        final result = await CurrencyHelper().getConvertedAmount(
-          base: expense.currency.toUpperCase(),
-          target: widget.tripDetails.currency.toUpperCase(),
-          value: expense.paid,
+        final targetCurrency = expense.targetCurrency!;
+        final baseCurrency = expense.baseCurrency!;
+        final basePaidAmount = toMajor(
+          expense.basePaidAmountMinor!,
+          expense.baseCurrency!,
+        );
+        final baseCostAmount = toMajor(
+          expense.baseCostAmountMinor!,
+          expense.baseCurrency!,
         );
 
+        final result = targetCurrency == baseCurrency
+            ? 1.0
+            : await CurrencyHelper().getExchangeRateCached(
+                base: baseCurrency,
+                target: targetCurrency,
+              );
+
         if (result != null) {
-          newConverted[id] = double.parse(result);
+          final convertedPaidAmount = basePaidAmount * result;
+          final convertedCostAmount = baseCostAmount * result;
+
+          final convertedPaidMinor = toMinor(
+            convertedPaidAmount.toString(),
+            targetCurrency,
+          );
+          final convertedCostMinor = toMinor(
+            convertedCostAmount.toString(),
+            targetCurrency,
+          );
+
+          final updatedExpense = expense.copyWith(
+            targetPaidAmountMinor: convertedPaidMinor,
+            targetCostAmountMinor: convertedCostMinor,
+            exchangeRate: result,
+            conversionStatus: 'completed',
+          );
+
+          context.read<ExpenseBloc>().add(EditExpense(updatedExpense));
         }
       } catch (e) {
-        debugPrint("Conversion failed for $id: $e");
+        debugPrint("Conversion still failing for ${expense.expenseId}: $e");
       }
     }
-
-    if (mounted) {
-      setState(() {
-        _convertedCosts = newConverted;
-      });
-    }
-
-    _isConverting = false;
+    if (mounted) setState(() => _isConverting = false);
   }
 
   @override
   void initState() {
     super.initState();
+
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((result) {
+    if (result.isNotEmpty && result.first != ConnectivityResult.none) {
+      _convertPendingExpenses();
+    }});
+
     context.read<TripDataBloc>().add(
       StartWatchingTrip(widget.tripDetails.tripId!),
     );
@@ -305,6 +325,7 @@ class _ViewTripState extends State<ViewTrip> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _connectivitySub.cancel();
     super.dispose();
   }
 
@@ -340,7 +361,7 @@ class _ViewTripState extends State<ViewTrip> {
                 _filterTripData();
               });
 
-              _convertAllExpenses();
+              _convertPendingExpenses();
             }
           },
         ),
@@ -480,7 +501,6 @@ class _ViewTripState extends State<ViewTrip> {
                   ),
                   const SizedBox(height: 20),
 
-                  
                   Text("Total User Currency Spent: $totalUserCurrencySpent"),
 
                   SegmentedSwitcher(
@@ -516,7 +536,7 @@ class _ViewTripState extends State<ViewTrip> {
                           _filterTripData();
                         });
 
-                        _convertAllExpenses();
+                        _convertPendingExpenses();
                       }
                     },
                     child: Expanded(
@@ -603,6 +623,7 @@ class _ViewTripState extends State<ViewTrip> {
                   participantName: participants
                       .firstWhere((p) => p.id == expense.participantId)
                       .particpantName,
+                  participants: participants,
                 ),
               ),
             ),

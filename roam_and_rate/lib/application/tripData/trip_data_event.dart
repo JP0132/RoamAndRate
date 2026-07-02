@@ -7,6 +7,11 @@ class StartWatchingTrip extends TripDataEvent {
   StartWatchingTrip(this.tripId);
 }
 
+class ProcessPendingConversions extends TripDataEvent {
+  final String tripId;
+  ProcessPendingConversions(this.tripId);
+}
+
 class TripExpensesUpdated extends TripDataEvent {
   final List<Expense> expenses;
   TripExpensesUpdated(this.expenses);

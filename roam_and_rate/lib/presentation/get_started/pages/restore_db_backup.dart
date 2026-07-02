@@ -324,6 +324,7 @@ class _RestoreDbBackupState extends State<RestoreDbBackup> {
               tags: e["tags"],
               lastUpdated: e["lastUpdated"],
               isNotBudget: e["isNotBudget"],
+              conversionStatus: e["conversionStatus"],
             );
 
             expenses.add(currentExpense);

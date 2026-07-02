@@ -30,7 +30,10 @@ extension ExpenseEntityMapper on Expense {
       cost: cost,
       baseCurrency: baseCurrency,
       targetCurrency: targetCurrency,
-      exchangeRateDate: exchangeRateDate
+      exchangeRateDate: exchangeRateDate,
+      conversionStatus: conversionStatus,
+      location: location,
+      splitParticipants: splitParticipants,
     );
   }
 }
@@ -62,7 +65,9 @@ extension ExpenseModelMapper on ExpenseModel {
       baseCurrency: Value(baseCurrency),
       targetCurrency: Value(targetCurrency),
       exchangeRateDate: Value(exchangeRateDate),
-
+      conversionStatus: Value(conversionStatus),
+      location: Value(location),
+      splitParticipants: Value(splitParticipants),
     );
   }
 }

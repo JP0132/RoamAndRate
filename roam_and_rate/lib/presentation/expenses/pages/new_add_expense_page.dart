@@ -60,9 +60,10 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final sessionManager = SessionManager();
   String? userCurrency = "";
 
-  String _convertedAmount = "0.00";
-  
-  double _conversionRate = 0.0;
+  String? _convertedAmount = "0.00";
+  String? _convertedCostAmount = "0.00";
+
+  double? _conversionRate;
 
   DateTime? selectedDate = DateTime.now();
   bool toBeSplit = false;
@@ -81,6 +82,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
   String? selectedCategory;
   String? selectedType;
   String? selectedCurrency;
+
+  String _conversionStatus = "completed";
 
   List<String> addedTags = [];
 
@@ -124,18 +127,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
     }
   }
 
-  // int toMinor(String value) {
-  //   int decimialDigits = CurrencyData.getCurrencyDecimalDigits(userCurrency!);
-  //   final factor = pow(10, decimialDigits);
-  //   final numeric = value.replaceAll(RegExp(r'[^\d.-]'), '');
-  //   return (double.parse(numeric) * factor).round();
-  // }
-
-  String convertCost(String value){
+  String convertCost(String value) {
     return NumberFormat.currency(
-            symbol: CurrencyData.currencySymbolFromCode(userCurrency!),
-            decimalDigits: CurrencyData.getCurrencyDecimalDigits(userCurrency!),  
-          ).format((_conversionRate * double.parse(value)));
+      symbol: CurrencyData.currencySymbolFromCode(userCurrency!),
+      decimalDigits: CurrencyData.getCurrencyDecimalDigits(userCurrency!),
+    ).format((_conversionRate! * double.parse(value)));
   }
 
   void _showPickOptionsDialog(BuildContext context) {
@@ -217,14 +213,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   double _amount = 0.0;
 
-
-
   Future<void> _updateConversion() async {
     final amount = double.tryParse(_paidController.text);
+    final costAmount = double.tryParse(_costController.text);
 
     if (amount == null) {
       setState(() {
         _convertedAmount = "0.00";
+        _conversionStatus = "completed";
       });
       return;
     }
@@ -235,23 +231,61 @@ class _AddExpensePageState extends State<AddExpensePage> {
     //   value: amount,
     // );
 
-    final result = await CurrencyHelper().getExchangeRateCached(
-      base: selectedCurrency!.toUpperCase(),
-      target: userCurrency!.toUpperCase(),
-    );
+    try {
+      final result = await CurrencyHelper().getExchangeRateCached(
+        base: selectedCurrency!.toUpperCase(),
+        target: userCurrency!.toUpperCase(),
+      );
 
-    if (mounted) {
-      setState(() {
-        if (result != null) {
-          // _convertedAmount = (result * amount).toString();
-          _conversionRate = result;
-          _convertedAmount = NumberFormat.currency(
-            symbol: CurrencyData.currencySymbolFromCode(userCurrency!),
-            decimalDigits: CurrencyData.getCurrencyDecimalDigits(userCurrency!),  
-          ).format((_conversionRate * amount));
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (result != null) {
+            // _convertedAmount = (result * amount).toString();
+            _conversionRate = result;
+            _convertedAmount = NumberFormat.currency(
+              symbol: CurrencyData.currencySymbolFromCode(userCurrency!),
+              decimalDigits: CurrencyData.getCurrencyDecimalDigits(
+                userCurrency!,
+              ),
+            ).format((_conversionRate! * amount));
+
+            _convertedCostAmount = NumberFormat.currency(
+              symbol: CurrencyData.currencySymbolFromCode(userCurrency!),
+              decimalDigits: CurrencyData.getCurrencyDecimalDigits(
+                userCurrency!,
+              ),
+            ).format((_conversionRate! * costAmount!));
+
+            _conversionStatus = "completed";
+          } else {
+            _convertedAmount = "0.00";
+            _convertedCostAmount = "0.00";
+            _conversionRate = null;
+            _conversionStatus = "pending";
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _convertedAmount = "0.00";
+          _conversionRate = null;
+          _conversionStatus = "pending";
+        });
+      }
     }
+  }
+
+  void setPayee(ParticipantModel payee) {
+    setState(() {
+      selectedPayee = payee;
+    });
+  }
+
+  getIdsOnly(List<ParticipantModel> selectedSplitParticipants) {
+    return selectedSplitParticipants
+        .map((participant) => participant.id)
+        .toList();
   }
 
   @override
@@ -383,14 +417,23 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                   fontSize: 12,
                                 ),
                               ),
-                              Text(
-                                " ≈ $_convertedAmount",
-                                style: TextStyle(
-                                  color: custom.primary,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              _conversionStatus == "pending"
+                                  ? Text(
+                                      " Conversion not available",
+                                      style: TextStyle(
+                                        color: custom.primary,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  : Text(
+                                      " ≈ $_convertedAmount",
+                                      style: TextStyle(
+                                        color: custom.primary,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                             ],
                           ),
                         ],
@@ -877,7 +920,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   expanded: Column(),
                   expandedState: isBudget,
                 ),
-
+                SizedBox(height: 10),
                 OptionWidget(
                   custom: custom,
                   icon: FontAwesomeIcons.solidCircleUser,
@@ -890,67 +933,18 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     icon: ChevronToggle(isExpanded: isPayeeSelectorOpen),
                   ),
                   title: 'Who Paid?',
-                  subtitle: selectedPayee!.particpantName,
-                  expanded: Column(),
+                  subtitle: toBeSplit
+                      ? "Splitting the budget (Unavailable)"
+                      : selectedPayee!.particpantName,
+                  expanded: WPayeeExtended(
+                    participants: widget.participants,
+                    custom: custom,
+                    selectedPayee: selectedPayee!,
+                    setPayee: setPayee,
+                  ),
                   expandedState: isPayeeSelectorOpen,
                 ),
                 const SizedBox(height: 10),
-
-                Text(
-                  "Who paid for it? *",
-                  style: TextStyle(fontSize: 14, color: custom.primary),
-                ),
-
-                BlocBuilder<ParticipantBloc, ParticipantState>(
-                  builder: (context, state) {
-                    if (state is ParticipantLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is ParticipantLoaded) {
-                      if (state.participants.isEmpty) {
-                        return Text("SOMETHING WENT WRONG");
-                      }
-
-                      _participants = state.participants;
-                      if (!_participants.any(
-                        (p) => p.id == selectedParticipant,
-                      )) {
-                        final admin = _participants.firstWhere(
-                          (p) => p.isAdmin,
-                          orElse: () => _participants.first,
-                        );
-                        selectedParticipant = admin.id!;
-                      }
-                      return CustomisableDropdown<String>(
-                        items: _participants.map((p) => p.id!).toList(),
-                        hint: "Who paid for it?",
-                        value: selectedParticipant,
-                        backgroundColour: custom.surface,
-                        borderColour: Colors.transparent,
-                        padding: EdgeInsets.all(20),
-                        borderRadius: 20,
-                        menuMaxHeight: 200,
-                        selectedItemTextColour: custom.primary,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedParticipant = value!;
-                          });
-                        },
-                        itemBuilder: (id) {
-                          final participant = _participants.firstWhere(
-                            (p) => p.id == id,
-                          );
-                          return Text(participant.particpantName);
-                        },
-                      );
-                    } else if (state is ParticipantError) {
-                      return Text("Error: ${state.message}");
-                    } else {
-                      return const Text("Something went wrong!");
-                    }
-                  },
-                ),
-
-                SizedBox(height: 20),
 
                 SubHeadings(custom: custom, text: "Tags"),
 
@@ -1004,30 +998,21 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         if (formValid.values.every((v) => v)) {
                           ExpenseModel newExpense = ExpenseModel(
                             name: _expenseNameController.text.trim(),
+                            location: _locationController.text.trim(),
                             tripId: widget.tripDetails.tripId!,
-                            participantId: selectedParticipant,
-                          
+                            participantId: toBeSplit ? "" : (selectedPayee!.id ?? ""),
+
                             baseCurrency: selectedCurrency!,
                             targetCurrency: userCurrency,
 
                             baseCostAmountMinor: toMinor(
                               _costController.text.trim(),
-                              userCurrency!,
+                              selectedCurrency!,
                             ),
                             basePaidAmountMinor: toMinor(
                               _costController.text.trim(),
-                              userCurrency!,
+                              selectedCurrency!,
                             ),
-
-                            targetCostAmountMinor: toMinor(
-                              convertCost(_costController.text.trim()),
-                              userCurrency!,
-                            ),
-                            targetPaidAmountMinor: toMinor(
-                              _convertedAmount,
-                              userCurrency!,
-                            ),
-
                             exchangeRate: _conversionRate,
                             exchangeRateDate: DateTime.now(),
 
@@ -1037,6 +1022,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             datePaid: selectedDate!,
                             currency: selectedCurrency!,
                             toBeSplit: toBeSplit,
+                            splitParticipants: toBeSplit
+                                ? getIdsOnly(selectedSplitParticipants)
+                                : [],
                             category: selectedCategory!,
                             type: selectedType!,
                             notes: _notesController.text.isNotEmpty
@@ -1044,7 +1032,22 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 : "",
                             tags: addedTags.isNotEmpty ? addedTags : [],
                             isNotBudget: !isBudget,
+                            conversionStatus: _conversionStatus,
                           );
+
+                          if (_conversionStatus != "pending") {
+                            newExpense = newExpense.copyWith(
+                              targetCostAmountMinor: toMinor(
+                                _convertedCostAmount!,
+                                selectedCurrency!,
+                              ),
+                              targetPaidAmountMinor: toMinor(
+                                _convertedAmount!,
+                                selectedCurrency!,
+                              ),
+                              exchangeRate: _conversionRate,
+                            );
+                          }
 
                           context.read<ExpenseBloc>().add(
                             AddExpense(newExpense),
@@ -1085,7 +1088,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
   }
 
   double get _splitConvertedPerPerson {
-    final paidConverted = double.tryParse(_convertedAmount) ?? 0.0;
+    if (_convertedAmount == null) return 0.0;
+    final paidConverted = double.tryParse(_convertedAmount!) ?? 0.0;
 
     if (selectedSplitParticipants.isEmpty) {
       return 0.0;
@@ -1362,6 +1366,117 @@ class _AddExpensePageState extends State<AddExpensePage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class WPayeeExtended extends StatelessWidget {
+  final List<ParticipantModel> participants;
+  final CustomColours custom;
+  final ParticipantModel selectedPayee;
+  final Function(ParticipantModel) setPayee;
+  const WPayeeExtended({
+    super.key,
+    required this.participants,
+    required this.custom,
+    required this.selectedPayee,
+    required this.setPayee,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: participants.length,
+      itemBuilder: (BuildContext context, int index) {
+        final participant = participants[index];
+        return GestureDetector(
+          onTap: () => setPayee(participant),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: custom.secondarySurface,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Avatar
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: custom.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              participant.particpantName
+                                  .substring(0, 1)
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: custom.primaryText,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15),
+                        // Name + subtitle
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              participant.particpantName,
+                              style: TextStyle(
+                                color: custom.primaryText,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            Text(
+                              participant.isAdmin ? "You" : "Travel Companion",
+                              style: TextStyle(
+                                color: custom.secondaryText,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    // Check Mark
+                    Container(
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        color: selectedPayee.id == participant.id
+                            ? custom.primary
+                            : custom.secondarySurface,
+                        border: Border.all(color: custom.primary),
+                        shape: BoxShape.circle,
+                      ),
+                      child: selectedPayee.id == participant.id
+                          ? Center(child: FaIcon(FontAwesomeIcons.check))
+                          : null,
+                    ),
+                  ],
+                ),
+              ),
+              index != participants.length - 1
+                  ? SizedBox(height: 8)
+                  : Container(),
+            ],
+          ),
+        );
+      },
     );
   }
 }

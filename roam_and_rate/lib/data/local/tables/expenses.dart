@@ -13,6 +13,7 @@ class Expenses extends Table {
   BoolColumn get toBeSplit => boolean()();
   BoolColumn get isNotBudget => boolean().withDefault(const Constant(false))();
   TextColumn get expenseName => text()();
+  TextColumn get location => text().nullable()();
   TextColumn get category => text()();
   
   // The old way
@@ -36,6 +37,12 @@ class Expenses extends Table {
   // Exchange rateAPI does not have a lot of historical data,
   // so storing the date of the exchange rate
   DateTimeColumn get exchangeRateDate => dateTime().nullable()();
+
+  // Setting a conversion status to indicate if the conversion has been completed
+  // this will be used to handle API offline or network issues
+  TextColumn get conversionStatus => text().withDefault(const Constant('pending'))();
+
+  TextColumn get splitParticipants => text().map(const StringListConverter()).nullable()();
 
 
   DateTimeColumn get datePaid => dateTime()();

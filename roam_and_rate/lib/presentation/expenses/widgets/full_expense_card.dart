@@ -15,6 +15,7 @@ import 'package:roam_and_rate/core/utils/helper/currency_helper.dart';
 import 'package:roam_and_rate/core/utils/helper/helper_functions.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
 import 'package:roam_and_rate/domain/models/expense_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/helpers/expense_helper_functions.dart';
 import 'package:roam_and_rate/presentation/expenses/widgets/tag_widget.dart';
@@ -25,6 +26,7 @@ class FullExpenseCard extends StatefulWidget {
   final Function(String, double) onCostConverted;
   final Map<String, double> convertedCosts;
   final String participantName;
+  final List<ParticipantModel> participants;
   const FullExpenseCard({
     super.key,
     required this.expenseDetails,
@@ -32,6 +34,7 @@ class FullExpenseCard extends StatefulWidget {
     required this.onCostConverted,
     required this.convertedCosts,
     required this.participantName,
+    required this.participants,
   });
 
   @override
@@ -95,7 +98,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                     context,
                     AppRouter.editExpense,
                     arguments: EditExpenseArugments(
-                      expense: widget.expenseDetails,
+                      expense: widget.expenseDetails, participants: widget.participants,
                     ),
                   );
                 },
@@ -249,7 +252,25 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                             SizedBox(width: 4),
 
                              widget.expenseDetails.exchangeRate == 1.0
-                                ? SizedBox() // no need to convert
+                                ? SizedBox()// no need to convert
+                                : widget.expenseDetails.conversionStatus == "pending"
+                                ? Container(
+                                    padding: EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: custom.background,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "pending",
+                                      style: TextStyle(
+                                        color: custom.primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  )
                                 : Container(
                                     padding: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
@@ -259,7 +280,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                                       ),
                                     ),
                                     child: Text(
-                                      "${CurrencyData.currencySymbolFromCode(widget.tripDetails.currency)}${getExpenseDisplay(widget.expenseDetails.targetPaidAmountMinor!, widget.expenseDetails.targetCurrency!)}",
+                                      "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.targetCurrency!)}${getExpenseDisplay(widget.expenseDetails.targetPaidAmountMinor!, widget.expenseDetails.targetCurrency!)}",
                                       style: TextStyle(
                                         color: custom.primary,
                                         fontWeight: FontWeight.bold,

@@ -5,7 +5,7 @@ import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
 import 'package:roam_and_rate/presentation/expenses/pages/new_add_expense_page.dart';
-import 'package:roam_and_rate/presentation/expenses/pages/edit_expense_page.dart';
+import 'package:roam_and_rate/presentation/expenses/pages/new_edit_expense_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/connect_to_database_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
@@ -41,7 +41,8 @@ class AddExpenseArguments {
 
 class EditExpenseArugments {
   final ExpenseModel expense;
-  EditExpenseArugments({required this.expense});
+  final List<ParticipantModel> participants;
+  EditExpenseArugments({required this.expense, required this.participants});
 }
 
 class AddRatingArguments {
@@ -122,7 +123,7 @@ class AppRouter {
       case editExpense:
         final args = selectedRoute.arguments as EditExpenseArugments;
         return MaterialPageRoute(
-          builder: (_) => EditExpensePage(expenseToEdit: args.expense),
+          builder: (_) => EditExpensePage(expenseToEdit: args.expense, participants: args.participants,),
         );
       case viewTrip:
         final args = selectedRoute.arguments as ViewTripArguments;
