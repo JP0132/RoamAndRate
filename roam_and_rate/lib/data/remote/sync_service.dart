@@ -63,7 +63,7 @@ class SyncService {
 
         await SessionManager().setLastSyncTime(DateTime.now());
       } catch (e) {
-        print("$e");
+        print("Error in syncToServer: $e");
       }
     } else {
       print("⏰⏰⏰⏰ sync timer is not null");
