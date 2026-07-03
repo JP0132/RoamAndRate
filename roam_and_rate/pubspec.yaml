@@ -27,7 +27,7 @@ dependencies:
   currency_picker: ^2.0.21
   super_tooltip: ^2.1.0
   image_picker: ^1.1.2
-  fl_chart: ^1.1.0
+  fl_chart: ^0.70.2
   http: ^1.2.1
   flutter_dotenv: ^6.0.0
   decimal: ^3.2.4
