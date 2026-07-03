@@ -459,8 +459,6 @@ class _ViewTripState extends State<ViewTrip> {
                                 await _controller.showTooltip();
                               },
                               child: SuperTooltip(
-                                showBarrier: true,
-                                popupDirection: TooltipDirection.left,
                                 controller: _controller,
                                 content: SizedBox(
                                   width: 250,

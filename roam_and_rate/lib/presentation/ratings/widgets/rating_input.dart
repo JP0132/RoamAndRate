@@ -118,8 +118,6 @@ class _RatingInputState extends State<RatingInput> {
               await _controller.showTooltip();
             },
             child: SuperTooltip(
-              showBarrier: true,
-              popupDirection: TooltipDirection.left,
               controller: _controller,
               content: SizedBox(
                 width: 250, // Fixed width to prevent overflow
