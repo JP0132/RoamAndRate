@@ -58,8 +58,6 @@ flutter:
     # - assets/images/icons/direct-flight.png
     # - assets/images/icons/flag.png
 
-    - .env
-
   # Custom fonts
   fonts:
     - family: JetBrains Mono
