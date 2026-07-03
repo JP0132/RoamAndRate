@@ -38,20 +38,24 @@ import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/show_custom_styled_picker.dart';
 
-class AddExpensePage extends StatefulWidget {
+class ExpenseFormPage extends StatefulWidget {
   final TripModel tripDetails;
   final List<ParticipantModel> participants;
-  const AddExpensePage({
+  final ExpenseModel? expense;
+  const ExpenseFormPage({
     super.key,
     required this.tripDetails,
     required this.participants,
+    this.expense,
   });
 
+  bool get isEditing => expense != null;
+
   @override
-  State<AddExpensePage> createState() => _AddExpensePageState();
+  State<ExpenseFormPage> createState() => _ExpenseFormPageState();
 }
 
-class _AddExpensePageState extends State<AddExpensePage> {
+class _ExpenseFormPageState extends State<ExpenseFormPage> {
   final TextEditingController _expenseNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
@@ -95,17 +99,56 @@ class _AddExpensePageState extends State<AddExpensePage> {
   @override
   void initState() {
     super.initState();
-    selectedCurrency = widget.tripDetails.currency;
+    selectedCurrency = widget.isEditing
+        ? widget.expense!.currency
+        : widget.tripDetails.currency;
     userCurrency = sessionManager.userCurrency;
 
-    final admin = widget.participants.firstWhere(
-      (p) => p.isAdmin,
-      orElse: () => widget.participants.first,
+    final payee = widget.participants.firstWhere(
+      (p) => widget.isEditing && p.id == widget.expense!.participantId,
+      orElse: () => widget.participants.firstWhere(
+        (p) => p.isAdmin,
+        orElse: () => widget.participants.first,
+      ),
     );
-    selectedPayee = admin;
-    selectedSplitParticipants.add(admin);
 
-    print("🥶🥶🥶🥶 ${selectedSplitParticipants.first.particpantName}");
+    selectedPayee = payee;
+    widget.isEditing
+        ? selectedSplitParticipants = getSplitParticipants(
+            widget.expense!.splitParticipants,
+          )
+        : selectedSplitParticipants.add(payee);
+
+    if (widget.isEditing) {
+      _expenseNameController.text = widget.expense!.name;
+      _locationController.text = widget.expense!.location ?? "";
+      _costController.text = getExpenseDisplay(
+        widget.expense!.baseCostAmountMinor!,
+        widget.expense!.baseCurrency!,
+      );
+      _paidController.text = getExpenseDisplay(
+        widget.expense!.basePaidAmountMinor!,
+        widget.expense!.baseCurrency!,
+      );
+      _notesController.text = widget.expense!.notes;
+
+      selectedCategory = widget.expense!.category;
+      selectedCurrency = widget.expense!.baseCurrency;
+      selectedDate = widget.expense!.datePaid;
+      selectedType = widget.expense!.type;
+
+      _conversionRate = widget.expense!.exchangeRate;
+      _conversionStatus = widget.expense!.conversionStatus;
+      _convertedAmount = getExpenseDisplay(
+        widget.expense!.targetPaidAmountMinor!,
+        widget.expense!.targetCurrency!,
+      );
+
+      addedTags = widget.expense!.tags;
+      toBeSplit = widget.expense!.toBeSplit;
+    }
+
+    // print("🥶🥶🥶🥶 ${selectedSplitParticipants.first.particpantName}");
 
     _paidController.addListener(() {
       _updateConversion();
@@ -125,6 +168,21 @@ class _AddExpensePageState extends State<AddExpensePage> {
         _image = File(pickedFile.path);
       });
     }
+  }
+
+  List<ParticipantModel> getSplitParticipants(List<String>? splitParticipants) {
+    List<ParticipantModel> participants = [];
+
+    if (splitParticipants == null || splitParticipants.isEmpty) {
+      return participants;
+    }
+
+    for (var participant in splitParticipants) {
+      final p = widget.participants.firstWhere((p) => p.id == participant);
+      participants.add(p);
+    }
+
+    return participants;
   }
 
   String convertCost(String value) {
@@ -288,11 +346,131 @@ class _AddExpensePageState extends State<AddExpensePage> {
         .toList();
   }
 
+  void _saveExpense() {
+    setState(() {
+      validateDetails();
+    });
+
+    if (formValid.values.every((v) => v)) {
+      if (!widget.isEditing) {
+        ExpenseModel newExpense = ExpenseModel(
+          name: _expenseNameController.text.trim(),
+          location: _locationController.text.trim(),
+          tripId: widget.tripDetails.tripId!,
+          participantId: toBeSplit ? "" : (selectedPayee!.id ?? ""),
+
+          baseCurrency: selectedCurrency!,
+          targetCurrency: userCurrency,
+
+          baseCostAmountMinor: toMinor(
+            _costController.text.trim(),
+            selectedCurrency!,
+          ),
+          basePaidAmountMinor: toMinor(
+            _costController.text.trim(),
+            selectedCurrency!,
+          ),
+          exchangeRate: _conversionRate,
+          exchangeRateDate: DateTime.now(),
+
+          paid: double.parse(_paidController.text.trim()),
+          cost: double.parse(_costController.text.trim()),
+          dateTimeAdded: DateTime.now(),
+          datePaid: selectedDate!,
+          currency: selectedCurrency!,
+          toBeSplit: toBeSplit,
+          splitParticipants: toBeSplit
+              ? getIdsOnly(selectedSplitParticipants)
+              : [],
+          category: selectedCategory!,
+          type: selectedType!,
+          notes: _notesController.text.isNotEmpty ? _notesController.text : "",
+          tags: addedTags.isNotEmpty ? addedTags : [],
+          isNotBudget: !isBudget,
+          conversionStatus: _conversionStatus,
+        );
+
+        if (_conversionStatus != "pending") {
+          newExpense = newExpense.copyWith(
+            targetCostAmountMinor: toMinor(
+              _convertedCostAmount!,
+              selectedCurrency!,
+            ),
+            targetPaidAmountMinor: toMinor(
+              _convertedAmount!,
+              selectedCurrency!,
+            ),
+            exchangeRate: _conversionRate,
+          );
+        }
+
+        context.read<ExpenseBloc>().add(AddExpense(newExpense));
+      } else {
+        ExpenseModel edittedExpense = widget.expense!.copyWith(
+          name: _expenseNameController.text.trim(),
+          location: _locationController.text.trim(),
+
+          splitParticipants: toBeSplit
+              ? getIdsOnly(selectedSplitParticipants)
+              : [],
+
+          participantId: toBeSplit ? "" : (selectedPayee!.id ?? ""),
+
+          baseCurrency: selectedCurrency!,
+          targetCurrency: userCurrency,
+
+          baseCostAmountMinor: toMinor(
+            _costController.text.trim(),
+            selectedCurrency!,
+          ),
+          basePaidAmountMinor: toMinor(
+            _costController.text.trim(),
+            selectedCurrency!,
+          ),
+          exchangeRate: _conversionRate,
+          exchangeRateDate: DateTime.now(),
+
+          paid: double.parse(_paidController.text.trim()),
+          cost: double.parse(_costController.text.trim()),
+          dateTimeAdded: DateTime.now(),
+          datePaid: selectedDate!,
+          currency: selectedCurrency!,
+          toBeSplit: toBeSplit,
+          category: selectedCategory!,
+          type: selectedType!,
+          notes: _notesController.text.isNotEmpty ? _notesController.text : "",
+          tags: addedTags.isNotEmpty ? addedTags : [],
+          isNotBudget: !isBudget,
+          conversionStatus: _conversionStatus,
+        );
+
+        if (_conversionStatus != "pending") {
+          edittedExpense = edittedExpense.copyWith(
+            targetCostAmountMinor: toMinor(
+              _costController.text.trim(),
+              selectedCurrency!,
+            ),
+            targetPaidAmountMinor: toMinor(
+              _paidController.text.trim(),
+              selectedCurrency!,
+            ),
+            exchangeRate: _conversionRate,
+          );
+        }
+
+        context.read<ExpenseBloc>().add(EditExpense(edittedExpense));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Scaffold(
-      appBar: CustomAppBar(title: "New Expense", custom: custom),
+      appBar: CustomAppBar(
+        title: widget.isEditing ? "Edit Expense" : "New Expense",
+        custom: custom,
+      ),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () => _showPickOptionsDialog(context),
@@ -974,11 +1152,20 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         ),
                       );
                       Navigator.pop(context);
+                    } else if (state is ExpenseEdited) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Expense edited!"),
+                          backgroundColor: custom.success,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      Navigator.pop(context);
                     } else if (state is ExpenseError) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            "Failed to create expense: ${state.message}",
+                            "Error occured: ${state.message}",
                           ),
                           backgroundColor: custom.error,
                           behavior: SnackBarBehavior.floating,
@@ -992,67 +1179,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     }
                     return ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          validateDetails();
-                        });
-                        if (formValid.values.every((v) => v)) {
-                          ExpenseModel newExpense = ExpenseModel(
-                            name: _expenseNameController.text.trim(),
-                            location: _locationController.text.trim(),
-                            tripId: widget.tripDetails.tripId!,
-                            participantId: toBeSplit ? "" : (selectedPayee!.id ?? ""),
-
-                            baseCurrency: selectedCurrency!,
-                            targetCurrency: userCurrency,
-
-                            baseCostAmountMinor: toMinor(
-                              _costController.text.trim(),
-                              selectedCurrency!,
-                            ),
-                            basePaidAmountMinor: toMinor(
-                              _costController.text.trim(),
-                              selectedCurrency!,
-                            ),
-                            exchangeRate: _conversionRate,
-                            exchangeRateDate: DateTime.now(),
-
-                            paid: double.parse(_paidController.text.trim()),
-                            cost: double.parse(_costController.text.trim()),
-                            dateTimeAdded: DateTime.now(),
-                            datePaid: selectedDate!,
-                            currency: selectedCurrency!,
-                            toBeSplit: toBeSplit,
-                            splitParticipants: toBeSplit
-                                ? getIdsOnly(selectedSplitParticipants)
-                                : [],
-                            category: selectedCategory!,
-                            type: selectedType!,
-                            notes: _notesController.text.isNotEmpty
-                                ? _notesController.text
-                                : "",
-                            tags: addedTags.isNotEmpty ? addedTags : [],
-                            isNotBudget: !isBudget,
-                            conversionStatus: _conversionStatus,
-                          );
-
-                          if (_conversionStatus != "pending") {
-                            newExpense = newExpense.copyWith(
-                              targetCostAmountMinor: toMinor(
-                                _convertedCostAmount!,
-                                selectedCurrency!,
-                              ),
-                              targetPaidAmountMinor: toMinor(
-                                _convertedAmount!,
-                                selectedCurrency!,
-                              ),
-                              exchangeRate: _conversionRate,
-                            );
-                          }
-
-                          context.read<ExpenseBloc>().add(
-                            AddExpense(newExpense),
-                          );
-                        }
+                        _saveExpense();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: custom.primary,
@@ -1060,7 +1187,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         padding: EdgeInsets.all(8.0),
                       ),
                       child: Text(
-                        "SUBMIT",
+                        widget.isEditing ? "UPDATE" : "CREATE",
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 20,

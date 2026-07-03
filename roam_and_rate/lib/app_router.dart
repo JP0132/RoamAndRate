@@ -4,8 +4,7 @@ import 'package:roam_and_rate/domain/models/participant_model.dart';
 import 'package:roam_and_rate/domain/models/rating_details_model.dart';
 import 'package:roam_and_rate/domain/models/ratings_made_model.dart';
 import 'package:roam_and_rate/domain/models/trip_model.dart';
-import 'package:roam_and_rate/presentation/expenses/pages/new_add_expense_page.dart';
-import 'package:roam_and_rate/presentation/expenses/pages/new_edit_expense_page.dart';
+import 'package:roam_and_rate/presentation/expenses/pages/expense_form_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/connect_to_database_page.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/enter_user_details.dart';
 import 'package:roam_and_rate/presentation/get_started/pages/get_started.dart';
@@ -32,17 +31,13 @@ class EditTripArguments {
   EditTripArguments({required this.tripDetails});
 }
 
-class AddExpenseArguments {
+
+class ExpenseFormArguments{
   final TripModel tripDetails;
   final List<ParticipantModel> participants;
+  final ExpenseModel? expense;
 
-  AddExpenseArguments({required this.participants, required this.tripDetails});
-}
-
-class EditExpenseArugments {
-  final ExpenseModel expense;
-  final List<ParticipantModel> participants;
-  EditExpenseArugments({required this.expense, required this.participants});
+  ExpenseFormArguments({required this.participants, required this.tripDetails, this.expense});
 }
 
 class AddRatingArguments {
@@ -116,14 +111,14 @@ class AppRouter {
           ),
         );
       case addExpense:
-        final args = selectedRoute.arguments as AddExpenseArguments;
+        final args = selectedRoute.arguments as ExpenseFormArguments;
         return MaterialPageRoute(
-          builder: (_) => AddExpensePage(tripDetails: args.tripDetails, participants: args.participants,),
+          builder: (_) => ExpenseFormPage(tripDetails: args.tripDetails, participants: args.participants),
         );
       case editExpense:
-        final args = selectedRoute.arguments as EditExpenseArugments;
+        final args = selectedRoute.arguments as ExpenseFormArguments;
         return MaterialPageRoute(
-          builder: (_) => EditExpensePage(expenseToEdit: args.expense, participants: args.participants,),
+          builder: (_) => ExpenseFormPage(expense: args.expense, participants: args.participants, tripDetails: args.tripDetails,),
         );
       case viewTrip:
         final args = selectedRoute.arguments as ViewTripArguments;

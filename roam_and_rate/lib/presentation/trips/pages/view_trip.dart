@@ -646,7 +646,7 @@ class _ViewTripState extends State<ViewTrip> {
               onPressed: () => Navigator.pushNamed(
                 context,
                 AppRouter.addExpense,
-                arguments: AddExpenseArguments(
+                arguments: ExpenseFormArguments(
                   tripDetails: widget.tripDetails,
                   participants: particpant,
                 ),

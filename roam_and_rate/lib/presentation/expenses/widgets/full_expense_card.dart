@@ -97,8 +97,8 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                   Navigator.pushNamed(
                     context,
                     AppRouter.editExpense,
-                    arguments: EditExpenseArugments(
-                      expense: widget.expenseDetails, participants: widget.participants,
+                    arguments: ExpenseFormArguments(
+                      expense: widget.expenseDetails, participants: widget.participants, tripDetails: widget.tripDetails
                     ),
                   );
                 },
