@@ -151,13 +151,15 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
     // print("🥶🥶🥶🥶 ${selectedSplitParticipants.first.particpantName}");
 
     _paidController.addListener(() {
-      _updateConversion();
+      
 
       if (_costController.text.isEmpty ||
           _costController.text == _lastPaidValue) {
         _costController.text = _paidController.text;
       }
       _lastPaidValue = _paidController.text;
+
+      _updateConversion();
     });
   }
 
@@ -340,9 +342,10 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
     });
   }
 
-  getIdsOnly(List<ParticipantModel> selectedSplitParticipants) {
+  List<String> getIdsOnly(List<ParticipantModel> selectedSplitParticipants) {
     return selectedSplitParticipants
         .map((participant) => participant.id)
+        .whereType<String>()
         .toList();
   }
 
