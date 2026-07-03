@@ -99,7 +99,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                     backgroundColor: custom.success,
                     padding: const EdgeInsets.all(10),
                   ),
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.pencil,
                     color: custom.icon,
                     size: 25,
@@ -156,7 +156,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                     backgroundColor: custom.error,
                     padding: const EdgeInsets.all(10),
                   ),
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.trash,
                     color: custom.icon,
                     size: 25,
@@ -188,11 +188,13 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       color: custom.primary,
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: Icon(
-                      Helperfunctions.getCatIcon(
-                        widget.expenseDetails.category,
+                    child: Center(
+                      child: FaIcon(
+                        Helperfunctions.getCatIcon(
+                          widget.expenseDetails.category,
+                        ),
+                        color: custom.background,
                       ),
-                      color: custom.background,
                     ),
                   ),
         

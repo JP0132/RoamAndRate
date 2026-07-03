@@ -31,7 +31,7 @@ bool isBetweenInclusive(DateTime target, DateTime start, DateTime end) {
 //   return "assets/images/icons/flag.png";
 // }
 
-IconData getTripStatusIcon(DateTime startDate, DateTime endDate) {
+FaIconData getTripStatusIcon(DateTime startDate, DateTime endDate) {
   DateTime currentDate = DateTime.now();
   // Trip is ongoing
   if (isBetweenInclusive(currentDate, startDate, endDate)) {
@@ -83,7 +83,7 @@ class _TripCardsState extends State<TripCards> {
                   backgroundColor: custom.success,
                   padding: const EdgeInsets.all(10),
                 ),
-                child: Icon(
+                child: FaIcon(
                   FontAwesomeIcons.pencil,
                   color: custom.icon,
                   size: 25,

@@ -52,7 +52,7 @@ class _RatingCardsState extends State<RatingCards> {
               shape: BoxShape.circle,
               color: custom.primary,
             ),
-            child: Icon(
+            child: FaIcon(
               Helperfunctions.getCatIcon(widget.category),
               color: custom.surface,
             ),

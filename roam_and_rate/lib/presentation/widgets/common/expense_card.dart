@@ -48,7 +48,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
               shape: BoxShape.circle,
               color: custom.primary,
             ),
-            child: Icon(Helperfunctions.getCatIcon(widget.category), color: custom.surface),
+            child: FaIcon(Helperfunctions.getCatIcon(widget.category), color: custom.surface),
           ),
 
           SizedBox(width: 16),

@@ -17,7 +17,7 @@ class OptionWidget extends StatelessWidget {
   final CustomColours custom;
   final String title;
   final String subtitle;
-  final IconData icon;
+  final FaIconData icon;
   final Widget action;
   final Widget expanded;
   final bool expandedState;

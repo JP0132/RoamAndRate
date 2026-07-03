@@ -89,7 +89,7 @@ class _TripsPageState extends State<TripsPage> {
                   children: [
                     Text("Create your first trip to get started!"),
                     SizedBox(height: 40),
-                    Icon(
+                    FaIcon(
                       FontAwesomeIcons.arrowDown,
                       size: 100,
                       color: Colors.white,

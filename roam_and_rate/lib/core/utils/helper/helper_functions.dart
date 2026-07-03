@@ -61,7 +61,7 @@ class Helperfunctions {
     return ratingDescriptions[rating] ?? 'Unrated';
   }
 
-  static IconData? getCatIcon(String category) {
+  static FaIconData? getCatIcon(String category) {
     for (CategoryModel c in Categories.categories) {
       if (c.name == category) {
         return c.icon;

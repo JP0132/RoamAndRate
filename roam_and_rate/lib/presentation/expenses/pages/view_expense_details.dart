@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:roam_and_rate/core/themes/custom_colours.dart';
 import 'package:roam_and_rate/core/utils/constants/currency_data.dart';
@@ -93,7 +94,7 @@ class ViewExpensePage extends StatelessWidget {
                 color: custom.primary,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(
+              child: FaIcon(
                 Helperfunctions.getCatIcon(expense.category),
                 color: custom.background,
                 size: 28,

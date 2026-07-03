@@ -383,7 +383,7 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
             selectedCurrency!,
           ),
           basePaidAmountMinor: toMinor(
-            _costController.text.trim(),
+            _paidController.text.trim(),
             selectedCurrency!,
           ),
           exchangeRate: _conversionRate,
@@ -441,7 +441,7 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
             selectedCurrency!,
           ),
           basePaidAmountMinor: toMinor(
-            _costController.text.trim(),
+            _paidController.text.trim(),
             selectedCurrency!,
           ),
           exchangeRate: _conversionRate,
@@ -465,11 +465,11 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
         if (_conversionStatus != "pending") {
           edittedExpense = edittedExpense.copyWith(
             targetCostAmountMinor: toMinor(
-              _costController.text.trim(),
+              _convertedCostAmount!,
               selectedCurrency!,
             ),
             targetPaidAmountMinor: toMinor(
-              _paidController.text.trim(),
+              _convertedAmount!,
               selectedCurrency!,
             ),
             exchangeRate: _conversionRate,

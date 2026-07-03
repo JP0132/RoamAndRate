@@ -140,7 +140,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
                                     backgroundColor: Colors.green,
                                     padding: const EdgeInsets.all(10),
                                   ),
-                                  child: const Icon(
+                                  child: const FaIcon(
                                     FontAwesomeIcons.pencil,
                                     color: Colors.white,
                                     size: 25,
@@ -209,7 +209,7 @@ class _ParticipantPageState extends State<ParticipantPage> {
                                     backgroundColor: Colors.red,
                                     padding: const EdgeInsets.all(10),
                                   ),
-                                  child: const Icon(
+                                  child: const FaIcon(
                                     FontAwesomeIcons.trash,
                                     color: Colors.white,
                                     size: 25,

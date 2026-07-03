@@ -60,7 +60,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
 class SettingsBtn extends StatelessWidget {
   final String btnText;
-  final IconData btnIcon;
+  final FaIconData btnIcon;
   final Function onTap;
   const SettingsBtn({
     super.key,

@@ -96,7 +96,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   backgroundColor: custom.success,
                   padding: const EdgeInsets.all(10),
                 ),
-                child:  Icon(
+                child: FaIcon(
                   FontAwesomeIcons.pencil,
                   color: custom.icon,
                   size: 25,
@@ -148,7 +148,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                   backgroundColor: custom.error,
                   padding: const EdgeInsets.all(10),
                 ),
-                child:  Icon(
+                child:  FaIcon(
                   FontAwesomeIcons.trash,
                   color: custom.icon,
                   size: 25,
@@ -179,7 +179,7 @@ class _FullRatingCardState extends State<FullRatingCard> {
                     color: custom.primary,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  child: Icon(
+                  child: FaIcon(
                     Helperfunctions.getCatIcon(widget.ratingDetails.category),
                     color: custom.background,
                   ),

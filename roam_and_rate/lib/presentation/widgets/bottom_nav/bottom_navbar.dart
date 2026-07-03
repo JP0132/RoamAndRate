@@ -114,7 +114,7 @@ class CustomBottomNavbar extends StatelessWidget {
 
   Widget _buildIcon(
     BuildContext context, {
-    required IconData icon,
+    required FaIconData icon,
     required int index,
     required int selectedIndex,
     required VoidCallback onTap,
