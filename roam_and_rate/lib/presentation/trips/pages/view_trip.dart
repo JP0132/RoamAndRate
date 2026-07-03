@@ -52,9 +52,11 @@ class _ViewTripState extends State<ViewTrip> {
   int _selectedIndex = 0;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  final FocusNode _searchFocusNode = FocusNode();
 
   final sessionManager = SessionManager();
   String? userCurrency = "";
+
 
   List<RatingDetailsModel> _ratings = [];
   List<ExpenseModel> _expenses = [];
@@ -308,9 +310,10 @@ class _ViewTripState extends State<ViewTrip> {
     super.initState();
 
     _connectivitySub = Connectivity().onConnectivityChanged.listen((result) {
-    if (result.isNotEmpty && result.first != ConnectivityResult.none) {
-      _convertPendingExpenses();
-    }});
+      if (result.isNotEmpty && result.first != ConnectivityResult.none) {
+        _convertPendingExpenses();
+      }
+    });
 
     context.read<TripDataBloc>().add(
       StartWatchingTrip(widget.tripDetails.tripId!),
@@ -319,12 +322,17 @@ class _ViewTripState extends State<ViewTrip> {
     userCurrency = SessionManager().userCurrency;
 
     _searchController.addListener(_onSearchChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFocusNode.unfocus();
+    });
+
   }
 
   @override
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _searchFocusNode.dispose();
     _connectivitySub.cancel();
     super.dispose();
   }
@@ -390,162 +398,169 @@ class _ViewTripState extends State<ViewTrip> {
 
           return Scaffold(
             appBar: CustomAppBar(title: "Trip Overview", custom: custom),
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  TripOverviewCard(
-                    tripModel: widget.tripDetails,
-                    totalSpent: totalPaidSpent,
-                    totalBudgetSpent: totalBudgetSpent,
-                    totalUserCurrencySpent: totalUserCurrencySpent,
-                    userCurrency: userCurrency,
-                  ),
-                  //TripCards(tripModel: widget.tripDetails),
-                  const SizedBox(height: 20),
-
-                  const SizedBox(height: 10),
-
-                  // Search bar
-                  Container(
-                    height: 40.0,
-                    decoration: BoxDecoration(
-                      color: custom.surface,
-                      borderRadius: BorderRadius.circular(20.0),
+            body: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              behavior: HitTestBehavior.translucent,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    TripOverviewCard(
+                      tripModel: widget.tripDetails,
+                      totalSpent: totalPaidSpent,
+                      totalBudgetSpent: totalBudgetSpent,
+                      totalUserCurrencySpent: totalUserCurrencySpent,
+                      userCurrency: userCurrency,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search, color: custom.primary),
-                          const SizedBox(width: 8.0),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                  hintText: 'Search',
-                                  border: InputBorder.none,
-                                  hintStyle: TextStyle(
+                    //TripCards(tripModel: widget.tripDetails),
+                    const SizedBox(height: 20),
+
+                    const SizedBox(height: 10),
+
+                    // Search bar
+                    Container(
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                        color: custom.surface,
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search, color: custom.primary),
+                            const SizedBox(width: 8.0),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextField(
+                                  controller: _searchController,
+                                  focusNode: _searchFocusNode,
+                                  onTapOutside: (event) {
+                                    FocusScope.of(context).unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Search',
+                                    border: InputBorder.none,
+                                    hintStyle: TextStyle(
+                                      fontSize: 14,
+                                      color: custom.primary,
+                                    ),
+                                  ),
+                                  style: TextStyle(
                                     fontSize: 14,
                                     color: custom.primary,
                                   ),
                                 ),
-                                style: TextStyle(
-                                  fontSize: 14,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                await _controller.showTooltip();
+                              },
+                              child: SuperTooltip(
+                                showBarrier: true,
+                                popupDirection: TooltipDirection.left,
+                                controller: _controller,
+                                content: SizedBox(
+                                  width: 250,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "The search bar can be used to filter by names and tags.",
+                                        style: TextStyle(
+                                          color: custom.primaryText,
+                                        ),
+                                      ),
+                                      SizedBox(height: 12),
+                                      Text(
+                                        "Types of searches:",
+                                        style: TextStyle(
+                                          color: custom.primaryText,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        "• Used commas to multi-search.",
+                                        style: TextStyle(
+                                          color: custom.primaryText,
+                                        ),
+                                      ),
+                                      Text(
+                                        "• Use the keyword 'tags:' to search tags only.",
+                                        style: TextStyle(
+                                          color: custom.primaryText,
+                                        ),
+                                      ),
+                                      Text(
+                                        "• Use the keyword 'category:' to search categories only.",
+                                        style: TextStyle(
+                                          color: custom.primaryText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.info_outline,
                                   color: custom.primary,
+                                  size: 24,
                                 ),
                               ),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              await _controller.showTooltip();
-                            },
-                            child: SuperTooltip(
-                              showBarrier: true,
-                              popupDirection: TooltipDirection.left,
-                              controller: _controller,
-                              content: SizedBox(
-                                width: 250,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "The search bar can be used to filter by names and tags.",
-                                      style: TextStyle(
-                                        color: custom.primaryText,
-                                      ),
-                                    ),
-                                    SizedBox(height: 12),
-                                    Text(
-                                      "Types of searches:",
-                                      style: TextStyle(
-                                        color: custom.primaryText,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      "• Used commas to multi-search.",
-                                      style: TextStyle(
-                                        color: custom.primaryText,
-                                      ),
-                                    ),
-                                    Text(
-                                      "• Use the keyword 'tags:' to search tags only.",
-                                      style: TextStyle(
-                                        color: custom.primaryText,
-                                      ),
-                                    ),
-                                    Text(
-                                      "• Use the keyword 'category:' to search categories only.",
-                                      style: TextStyle(
-                                        color: custom.primaryText,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.info_outline,
-                                color: custom.primary,
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  Text("Total User Currency Spent: $totalUserCurrencySpent"),
-
-                  SegmentedSwitcher(
-                    items: [
-                      TabItem(title: "Expenses", count: _expenses.length),
-                      TabItem(title: "Ratings", count: _ratings.length),
-                    ],
-                    onTabSelected: _onSelectIndex,
-                    selectedIndex: _selectedIndex,
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Content
-                  BlocListener<TripDataBloc, TripDataState>(
-                    listener: (context, state) {
-                      _latestState = state;
-
-                      // Update data
-                      final newRatings = state.ratings
-                          .map((e) => e.toModel())
-                          .toList();
-                      final newExpenses = state.expenses
-                          .map((e) => e.toModel())
-                          .toList();
-
-                      // Only update if data actually changed
-                      if (!listEquals(newExpenses, _expenses) ||
-                          !listEquals(newRatings, _ratings)) {
-                        setState(() {
-                          _ratings = newRatings;
-                          _expenses = newExpenses;
-                          _filterTripData();
-                        });
-
-                        _convertPendingExpenses();
-                      }
-                    },
-                    child: Expanded(
-                      child: _selectedIndex == 1
-                          ? _buildRatingsList(participants)
-                          : _buildExpensesList(participants),
+                    SegmentedSwitcher(
+                      items: [
+                        TabItem(title: "Expenses", count: _expenses.length),
+                        TabItem(title: "Ratings", count: _ratings.length),
+                      ],
+                      onTabSelected: _onSelectIndex,
+                      selectedIndex: _selectedIndex,
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 12),
+
+                    // Content
+                    BlocListener<TripDataBloc, TripDataState>(
+                      listener: (context, state) {
+                        _latestState = state;
+
+                        // Update data
+                        final newRatings = state.ratings
+                            .map((e) => e.toModel())
+                            .toList();
+                        final newExpenses = state.expenses
+                            .map((e) => e.toModel())
+                            .toList();
+
+                        // Only update if data actually changed
+                        if (!listEquals(newExpenses, _expenses) ||
+                            !listEquals(newRatings, _ratings)) {
+                          setState(() {
+                            _ratings = newRatings;
+                            _expenses = newExpenses;
+                            _filterTripData();
+                          });
+
+                          _convertPendingExpenses();
+                        }
+                      },
+                      child: Expanded(
+                        child: _selectedIndex == 1
+                            ? _buildRatingsList(participants)
+                            : _buildExpensesList(participants),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             bottomNavigationBar: _buildBottomButtons(participants),
@@ -620,9 +635,6 @@ class _ViewTripState extends State<ViewTrip> {
                   tripDetails: widget.tripDetails,
                   onCostConverted: _onCostConverted,
                   convertedCosts: _convertedCosts,
-                  participantName: participants
-                      .firstWhere((p) => p.id == expense.participantId)
-                      .particpantName,
                   participants: participants,
                 ),
               ),
