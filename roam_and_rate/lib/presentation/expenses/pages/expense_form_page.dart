@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:roam_and_rate/application/expenses/expense_bloc.dart';
 import 'package:roam_and_rate/application/expenses/expense_event.dart';
 import 'package:roam_and_rate/application/expenses/expense_state.dart';
@@ -37,6 +38,7 @@ import 'package:roam_and_rate/presentation/widgets/date_picker/customised_date_p
 import 'package:roam_and_rate/presentation/widgets/common/w_large_textfield.dart';
 import 'package:roam_and_rate/presentation/widgets/common/w_tag_field.dart';
 import 'package:roam_and_rate/presentation/widgets/date_picker/show_custom_styled_picker.dart';
+import 'package:path/path.dart' as p;
 
 class ExpenseFormPage extends StatefulWidget {
   final TripModel tripDetails;
@@ -143,16 +145,19 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
         widget.expense!.targetPaidAmountMinor!,
         widget.expense!.targetCurrency!,
       );
-
-      addedTags = widget.expense!.tags;
-      toBeSplit = widget.expense!.toBeSplit;
+      if (widget.expense!.image.isNotEmpty) {
+        final file = File(widget.expense!.image);
+        if (file.existsSync()) {
+          _image = file;
+        }
+        addedTags = widget.expense!.tags;
+        toBeSplit = widget.expense!.toBeSplit;
+      }
     }
 
     // print("🥶🥶🥶🥶 ${selectedSplitParticipants.first.particpantName}");
 
     _paidController.addListener(() {
-      
-
       if (_costController.text.isEmpty ||
           _costController.text == _lastPaidValue) {
         _costController.text = _paidController.text;
@@ -165,11 +170,19 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
+    if (pickedFile == null) return;
+
+    // Copy to app's persistent storage
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    final String fileName =
+        'expense_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final String savedPath = p.join(appDir.path, fileName);
+
+    await File(pickedFile.path).copy(savedPath);
+
+    setState(() {
+      _image = File(savedPath); // now a permanent file
+    });
   }
 
   List<ParticipantModel> getSplitParticipants(List<String>? splitParticipants) {
@@ -391,6 +404,7 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
           tags: addedTags.isNotEmpty ? addedTags : [],
           isNotBudget: !isBudget,
           conversionStatus: _conversionStatus,
+          image: _image?.path ?? '',
         );
 
         if (_conversionStatus != "pending") {
@@ -445,6 +459,7 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
           tags: addedTags.isNotEmpty ? addedTags : [],
           isNotBudget: !isBudget,
           conversionStatus: _conversionStatus,
+          image: _image?.path ?? '',
         );
 
         if (_conversionStatus != "pending") {
@@ -1142,7 +1157,43 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
                   controller: _notesController,
                 ),
                 SizedBox(height: 20),
-                Center(child: _image == null ? Text("") : Image.file(_image!)),
+                if (_image != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Image.file(
+                            _image!,
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () => setState(() => _image = null),
+                            child: Container(
+                              padding: const EdgeInsets.all(4.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: custom.surface.withValues(alpha: 0.6),
+                              ),
+                              child: FaIcon(
+                                FontAwesomeIcons.xmark,
+                                color: custom.error,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 SizedBox(height: 50),
                 BlocConsumer<ExpenseBloc, ExpenseState>(
                   listener: (context, state) {
@@ -1167,9 +1218,7 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
                     } else if (state is ExpenseError) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            "Error occured: ${state.message}",
-                          ),
+                          content: Text("Error occured: ${state.message}"),
                           backgroundColor: custom.error,
                           behavior: SnackBarBehavior.floating,
                         ),

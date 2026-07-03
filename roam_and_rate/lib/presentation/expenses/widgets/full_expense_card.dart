@@ -25,7 +25,6 @@ class FullExpenseCard extends StatefulWidget {
   final TripModel tripDetails;
   final Function(String, double) onCostConverted;
   final Map<String, double> convertedCosts;
-  final String participantName;
   final List<ParticipantModel> participants;
   const FullExpenseCard({
     super.key,
@@ -33,7 +32,6 @@ class FullExpenseCard extends StatefulWidget {
     required this.tripDetails,
     required this.onCostConverted,
     required this.convertedCosts,
-    required this.participantName,
     required this.participants,
   });
 
@@ -44,153 +42,130 @@ class FullExpenseCard extends StatefulWidget {
 class _FullExpenseCardState extends State<FullExpenseCard> {
   bool _expanded = false;
   late Future<String?> _conversionFuture; // Store the future
-   final sessionManager = SessionManager();
+  final sessionManager = SessionManager();
   String? userCurrency = "";
 
   @override
   void initState() {
     super.initState();
-    print("🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetPaidAmountMinor.toString()}");
-    print("🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetCostAmountMinor.toString()}");
+    print(
+      "🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetPaidAmountMinor.toString()}",
+    );
+    print(
+      "🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetCostAmountMinor.toString()}",
+    );
     print("🤯🤯🤯🤯🤯🤯 ${widget.expenseDetails.targetCurrency.toString()}");
     userCurrency = sessionManager.userCurrency;
 
     // _initializeConversionFuture();
   }
 
-  // @override
-  // void didUpdateWidget(FullExpenseCard oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-
-  //   // Re-initialize if expense details changed
-  //   if (oldWidget.expenseDetails.basePaidAmountMinor != widget.expenseDetails.basePaidAmountMinor ||
-  //       oldWidget.expenseDetails.baseCurrency != widget.expenseDetails.baseCurrency ||
-  //       oldWidget.tripDetails.currency != widget.tripDetails.currency) {
-  //     _initializeConversionFuture();
-  //   }
-  // }
-
-  // void _initializeConversionFuture() {
-  //   if (widget.tripDetails.currency != widget.expenseDetails.currency) {
-  //     _conversionFuture = CurrencyHelper().getConvertedAmount(
-  //       base: widget.expenseDetails.currency.toUpperCase(),
-  //       target: widget.tripDetails.currency.toUpperCase(),
-  //       value: widget.expenseDetails.paid,
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final custom = Theme.of(context).extension<CustomColours>()!;
     final id = widget.expenseDetails.expenseId!;
 
-    return Slidable(
-      key: Key(widget.expenseDetails.expenseId!),
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        children: [
-          Builder(
-            builder: (context) {
-              return ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.editExpense,
-                    arguments: ExpenseFormArguments(
-                      expense: widget.expenseDetails, participants: widget.participants, tripDetails: widget.tripDetails
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  backgroundColor: custom.success,
-                  padding: const EdgeInsets.all(10),
-                ),
-                child:  Icon(
-                  FontAwesomeIcons.pencil,
-                  color: custom.icon,
-                  size: 25,
-                ),
-              );
-            },
-          ),
-          Builder(
-            builder: (context) {
-              return ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      backgroundColor: custom.surface,
-                      title: const Text("Delete Expense?"),
-                      content: const Text(
-                        "Are you sure you want to delete this expense, this action is irversiable",
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.read<ExpenseBloc>().add(
-                              DeleteExpense(widget.expenseDetails.expenseId!),
-                            );
-                            // context.read<ExpenseBloc>().add(
-                            //     DeleteExpenseRequested(
-                            //         widget.expenseDetails));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                               SnackBar(
-                                content: Text('Expense deleted successfully!'),
-                                backgroundColor: custom.success,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child:  Text(
-                            "DELETE",
-                            style: TextStyle(color: custom.error),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  backgroundColor: custom.error,
-                  padding: const EdgeInsets.all(10),
-                ),
-                child:  Icon(
-                  FontAwesomeIcons.trash,
-                  color: custom.icon,
-                  size: 25,
-                ),
-              );
-            },
-          ),
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(
+        context,
+        AppRouter.viewExpense,
+        arguments: ViewExpenseArguments(
+          tripDetails: widget.tripDetails,
+          participants: widget.participants,
+          expense: widget.expenseDetails,
+        ),
       ),
-
-      child: GestureDetector(
-        onTap: () {
-          if (widget.expenseDetails.notes.isNotEmpty) {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text("Notes"),
-                content: Text(widget.expenseDetails.notes),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('OK'),
+      child: Slidable(
+        key: Key(widget.expenseDetails.expenseId!),
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          children: [
+            Builder(
+              builder: (context) {
+                return ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.editExpense,
+                      arguments: ExpenseFormArguments(
+                        expense: widget.expenseDetails,
+                        participants: widget.participants,
+                        tripDetails: widget.tripDetails,
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    backgroundColor: custom.success,
+                    padding: const EdgeInsets.all(10),
                   ),
-                ],
-              ),
-            );
-          }
-        },
+                  child: Icon(
+                    FontAwesomeIcons.pencil,
+                    color: custom.icon,
+                    size: 25,
+                  ),
+                );
+              },
+            ),
+            Builder(
+              builder: (context) {
+                return ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        backgroundColor: custom.surface,
+                        title: const Text("Delete Expense?"),
+                        content: const Text(
+                          "Are you sure you want to delete this expense, this action is irversiable",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              context.read<ExpenseBloc>().add(
+                                DeleteExpense(widget.expenseDetails.expenseId!),
+                              );
+                              // context.read<ExpenseBloc>().add(
+                              //     DeleteExpenseRequested(
+                              //         widget.expenseDetails));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Expense deleted successfully!',
+                                  ),
+                                  backgroundColor: custom.success,
+                                ),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "DELETE",
+                              style: TextStyle(color: custom.error),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    backgroundColor: custom.error,
+                    padding: const EdgeInsets.all(10),
+                  ),
+                  child: Icon(
+                    FontAwesomeIcons.trash,
+                    color: custom.icon,
+                    size: 25,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
 
         child: Container(
           padding: EdgeInsets.all(8),
@@ -220,9 +195,9 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       color: custom.background,
                     ),
                   ),
-
+        
                   SizedBox(width: 16),
-
+        
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,10 +225,11 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                               ),
                             ),
                             SizedBox(width: 4),
-
-                             widget.expenseDetails.exchangeRate == 1.0
-                                ? SizedBox()// no need to convert
-                                : widget.expenseDetails.conversionStatus == "pending"
+        
+                            widget.expenseDetails.exchangeRate == 1.0
+                                ? SizedBox() // no need to convert
+                                : widget.expenseDetails.conversionStatus ==
+                                      "pending"
                                 ? Container(
                                     padding: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
@@ -293,14 +269,13 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                       ],
                     ),
                   ),
-
+        
                   // Right - Date
                   Container(
                     padding: EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: custom.secondarySurface,
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      
                     ),
                     child: Text(
                       DateFormat(
@@ -314,19 +289,16 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                   ),
                 ],
               ),
-
+        
               SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(
-                      color: custom.secondaryText,
-                      width: 1,
-                    ),
+                    bottom: BorderSide(color: custom.secondaryText, width: 1),
                   ),
                 ),
               ),
-
+        
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: IntrinsicHeight(
@@ -334,24 +306,23 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildCostDetails(
-                        "payee",
-                        widget.participantName,
-                      ),
-
+                      widget.expenseDetails.toBeSplit 
+                      ? _buildCostDetails("split", "Yes") 
+                      : _buildCostDetails("payee", Helperfunctions.getParticipantName(widget.participants, widget.expenseDetails.participantId!)),
+        
                       _buildCostDetails(
                         "cost",
                         "${CurrencyData.currencySymbolFromCode(widget.expenseDetails.baseCurrency!)}${getExpenseDisplay(widget.expenseDetails.baseCostAmountMinor!, widget.expenseDetails.baseCurrency!)}",
                       ),
-
+        
                       _buildCostDetails("type", widget.expenseDetails.type),
-
+        
                       SizedBox(width: 1),
                     ],
                   ),
                 ),
               ),
-
+        
               widget.expenseDetails.tags.isEmpty
                   ? const SizedBox.shrink()
                   : LayoutBuilder(
@@ -359,7 +330,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
                         final visibleTags = _expanded
                             ? widget.expenseDetails.tags
                             : widget.expenseDetails.tags.take(3).toList();
-
+        
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -423,11 +394,7 @@ class _FullExpenseCardState extends State<FullExpenseCard> {
     final custom = Theme.of(context).extension<CustomColours>()!;
     return Row(
       children: [
-        VerticalDivider(
-          color: custom.secondaryText,
-          thickness: 1,
-          width: 1,
-        ),
+        VerticalDivider(color: custom.secondaryText, thickness: 1, width: 1),
         SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
