@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:roam_and_rate/core/utils/constants/categories.dart';
 import 'package:roam_and_rate/domain/models/category_model.dart';
+import 'package:roam_and_rate/domain/models/participant_model.dart';
 
 const Map<int, String> ratingDescriptions = {
   10: 'Stellar',
@@ -67,5 +68,9 @@ class Helperfunctions {
       }
     }
     return FontAwesomeIcons.question;
+  }
+
+  static String getParticipantName(List<ParticipantModel> participants, String participantId){
+    return participants.firstWhere((p) => p.id == participantId).particpantName;
   }
 }
