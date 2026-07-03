@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:roam_and_rate/data/local/database.dart';
 import 'package:roam_and_rate/data/local/session_manager.dart';
@@ -10,8 +9,6 @@ class SyncService {
   Timer? _timer;
   String? lastSyncTime = SessionManager().lastSyncTime;
   final db = AppDatabase.instance;
-  // final String baseUrl = SessionManager();
-  // final portnumber = dotenv.env['PORT_NUMBER'] ?? 8000;
 
   void startSyncTimer() {
     print("⏰⏰⏰⏰ timer started");
